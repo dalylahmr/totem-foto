@@ -44,7 +44,7 @@ html,body{width:100%;height:100%;background:var(--black);color:var(--white);font
 .cam-hdr{width:100%;padding:.8rem 1.4rem;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(201,168,76,.18);flex-shrink:0}
 .cam-logo{font-family:'Playfair Display',serif;font-size:.95rem;font-style:italic;color:var(--gold)}
 .cam-info{display:flex;align-items:center;gap:10px}
-#voiceDot{width:8px;height:8px;border-radius:50%;background:#444;transition:background .3s;cursor:pointer;title:'Microfone'}
+#voiceDot{width:8px;height:8px;border-radius:50%;background:#444;transition:background .3s}
 #voiceDot.on{background:#4caf50;animation:vp 1.4s infinite}
 @keyframes vp{0%,100%{opacity:1}50%{opacity:.25}}
 #pcount{font-size:.62rem;letter-spacing:.28em;text-transform:uppercase;color:var(--white-dim)}
@@ -70,10 +70,13 @@ html,body{width:100%;height:100%;background:var(--black);color:var(--white);font
 .btn-cap:disabled{opacity:.35;cursor:not-allowed}
 
 /* RESULT */
-#sRes{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--black);z-index:80;opacity:0;pointer-events:none;transition:opacity .5s;padding:1rem;gap:1.4rem}
+#sRes{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--black);z-index:80;opacity:0;pointer-events:none;transition:opacity .5s;padding:1rem;gap:1.2rem}
 #sRes.on{opacity:1;pointer-events:all}
-.res-frm{position:relative;max-width:min(90vw,480px);max-height:54vh;border:1px solid rgba(201,168,76,.28);box-shadow:0 0 55px rgba(201,168,76,.12)}
+.res-frm{position:relative;max-width:min(90vw,480px);max-height:52vh;border:1px solid rgba(201,168,76,.28);box-shadow:0 0 55px rgba(201,168,76,.12)}
 .res-frm img{display:block;width:100%;height:100%;object-fit:contain}
+#uploadStatus{font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--white-dim);height:1.2em;text-align:center}
+#uploadStatus.ok{color:#4caf50}
+#uploadStatus.err{color:#e57373}
 .res-act{display:flex;gap:.9rem;flex-wrap:wrap;justify-content:center}
 .btn-a{padding:.85rem 1.8rem;font-family:'Montserrat',sans-serif;font-size:.68rem;font-weight:600;letter-spacing:.28em;text-transform:uppercase;cursor:pointer;transition:.2s;text-decoration:none;display:inline-flex;align-items:center;gap:.4rem;border:1px solid}
 .btn-share{background:var(--gold);color:var(--black);border-color:var(--gold)}
@@ -90,10 +93,12 @@ html,body{width:100%;height:100%;background:var(--black);color:var(--white);font
 #sGal.on{opacity:1;pointer-events:all}
 .gal-hdr{padding:.9rem 1.4rem;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(201,168,76,.18);flex-shrink:0}
 .gal-ttl{font-family:'Playfair Display',serif;font-size:1.15rem;font-style:italic;color:var(--gold)}
+.gal-count{font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--white-dim)}
 .gal-grid{flex:1;overflow-y:auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:3px;padding:.9rem}
 .gal-grid img{width:100%;aspect-ratio:3/4;object-fit:cover;cursor:pointer;transition:opacity .2s;border:1px solid rgba(201,168,76,.1)}
 .gal-grid img:hover{opacity:.75}
 .gal-empty{grid-column:1/-1;text-align:center;color:var(--white-dim);padding:3rem;font-size:.82rem;letter-spacing:.12em}
+.gal-loading{grid-column:1/-1;text-align:center;color:var(--gold);padding:3rem;font-size:.75rem;letter-spacing:.2em;text-transform:uppercase;animation:pulse 1.5s infinite}
 
 #canvas{display:none}
 </style>
@@ -143,6 +148,7 @@ html,body{width:100%;height:100%;background:var(--black);color:var(--white);font
 <!-- RESULT -->
 <div id="sRes">
   <div class="res-frm"><img id="rImg" src="" alt="Foto"></div>
+  <p id="uploadStatus">Enviando para a nuvem...</p>
   <div class="res-act">
     <button class="btn-a btn-share" onclick="sharePhoto()">&#8679; Compartilhar</button>
     <button class="btn-a btn-retry" onclick="retryCam()">&#9654; Nova Foto</button>
@@ -155,14 +161,24 @@ html,body{width:100%;height:100%;background:var(--black);color:var(--white);font
 <div id="sGal">
   <div class="gal-hdr">
     <span class="gal-ttl">Galeria da Festa</span>
-    <button class="btn-d" onclick="hideGal()">&#10005; Fechar</button>
+    <div style="display:flex;align-items:center;gap:1rem">
+      <span class="gal-count" id="galCount"></span>
+      <button class="btn-d" onclick="hideGal()">&#10005; Fechar</button>
+    </div>
   </div>
   <div class="gal-grid" id="galGrid">
-    <p class="gal-empty">Nenhuma foto ainda.<br>Seja o primeiro!</p>
+    <p class="gal-loading">Carregando fotos...</p>
   </div>
 </div>
 
 <script>
+/* ══════════════════════════════════════
+   CONFIG — Cloudinary + Firebase
+══════════════════════════════════════ */
+const CLOUDINARY_CLOUD  = 'dalylahs';
+const CLOUDINARY_PRESET = 'dalylah-party';
+const FIREBASE_URL      = 'https://dalylah-party-default-rtdb.firebaseio.com';
+
 /* ══════════════════════════════════════
    FRAMES
 ══════════════════════════════════════ */
@@ -172,33 +188,26 @@ let curF = 0;
 function drawFrame(ctx, w, h, fi) {
   if (fi === 0) {
     const g = ctx.createLinearGradient(0, h * .68, 0, h);
-    g.addColorStop(0, 'rgba(0,0,0,0)');
-    g.addColorStop(1, 'rgba(0,0,0,.8)');
-    ctx.fillStyle = g;
-    ctx.fillRect(0, h * .68, w, h * .32);
+    g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, 'rgba(0,0,0,.8)');
+    ctx.fillStyle = g; ctx.fillRect(0, h * .68, w, h * .32);
     arabescoSpiral(ctx, w, h);
   } else if (fi === 1) {
     const s = h * .12;
     ctx.fillStyle = 'rgba(0,0,0,.88)';
-    ctx.fillRect(0, 0, w, s);
-    ctx.fillRect(0, h - s, w, s);
+    ctx.fillRect(0, 0, w, s); ctx.fillRect(0, h - s, w, s);
     ctx.fillStyle = '#C9A84C';
     for (let i = 0; i < 8; i++) {
       const x = (w / 8) * i + (w / 16) - w * .02;
       rrect(ctx, x, s * .22, w * .04, s * .48, s * .12);
       rrect(ctx, x, h - s + s * .22, w * .04, s * .48, s * .12);
     }
-    ctx.strokeStyle = '#C9A84C';
-    ctx.lineWidth = 2;
+    ctx.strokeStyle = '#C9A84C'; ctx.lineWidth = 2;
     ctx.strokeRect(w * .015, s + h * .012, w * .97, h - s * 2 - h * .024);
   } else if (fi === 2) {
-    ctx.strokeStyle = '#C9A84C';
-    ctx.lineWidth = 3;
+    ctx.strokeStyle = '#C9A84C'; ctx.lineWidth = 3;
     ctx.strokeRect(13, 13, w - 26, h - 26);
-    ctx.lineWidth = 1;
-    ctx.globalAlpha = .5;
-    ctx.strokeRect(22, 22, w - 44, h - 44);
-    ctx.globalAlpha = 1;
+    ctx.lineWidth = 1; ctx.globalAlpha = .5;
+    ctx.strokeRect(22, 22, w - 44, h - 44); ctx.globalAlpha = 1;
     const ds = Math.min(w, h) * .11;
     [[16,16,1,1],[w-16,16,-1,1],[16,h-16,1,-1],[w-16,h-16,-1,-1]].forEach(([cx,cy,dx,dy]) => {
       ctx.fillStyle = '#C9A84C';
@@ -212,9 +221,7 @@ function drawFrame(ctx, w, h, fi) {
     });
     ctx.fillStyle = '#C9A84C';
     [[w/2,14,1],[w/2,h-14,-1]].forEach(([cx,cy,d]) => {
-      ctx.beginPath();
-      ctx.moveTo(cx - w * .07, cy); ctx.lineTo(cx, cy + d * 9); ctx.lineTo(cx + w * .07, cy);
-      ctx.fill();
+      ctx.beginPath(); ctx.moveTo(cx - w * .07, cy); ctx.lineTo(cx, cy + d * 9); ctx.lineTo(cx + w * .07, cy); ctx.fill();
     });
     const g = ctx.createLinearGradient(0, h * .7, 0, h);
     g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, 'rgba(0,0,0,.75)');
@@ -229,32 +236,27 @@ function drawFrame(ctx, w, h, fi) {
   }
 }
 
-/* Ajuste 5: stamp = "#DalylahParty" pequeno no canto inferior direito */
 function drawStamp(ctx, w, h, fi) {
   const fontSize = Math.round(w * .026);
   const marginR  = Math.round(w * .025);
-  // Para moldura Cinema, posiciona acima da barra preta inferior
-  const yBase = fi === 1 ? h - h * .12 - 10
-               : fi === 3 ? h - h * .22 + h * .22 * .55   // centro da área branca Polaroid
-               : h - 14;
+  const yBase    = fi === 1 ? h - h * .12 - 10
+                 : fi === 3 ? h - h * .22 * .5
+                 : h - 14;
   ctx.save();
-  ctx.font = `italic ${fontSize}px 'Playfair Display',Georgia,serif`;
-  ctx.textAlign = 'right';
-  // Sombra suave para legibilidade em qualquer fundo
-  ctx.shadowColor = 'rgba(0,0,0,.55)';
-  ctx.shadowBlur = 4;
-  ctx.fillStyle = fi === 3 ? '#C9A84C' : '#C9A84C';
+  ctx.font         = `italic ${fontSize}px 'Playfair Display',Georgia,serif`;
+  ctx.textAlign    = 'right';
+  ctx.shadowColor  = 'rgba(0,0,0,.6)';
+  ctx.shadowBlur   = 4;
+  ctx.fillStyle    = '#C9A84C';
   ctx.fillText('#DalylahParty', w - marginR, yBase);
   ctx.restore();
 }
 
 function arabescoSpiral(ctx, w, h) {
-  const sc = Math.min(w, h) / 420;
-  const m = Math.round(14 * sc);
+  const sc = Math.min(w, h) / 420, m = Math.round(14 * sc);
   ctx.strokeStyle = '#C9A84C'; ctx.fillStyle = '#C9A84C';
   [[m,m,1,1],[w-m,m,-1,1],[m,h-m,1,-1],[w-m,h-m,-1,-1]].forEach(([ox,oy,sx,sy]) => {
-    ctx.save();
-    ctx.translate(ox, oy); ctx.scale(sx * sc, sy * sc);
+    ctx.save(); ctx.translate(ox, oy); ctx.scale(sx * sc, sy * sc);
     ctx.lineWidth = 1.5 / sc;
     ctx.beginPath(); ctx.moveTo(0,0); ctx.bezierCurveTo(18,-2,36,8,42,0); ctx.bezierCurveTo(48,-8,44,-18,36,-16); ctx.bezierCurveTo(28,-14,28,-6,34,-4); ctx.stroke();
     ctx.beginPath(); ctx.moveTo(0,0); ctx.bezierCurveTo(-2,18,8,36,0,42); ctx.bezierCurveTo(-8,48,-18,44,-16,36); ctx.bezierCurveTo(-14,28,-6,28,-4,34); ctx.stroke();
@@ -273,12 +275,47 @@ function rrect(ctx, x, y, w, h, r) {
   ctx.moveTo(x+r,y); ctx.lineTo(x+w-r,y); ctx.quadraticCurveTo(x+w,y,x+w,y+r);
   ctx.lineTo(x+w,y+h-r); ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
   ctx.lineTo(x+r,y+h); ctx.quadraticCurveTo(x,y+h,x,y+h-r);
-  ctx.lineTo(x,y+r); ctx.quadraticCurveTo(x,y,x+r,y);
-  ctx.closePath(); ctx.fill();
+  ctx.lineTo(x,y+r); ctx.quadraticCurveTo(x,y,x+r,y); ctx.closePath(); ctx.fill();
 }
 
 /* ══════════════════════════════════════
-   INDEXEDDB — galeria persistente
+   CLOUDINARY — upload de imagem
+══════════════════════════════════════ */
+async function uploadToCloudinary(dataUrl) {
+  const blob = toBlob(dataUrl);
+  const fd   = new FormData();
+  fd.append('file', blob, 'photo.jpg');
+  fd.append('upload_preset', CLOUDINARY_PRESET);
+  const res  = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/image/upload`, {
+    method: 'POST', body: fd
+  });
+  if (!res.ok) throw new Error('Cloudinary error ' + res.status);
+  const data = await res.json();
+  return data.secure_url;
+}
+
+/* ══════════════════════════════════════
+   FIREBASE RTDB — lista compartilhada de URLs
+══════════════════════════════════════ */
+async function saveToFirebase(url) {
+  const res = await fetch(`${FIREBASE_URL}/photos.json`, {
+    method : 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body   : JSON.stringify({ url, ts: Date.now() })
+  });
+  if (!res.ok) throw new Error('Firebase error ' + res.status);
+}
+
+async function loadFromFirebase() {
+  const res  = await fetch(`${FIREBASE_URL}/photos.json`);
+  if (!res.ok) throw new Error('Firebase read error');
+  const data = await res.json();
+  if (!data) return [];
+  return Object.values(data).sort((a, b) => a.ts - b.ts);
+}
+
+/* ══════════════════════════════════════
+   INDEXEDDB — fallback local
 ══════════════════════════════════════ */
 const DB_NAME = 'dalylahpartydb', DB_STORE = 'photos', DB_VER = 1;
 let db = null;
@@ -287,79 +324,62 @@ function openDB() {
   return new Promise((resolve, reject) => {
     const req = indexedDB.open(DB_NAME, DB_VER);
     req.onupgradeneeded = e => {
-      const d = e.target.result;
-      if (!d.objectStoreNames.contains(DB_STORE))
-        d.createObjectStore(DB_STORE, { keyPath: 'id', autoIncrement: true });
+      if (!e.target.result.objectStoreNames.contains(DB_STORE))
+        e.target.result.createObjectStore(DB_STORE, { keyPath: 'id', autoIncrement: true });
     };
-    req.onsuccess = e => { db = e.target.result; resolve(db); };
-    req.onerror   = () => reject(req.error);
+    req.onsuccess = e => { db = e.target.result; resolve(); };
+    req.onerror   = () => resolve(); // falha silenciosa
   });
 }
-
-function savePhotoToDB(url) {
+function saveToIDB(url) {
   if (!db) return;
-  try {
-    const tx = db.transaction(DB_STORE, 'readwrite');
-    tx.objectStore(DB_STORE).add({ url, ts: new Date().toISOString() });
-  } catch(e) {}
+  try { db.transaction(DB_STORE,'readwrite').objectStore(DB_STORE).add({ url, ts: Date.now() }); } catch(e) {}
 }
-
-function loadPhotosFromDB() {
-  return new Promise(resolve => {
-    if (!db) return resolve([]);
+function loadFromIDB() {
+  return new Promise(r => {
+    if (!db) return r([]);
     try {
-      const tx  = db.transaction(DB_STORE, 'readonly');
-      const req = tx.objectStore(DB_STORE).getAll();
-      req.onsuccess = () => resolve(req.result || []);
-      req.onerror   = () => resolve([]);
-    } catch(e) { resolve([]); }
+      const req = db.transaction(DB_STORE,'readonly').objectStore(DB_STORE).getAll();
+      req.onsuccess = () => r(req.result || []);
+      req.onerror   = () => r([]);
+    } catch(e) { r([]); }
   });
 }
 
 /* ══════════════════════════════════════
    STATE
 ══════════════════════════════════════ */
-let stream = null, photos = [], photoCount = 0;
+let stream = null, photoCount = 0;
 let cdTimer = null, capturing = false, curUrl = null;
 let overlayRAF = null;
 
-const video    = document.getElementById('video');
-const canvas   = document.getElementById('canvas');
-const fOverlay = document.getElementById('fOverlay');
-const flash    = document.getElementById('flash');
-const cdnum    = document.getElementById('cdnum');
-const btnCap   = document.getElementById('btnCap');
-const rImg     = document.getElementById('rImg');
-const galGrid  = document.getElementById('galGrid');
-const voiceDot = document.getElementById('voiceDot');
-const toastEl  = document.getElementById('toast');
-const fbadge   = document.getElementById('fbadge');
-const camVp    = document.getElementById('camVp');
+const video          = document.getElementById('video');
+const canvas         = document.getElementById('canvas');
+const fOverlay       = document.getElementById('fOverlay');
+const flash          = document.getElementById('flash');
+const cdnum          = document.getElementById('cdnum');
+const btnCap         = document.getElementById('btnCap');
+const rImg           = document.getElementById('rImg');
+const galGrid        = document.getElementById('galGrid');
+const voiceDot       = document.getElementById('voiceDot');
+const toastEl        = document.getElementById('toast');
+const fbadge         = document.getElementById('fbadge');
+const camVp          = document.getElementById('camVp');
+const uploadStatus   = document.getElementById('uploadStatus');
 
 /* ══════════════════════════════════════
    SCREENS
 ══════════════════════════════════════ */
 function show(id) {
-  ['sIdle','sCam','sRes','sGal'].forEach(s => {
-    const el = document.getElementById(s);
-    el.classList.remove('on', 'hide');
-  });
+  ['sIdle','sCam','sRes','sGal'].forEach(s => document.getElementById(s).classList.remove('on','hide'));
   if (id === 'sIdle') return;
   document.getElementById('sIdle').classList.add('hide');
   document.getElementById(id).classList.add('on');
 }
-
 function goHome()   { stopCam(); show('sIdle'); }
 function showGal()  { renderGal(); show('sGal'); }
 function hideGal()  { stream ? show('sCam') : show('sIdle'); }
-
-/* Ajuste 6: retryCam reinicia overlay corretamente */
-function retryCam() {
-  show('sCam');
-  resizeOverlay();
-  if (!overlayRAF) startOverlay();
-}
-
+function retryCam() { show('sCam'); resizeOverlay(); if (!overlayRAF) startOverlay(); }
 function getScreen() {
   if (document.getElementById('sCam').classList.contains('on')) return 'cam';
   if (document.getElementById('sRes').classList.contains('on')) return 'res';
@@ -375,24 +395,19 @@ async function startCam() {
   if (stream) { resizeOverlay(); if (!overlayRAF) startOverlay(); return; }
   try {
     stream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } },
+      video: { facingMode: 'user', width: { ideal: 1920 }, height: { ideal: 1080 } },
       audio: false
     });
     video.srcObject = stream;
     video.onloadedmetadata = () => { resizeOverlay(); startOverlay(); };
-  } catch(e) {
-    alert('Câmera indisponível. Verifique permissões.');
-    goHome();
-  }
+  } catch(e) { alert('Câmera indisponível. Verifique permissões.'); goHome(); }
 }
 
 function stopCam() {
   if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; video.srcObject = null; }
   if (cdTimer) { clearInterval(cdTimer); cdTimer = null; }
   if (overlayRAF) { cancelAnimationFrame(overlayRAF); overlayRAF = null; }
-  cdnum.classList.remove('on');
-  btnCap.disabled = false;
-  capturing = false;
+  cdnum.classList.remove('on'); btnCap.disabled = false; capturing = false;
 }
 
 function resizeOverlay() {
@@ -401,7 +416,7 @@ function resizeOverlay() {
 }
 
 function startOverlay() {
-  if (overlayRAF) return; // já rodando
+  if (overlayRAF) return;
   function loop() {
     if (!document.getElementById('sCam').classList.contains('on')) { overlayRAF = null; return; }
     const ctx = fOverlay.getContext('2d');
@@ -418,8 +433,7 @@ window.addEventListener('resize', () => { if (stream) resizeOverlay(); });
    FRAME DOTS
 ══════════════════════════════════════ */
 function initDots() {
-  const c = document.getElementById('fdots');
-  c.innerHTML = '';
+  const c = document.getElementById('fdots'); c.innerHTML = '';
   FRAMES.forEach((_, i) => {
     const d = document.createElement('div');
     d.className = 'fdot' + (i === curF ? ' on' : '');
@@ -428,88 +442,82 @@ function initDots() {
     c.appendChild(d);
   });
 }
-
 function setFrame(i) {
   curF = i;
   document.querySelectorAll('.fdot').forEach((d, j) => d.classList.toggle('on', j === i));
-  fbadge.textContent = FRAMES[i];
-  fbadge.classList.add('on');
-  clearTimeout(fbadge._t);
-  fbadge._t = setTimeout(() => fbadge.classList.remove('on'), 1800);
+  fbadge.textContent = FRAMES[i]; fbadge.classList.add('on');
+  clearTimeout(fbadge._t); fbadge._t = setTimeout(() => fbadge.classList.remove('on'), 1800);
 }
-
-function nextFrame() {
-  setFrame((curF + 1) % FRAMES.length);
-  showToast('Moldura: ' + FRAMES[curF]);
-}
+function nextFrame() { setFrame((curF + 1) % FRAMES.length); showToast('Moldura: ' + FRAMES[curF]); }
 
 /* ══════════════════════════════════════
-   COUNTDOWN & CAPTURE
-   Ajuste 1: canvas usa mesmas dimensões do container (object-fit: cover)
+   COUNTDOWN & CAPTURE — alta qualidade
 ══════════════════════════════════════ */
 function startCD() {
   if (capturing || getScreen() !== 'cam') return;
-  capturing = true;
-  btnCap.disabled = true;
-  let n = 3;
-  cdnum.textContent = n;
-  cdnum.classList.add('on');
+  capturing = true; btnCap.disabled = true;
+  let n = 3; cdnum.textContent = n; cdnum.classList.add('on');
   cdTimer = setInterval(() => {
     n--;
-    if (n > 0) {
-      cdnum.textContent = n;
-    } else {
-      clearInterval(cdTimer); cdTimer = null;
-      cdnum.classList.remove('on');
-      capture();
-    }
+    if (n > 0) { cdnum.textContent = n; }
+    else { clearInterval(cdTimer); cdTimer = null; cdnum.classList.remove('on'); capture(); }
   }, 1000);
 }
 
-function capture() {
-  flash.classList.add('on');
-  setTimeout(() => flash.classList.remove('on'), 140);
+async function capture() {
+  flash.classList.add('on'); setTimeout(() => flash.classList.remove('on'), 140);
 
-  // Ajuste 1: captura exatamente o que o usuário vê (mesma lógica do object-fit: cover)
-  const cW = camVp.offsetWidth;
-  const cH = camVp.offsetHeight;
-  const vW = video.videoWidth  || 1280;
-  const vH = video.videoHeight || 720;
+  // Dimensões do container (preview)
+  const cW = camVp.offsetWidth, cH = camVp.offsetHeight;
+  // Resolução nativa da câmera
+  const vW = video.videoWidth || 1280, vH = video.videoHeight || 720;
 
-  // Calcula crop que object-fit:cover aplica ao vídeo
+  // Crop equivalente ao object-fit:cover — mantém enquadramento fiel ao preview
   const scale = Math.max(cW / vW, cH / vH);
-  const srcW  = cW / scale;
-  const srcH  = cH / scale;
-  const srcX  = (vW - srcW) / 2;
-  const srcY  = (vH - srcH) / 2;
+  const srcW  = Math.round(cW / scale);
+  const srcH  = Math.round(cH / scale);
+  const srcX  = Math.round((vW - srcW) / 2);
+  const srcY  = Math.round((vH - srcH) / 2);
 
-  canvas.width  = cW;
-  canvas.height = cH;
+  // Canvas na resolução NATIVA (máxima qualidade para impressão)
+  canvas.width  = srcW;
+  canvas.height = srcH;
 
   const ctx = canvas.getContext('2d');
-  // Espelha horizontalmente (selfie natural)
-  ctx.save();
-  ctx.translate(cW, 0);
-  ctx.scale(-1, 1);
-  ctx.drawImage(video, srcX, srcY, srcW, srcH, 0, 0, cW, cH);
+  ctx.save(); ctx.translate(srcW, 0); ctx.scale(-1, 1);
+  ctx.drawImage(video, srcX, srcY, srcW, srcH, 0, 0, srcW, srcH);
   ctx.restore();
+  drawFrame(ctx, srcW, srcH, curF);
+  drawStamp(ctx, srcW, srcH, curF);
 
-  drawFrame(ctx, cW, cH, curF);
-  drawStamp(ctx, cW, cH, curF);
+  // JPEG alta qualidade
+  const localUrl = canvas.toDataURL('image/jpeg', .95);
 
-  const url = canvas.toDataURL('image/jpeg', .92);
-  curUrl = url;
+  curUrl = localUrl;
   photoCount++;
   document.getElementById('pcount').textContent = photoCount + ' foto' + (photoCount !== 1 ? 's' : '');
 
-  // Salva automaticamente no banco local
-  savePhotoToDB(url);
-  photos.push({ url, ts: new Date() });
-
-  rImg.src = url;
-  btnCap.disabled = false;
-  capturing = false;
+  // Mostra resultado imediatamente com prévia local
+  rImg.src = localUrl;
+  uploadStatus.textContent = '⏳ Enviando para a nuvem...';
+  uploadStatus.className = '';
+  btnCap.disabled = false; capturing = false;
   show('sRes');
+
+  // Upload em background: Cloudinary → Firebase
+  try {
+    const cloudUrl = await uploadToCloudinary(localUrl);
+    await saveToFirebase(cloudUrl);
+    curUrl = cloudUrl; // atualiza URL para compartilhamento
+    uploadStatus.textContent = '✓ Salva na nuvem';
+    uploadStatus.className = 'ok';
+  } catch(e) {
+    // Fallback local
+    saveToIDB(localUrl);
+    uploadStatus.textContent = '✓ Salva no dispositivo';
+    uploadStatus.className = 'err';
+    console.warn('Upload falhou, salvo localmente:', e);
+  }
 }
 
 /* ══════════════════════════════════════
@@ -517,7 +525,20 @@ function capture() {
 ══════════════════════════════════════ */
 async function sharePhoto() {
   if (!curUrl) return;
-  if (!navigator.share) { showToast('Salve a foto pela galeria'); return; }
+  // Se tiver URL do Cloudinary, compartilha direto o link
+  if (curUrl.startsWith('https://res.cloudinary.com')) {
+    if (navigator.share) {
+      try {
+        await navigator.share({ url: curUrl, title: '#DalylahParty', text: 'Minha foto da festa!' });
+        return;
+      } catch(e) { if (e.name === 'AbortError') return; }
+    }
+    // Fallback: copia link
+    try { await navigator.clipboard.writeText(curUrl); showToast('Link copiado!'); } catch(e) {}
+    return;
+  }
+  // Fallback: compartilha arquivo local
+  if (!navigator.share) { showToast('Foto salva no dispositivo'); return; }
   try {
     const blob = toBlob(curUrl);
     const file = new File([blob], 'dalylah-party.jpg', { type: 'image/jpeg' });
@@ -526,114 +547,70 @@ async function sharePhoto() {
     } else {
       await navigator.share({ title: '#DalylahParty', text: 'Minha foto da festa!' });
     }
-  } catch(e) {
-    if (e.name !== 'AbortError') showToast('Não foi possível compartilhar');
-  }
+  } catch(e) { if (e.name !== 'AbortError') showToast('Não foi possível compartilhar'); }
 }
 
 function toBlob(url) {
-  const [head, data] = url.split(',');
-  const mime = head.match(/:(.*?);/)[1];
-  const bin  = atob(data);
-  const arr  = new Uint8Array(bin.length);
-  for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
-  return new Blob([arr], { type: mime });
+  const [h, d] = url.split(','), mime = h.match(/:(.*?);/)[1], b = atob(d);
+  const a = new Uint8Array(b.length);
+  for (let i = 0; i < b.length; i++) a[i] = b.charCodeAt(i);
+  return new Blob([a], { type: mime });
 }
 
 /* ══════════════════════════════════════
-   VOICE — robusto + todos os comandos (Ajustes 4 e 7)
+   VOICE — todos os comandos
 ══════════════════════════════════════ */
-let recog = null;
-let voiceEnabled = false;
+let recog = null, voiceEnabled = false;
 
 function startVoice() {
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (!SR) return;
   voiceEnabled = true;
 
-  function buildRecog() {
+  function build() {
     const r = new SR();
-    r.lang = 'pt-BR';
-    r.continuous = true;
-    r.interimResults = false;
-    r.maxAlternatives = 3;
-
-    r.onstart = () => voiceDot.classList.add('on');
-
-    r.onend = () => {
-      voiceDot.classList.remove('on');
-      if (voiceEnabled) setTimeout(() => { try { r.start(); } catch(e) {} }, 600);
-    };
-
-    r.onerror = e => {
-      voiceDot.classList.remove('on');
-      if (e.error === 'not-allowed' || e.error === 'service-not-allowed') voiceEnabled = false;
-    };
-
+    r.lang = 'pt-BR'; r.continuous = true; r.interimResults = false; r.maxAlternatives = 3;
+    r.onstart  = () => voiceDot.classList.add('on');
+    r.onend    = () => { voiceDot.classList.remove('on'); if (voiceEnabled) setTimeout(() => { try { r.start(); } catch(e) {} }, 600); };
+    r.onerror  = e => { voiceDot.classList.remove('on'); if (/not-allowed|service/.test(e.error)) voiceEnabled = false; };
     r.onresult = e => {
-      // Pega todas as alternativas do último resultado
-      const result = e.results[e.results.length - 1];
-      if (!result.isFinal) return;
-      for (let i = 0; i < result.length; i++) {
-        const t = result[i].transcript.toLowerCase().trim();
-        if (handleVoice(t)) break;
-      }
+      const res = e.results[e.results.length - 1];
+      if (!res.isFinal) return;
+      for (let i = 0; i < res.length; i++) { if (handleVoice(res[i].transcript.toLowerCase().trim())) break; }
     };
     return r;
   }
-
-  recog = buildRecog();
-  try { recog.start(); } catch(e) {}
+  recog = build(); try { recog.start(); } catch(e) {}
 }
 
-/* Retorna true se o comando foi reconhecido */
 function handleVoice(t) {
   const sc = getScreen();
-
-  // Tirar foto
   if (/xis|x{2,}|cheese|foto|sorri/.test(t)) {
     showToast('🎤 ' + t);
     if (sc === 'cam') { startCD(); return true; }
     if (sc === 'idle') { startCam().then(() => setTimeout(startCD, 1200)); return true; }
   }
-
-  // Compartilhar
   if (/compartilh/.test(t)) {
     showToast('🎤 Compartilhar');
     if (sc === 'res') { sharePhoto(); return true; }
   }
-
-  // Nova foto
-  if (/nova foto|mais uma|repetir|outra foto/.test(t)) {
+  if (/nova foto|mais uma|outra foto|repetir/.test(t)) {
     showToast('🎤 Nova foto');
     if (sc === 'res') { retryCam(); return true; }
     if (sc === 'idle') { startCam(); return true; }
   }
-
-  // Início
-  if (/início|ir para o início|ir pra casa|voltar ao início|home/.test(t)) {
-    showToast('🎤 Início');
-    goHome(); return true;
+  if (/início|ir para o início|ir pro início|home|voltar/.test(t)) {
+    showToast('🎤 Início'); goHome(); return true;
   }
-
-  // Trocar moldura
-  if (/trocar moldura|mudar moldura|próxima moldura|troca moldura|próxima/.test(t)) {
-    showToast('🎤 Trocando moldura');
-    nextFrame(); return true;
+  if (/trocar moldura|mudar moldura|próxima moldura|troca/.test(t)) {
+    showToast('🎤 Trocando moldura'); nextFrame(); return true;
   }
-
-  // Fechar galeria
   if (/fechar galeria|fechar|sair da galeria/.test(t)) {
-    showToast('🎤 Fechar galeria');
-    if (sc === 'gal') { hideGal(); return true; }
+    showToast('🎤 Fechar galeria'); if (sc === 'gal') { hideGal(); return true; }
   }
-
-  // Abrir galeria
   if (/abrir galeria|ver galeria|galeria/.test(t)) {
-    showToast('🎤 Galeria');
-    showGal(); return true;
+    showToast('🎤 Galeria'); showGal(); return true;
   }
-
   return false;
 }
 
@@ -642,58 +619,37 @@ function handleVoice(t) {
 ══════════════════════════════════════ */
 let toastTimer = null;
 function showToast(msg) {
-  toastEl.textContent = msg;
-  toastEl.classList.add('on');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => toastEl.classList.remove('on'), 1800);
+  toastEl.textContent = msg; toastEl.classList.add('on');
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => toastEl.classList.remove('on'), 1800);
 }
 
 /* ══════════════════════════════════════
    TOUCH GESTURES
-   Ajuste 3: swipe direita → compartilhar
-   Sem gesto para ir ao início
 ══════════════════════════════════════ */
 let tStart = null;
-
 document.addEventListener('touchstart', e => {
-  tStart = {
-    x: e.touches[0].clientX,
-    y: e.touches[0].clientY,
-    t: Date.now(),
-    target: e.target
-  };
+  tStart = { x: e.touches[0].clientX, y: e.touches[0].clientY, t: Date.now(), target: e.target };
 }, { passive: true });
 
 document.addEventListener('touchend', e => {
   if (!tStart) return;
-
-  const dx   = e.changedTouches[0].clientX - tStart.x;
-  const dy   = e.changedTouches[0].clientY - tStart.y;
-  const dist = Math.sqrt(dx * dx + dy * dy);
-  const dt   = Date.now() - tStart.t;
-  const sc   = getScreen();
+  const dx = e.changedTouches[0].clientX - tStart.x;
+  const dy = e.changedTouches[0].clientY - tStart.y;
+  const dist = Math.sqrt(dx*dx+dy*dy), dt = Date.now()-tStart.t, sc = getScreen();
 
   if (dist > 60 && dt < 450) {
     if (Math.abs(dx) > Math.abs(dy)) {
-      // Swipe horizontal
       if (dx < 0 && sc === 'res') { showToast('← Nova Foto'); retryCam(); }
-      // Ajuste 3: swipe direita compartilha
       else if (dx > 0 && sc === 'res') { showToast('→ Compartilhar'); sharePhoto(); }
     } else {
-      // Swipe vertical para cima → trocar moldura
       if (dy < 0 && (sc === 'cam' || sc === 'res')) nextFrame();
     }
-
   } else if (dist < 12 && dt < 300 && sc === 'cam') {
-    // Tap na área da câmera → tirar foto
-    // Ignora se tocou em botão ou dot
     if (tStart.target.closest('button, .fdot')) { tStart = null; return; }
     const vp = camVp.getBoundingClientRect();
-    const tx = e.changedTouches[0].clientX;
-    const ty = e.changedTouches[0].clientY;
+    const tx = e.changedTouches[0].clientX, ty = e.changedTouches[0].clientY;
     if (tx >= vp.left && tx <= vp.right && ty >= vp.top && ty <= vp.bottom) startCD();
   }
-
   tStart = null;
 });
 
@@ -707,25 +663,41 @@ document.addEventListener('keydown', e => {
 });
 
 /* ══════════════════════════════════════
-   GALLERY
+   GALLERY — carrega do Firebase (compartilhada)
+   com fallback para IndexedDB local
 ══════════════════════════════════════ */
 async function renderGal() {
-  const dbPhotos = await loadPhotosFromDB();
-  const allUrls  = new Set(photos.map(p => p.url));
-  dbPhotos.forEach(p => { if (!allUrls.has(p.url)) photos.push({ url: p.url, ts: new Date(p.ts) }); });
+  galGrid.innerHTML = '<p class="gal-loading">Carregando fotos da festa...</p>';
+  document.getElementById('galCount').textContent = '';
 
-  if (!photos.length) {
-    galGrid.innerHTML = '<p class="gal-empty">Nenhuma foto ainda.<br>Seja o primeiro!</p>';
+  let items = [];
+  try {
+    items = await loadFromFirebase();
+  } catch(e) {
+    // Firebase falhou — usa local
+    const local = await loadFromIDB();
+    items = local.map(p => ({ url: p.url, ts: p.ts }));
+  }
+
+  if (!items.length) {
+    galGrid.innerHTML = '<p class="gal-empty">Nenhuma foto ainda.<br>Seja a primeira!</p>';
     return;
   }
 
+  document.getElementById('galCount').textContent = items.length + ' foto' + (items.length !== 1 ? 's' : '');
   galGrid.innerHTML = '';
-  [...photos].reverse().forEach((p, i) => {
-    const img   = document.createElement('img');
+  [...items].reverse().forEach((p, i) => {
+    const img = document.createElement('img');
     img.src     = p.url;
-    img.alt     = 'Foto ' + (photos.length - i);
+    img.alt     = 'Foto ' + (items.length - i);
     img.loading = 'lazy';
-    img.onclick = () => { curUrl = p.url; rImg.src = p.url; show('sRes'); };
+    img.onclick = () => {
+      curUrl  = p.url;
+      rImg.src = p.url;
+      uploadStatus.textContent = '✓ Salva na nuvem';
+      uploadStatus.className   = 'ok';
+      show('sRes');
+    };
     galGrid.appendChild(img);
   });
 }
@@ -734,12 +706,11 @@ async function renderGal() {
    INIT
 ══════════════════════════════════════ */
 async function init() {
-  await openDB().catch(() => {});
+  await openDB();
   initDots();
   startVoice();
   show('sIdle');
 }
-
 init();
 </script>
 </body>
