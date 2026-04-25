@@ -52,18 +52,18 @@ html,body{width:100%;height:100%;background:var(--black);color:var(--white);font
 .cam-vp{position:relative;flex:1;overflow:hidden;display:flex;align-items:center;justify-content:center}
 #video{width:100%;height:100%;object-fit:cover;transform:scaleX(-1)}
 #fOverlay{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
-#cdnum{position:absolute;font-family:'Playfair Display',serif;font-size:20vw;font-weight:900;color:var(--gold);text-shadow:0 0 60px rgba(201,168,76,.8);opacity:0;transform:scale(.8);transition:opacity .25s,transform .25s;z-index:10}
+#cdnum{position:absolute;font-family:'Playfair Display',serif;font-size:20vw;font-weight:900;color:var(--gold);text-shadow:0 0 60px rgba(201,168,76,.8);opacity:0;transform:scale(.8);transition:opacity .25s,transform .25s;z-index:10;pointer-events:none}
 #cdnum.on{opacity:1;transform:scale(1)}
 #fbadge{position:absolute;top:10px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.65);border:1px solid rgba(201,168,76,.5);color:var(--gold);font-size:.58rem;letter-spacing:.25em;text-transform:uppercase;padding:.28rem .8rem;opacity:0;transition:opacity .3s;pointer-events:none;z-index:6;white-space:nowrap}
 #fbadge.on{opacity:1}
-.fdots{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);display:flex;gap:7px;z-index:5}
-.fdot{width:8px;height:8px;border-radius:50%;background:rgba(201,168,76,.25);border:1px solid var(--gold);cursor:pointer;transition:background .2s}
+.fdots{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);display:flex;gap:14px;z-index:5;padding:10px}
+.fdot{width:12px;height:12px;border-radius:50%;background:rgba(201,168,76,.25);border:1px solid var(--gold);cursor:pointer;transition:background .2s;-webkit-tap-highlight-color:transparent}
 .fdot.on{background:var(--gold)}
-#gfb{position:absolute;top:42%;left:50%;transform:translateX(-50%);background:rgba(201,168,76,.92);color:#000;font-size:.72rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase;padding:.42rem 1.1rem;border-radius:2px;opacity:0;transition:opacity .25s;pointer-events:none;z-index:20;white-space:nowrap}
-#gfb.on{opacity:1}
+#toast{position:absolute;top:42%;left:50%;transform:translateX(-50%);background:rgba(201,168,76,.92);color:#000;font-size:.72rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase;padding:.42rem 1.1rem;border-radius:2px;opacity:0;transition:opacity .25s;pointer-events:none;z-index:20;white-space:nowrap}
+#toast.on{opacity:1}
 
 .cam-ftr{width:100%;padding:1rem 1.4rem;display:flex;align-items:center;justify-content:space-around;border-top:1px solid rgba(201,168,76,.18);flex-shrink:0}
-.btn-cap{width:72px;height:72px;border-radius:50%;border:3px solid var(--gold);background:transparent;cursor:pointer;position:relative;transition:transform .15s;flex-shrink:0}
+.btn-cap{width:72px;height:72px;border-radius:50%;border:3px solid var(--gold);background:transparent;cursor:pointer;position:relative;transition:transform .15s;flex-shrink:0;-webkit-tap-highlight-color:transparent}
 .btn-cap::after{content:'';position:absolute;inset:7px;border-radius:50%;background:var(--gold);transition:background .2s}
 .btn-cap:hover::after{background:var(--gold-light)}
 .btn-cap:active{transform:scale(.91)}
@@ -131,12 +131,12 @@ html,body{width:100%;height:100%;background:var(--black);color:var(--white);font
     <div id="cdnum"></div>
     <div id="fbadge"></div>
     <div class="fdots" id="fdots"></div>
-    <div id="gfb"></div>
+    <div id="toast"></div>
   </div>
   <div class="cam-ftr">
-    <button class="btn-d" onclick="goHome()">&#8592; Início</button>
-    <button class="btn-cap" id="btnCap" onclick="startCD(false)" title="Tirar foto"></button>
-    <button class="btn-d" onclick="showGal()">Galeria</button>
+    <button class="btn-d" id="btnHome" onclick="goHome()">&#8592; Início</button>
+    <button class="btn-cap" id="btnCap" onclick="startCD()" title="Tirar foto"></button>
+    <button class="btn-d" id="btnGal" onclick="showGal()">Galeria</button>
   </div>
 </div>
 
@@ -163,145 +163,99 @@ html,body{width:100%;height:100%;background:var(--black);color:var(--white);font
 </div>
 
 <script>
-/* ── FRAMES ── */
+/* ══════════════════════════════════════
+   FRAMES
+══════════════════════════════════════ */
 const FRAMES = ['Clássica','Cinema','Art Déco','Polaroid'];
 let curF = 0;
 
 function drawFrame(ctx, w, h, fi) {
-  if(fi===0) {
-    const g=ctx.createLinearGradient(0,h*.68,0,h);
-    g.addColorStop(0,'rgba(0,0,0,0)'); g.addColorStop(1,'rgba(0,0,0,.8)');
-    ctx.fillStyle=g; ctx.fillRect(0,h*.68,w,h*.32);
-    arabescoSpiral(ctx,w,h);
-  } else if(fi===1) {
-    const s=h*.12;
-    ctx.fillStyle='rgba(0,0,0,.88)';
-    ctx.fillRect(0,0,w,s); ctx.fillRect(0,h-s,w,s);
-    ctx.fillStyle='#C9A84C';
-    for(let i=0;i<8;i++){
-      const x=(w/8)*i+(w/16)-w*.02;
-      rrect(ctx,x,s*.22,w*.04,s*.48,s*.12);
-      rrect(ctx,x,h-s+s*.22,w*.04,s*.48,s*.12);
+  if (fi === 0) {
+    const g = ctx.createLinearGradient(0, h * .68, 0, h);
+    g.addColorStop(0, 'rgba(0,0,0,0)');
+    g.addColorStop(1, 'rgba(0,0,0,.8)');
+    ctx.fillStyle = g;
+    ctx.fillRect(0, h * .68, w, h * .32);
+    arabescoSpiral(ctx, w, h);
+  } else if (fi === 1) {
+    const s = h * .12;
+    ctx.fillStyle = 'rgba(0,0,0,.88)';
+    ctx.fillRect(0, 0, w, s);
+    ctx.fillRect(0, h - s, w, s);
+    ctx.fillStyle = '#C9A84C';
+    for (let i = 0; i < 8; i++) {
+      const x = (w / 8) * i + (w / 16) - w * .02;
+      rrect(ctx, x, s * .22, w * .04, s * .48, s * .12);
+      rrect(ctx, x, h - s + s * .22, w * .04, s * .48, s * .12);
     }
-    ctx.strokeStyle='#C9A84C'; ctx.lineWidth=2;
-    ctx.strokeRect(w*.015,s+h*.012,w*.97,h-s*2-h*.024);
-  } else if(fi===2) {
-    ctx.strokeStyle='#C9A84C'; ctx.lineWidth=3;
-    ctx.strokeRect(13,13,w-26,h-26);
-    ctx.lineWidth=1; ctx.globalAlpha=.5;
-    ctx.strokeRect(22,22,w-44,h-44); ctx.globalAlpha=1;
-    const ds=Math.min(w,h)*.11;
-    [[16,16,1,1],[w-16,16,-1,1],[16,h-16,1,-1],[w-16,h-16,-1,-1]].forEach(([cx,cy,dx,dy])=>{
-      ctx.fillStyle='#C9A84C';
-      ctx.beginPath(); ctx.moveTo(cx,cy-dy*ds*.28); ctx.lineTo(cx+dx*ds*.28,cy); ctx.lineTo(cx,cy+dy*ds*.28); ctx.lineTo(cx-dx*ds*.28,cy); ctx.closePath(); ctx.fill();
-      ctx.strokeStyle='#C9A84C'; ctx.lineWidth=2;
-      ctx.beginPath(); ctx.moveTo(cx+dx*4,cy); ctx.lineTo(cx+dx*ds*.7,cy); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(cx,cy+dy*4); ctx.lineTo(cx,cy+dy*ds*.7); ctx.stroke();
+    ctx.strokeStyle = '#C9A84C';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(w * .015, s + h * .012, w * .97, h - s * 2 - h * .024);
+  } else if (fi === 2) {
+    ctx.strokeStyle = '#C9A84C';
+    ctx.lineWidth = 3;
+    ctx.strokeRect(13, 13, w - 26, h - 26);
+    ctx.lineWidth = 1;
+    ctx.globalAlpha = .5;
+    ctx.strokeRect(22, 22, w - 44, h - 44);
+    ctx.globalAlpha = 1;
+    const ds = Math.min(w, h) * .11;
+    [[16,16,1,1],[w-16,16,-1,1],[16,h-16,1,-1],[w-16,h-16,-1,-1]].forEach(([cx,cy,dx,dy]) => {
+      ctx.fillStyle = '#C9A84C';
+      ctx.beginPath();
+      ctx.moveTo(cx, cy - dy * ds * .28);
+      ctx.lineTo(cx + dx * ds * .28, cy);
+      ctx.lineTo(cx, cy + dy * ds * .28);
+      ctx.lineTo(cx - dx * ds * .28, cy);
+      ctx.closePath();
+      ctx.fill();
+      ctx.strokeStyle = '#C9A84C';
+      ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(cx + dx * 4, cy); ctx.lineTo(cx + dx * ds * .7, cy); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(cx, cy + dy * 4); ctx.lineTo(cx, cy + dy * ds * .7); ctx.stroke();
     });
-    ctx.fillStyle='#C9A84C';
-    [[w/2,14,1],[w/2,h-14,-1]].forEach(([cx,cy,d])=>{
-      ctx.beginPath(); ctx.moveTo(cx-w*.07,cy); ctx.lineTo(cx,cy+d*9); ctx.lineTo(cx+w*.07,cy); ctx.fill();
+    ctx.fillStyle = '#C9A84C';
+    [[w/2,14,1],[w/2,h-14,-1]].forEach(([cx,cy,d]) => {
+      ctx.beginPath();
+      ctx.moveTo(cx - w * .07, cy);
+      ctx.lineTo(cx, cy + d * 9);
+      ctx.lineTo(cx + w * .07, cy);
+      ctx.fill();
     });
-    const g=ctx.createLinearGradient(0,h*.7,0,h);
-    g.addColorStop(0,'rgba(0,0,0,0)'); g.addColorStop(1,'rgba(0,0,0,.75)');
-    ctx.fillStyle=g; ctx.fillRect(0,h*.7,w,h*.3);
-  } else if(fi===3) {
-    const bw=w*.06,bt=h*.06,bb=h*.22;
-    ctx.fillStyle='#FAF6EE';
-    ctx.fillRect(0,0,w,bt); ctx.fillRect(0,0,bw,h);
-    ctx.fillRect(w-bw,0,bw,h); ctx.fillRect(0,h-bb,w,bb);
-    ctx.strokeStyle='rgba(201,168,76,.5)'; ctx.lineWidth=1;
-    ctx.beginPath(); ctx.moveTo(w*.18,h-bb+bb*.35); ctx.lineTo(w*.82,h-bb+bb*.35); ctx.stroke();
+    const g = ctx.createLinearGradient(0, h * .7, 0, h);
+    g.addColorStop(0, 'rgba(0,0,0,0)');
+    g.addColorStop(1, 'rgba(0,0,0,.75)');
+    ctx.fillStyle = g;
+    ctx.fillRect(0, h * .7, w, h * .3);
+  } else if (fi === 3) {
+    const bw = w * .06, bt = h * .06, bb = h * .22;
+    ctx.fillStyle = '#FAF6EE';
+    ctx.fillRect(0, 0, w, bt);
+    ctx.fillRect(0, 0, bw, h);
+    ctx.fillRect(w - bw, 0, bw, h);
+    ctx.fillRect(0, h - bb, w, bb);
+    ctx.strokeStyle = 'rgba(201,168,76,.5)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(w * .18, h - bb + bb * .35);
+    ctx.lineTo(w * .82, h - bb + bb * .35);
+    ctx.stroke();
   }
 }
 
-function drawStamp(ctx,w,h,fi) {
-  const yBase = fi===1 ? h - h*.12 - 10 : h - 22;
-  ctx.fillStyle='#C9A84C';
-  ctx.font=`italic ${Math.round(w*.044)}px 'Playfair Display',Georgia,serif`;
-  ctx.textAlign='center';
-  ctx.fillText('Dalylah #40',w/2,yBase);
-}
-
-function drawOscar(ctx, w, h, fi) {
-  const oscH = h * 0.30;
-  const oW = oscH * 0.28;
-  const margin = w * 0.022;
-  const x = w - margin - oW * 0.14;
-  const y = fi === 1 ? h - h*0.12 - oscH*0.02 : h - h*0.015;
-  const lw = Math.max(1.2, oscH * 0.006);
-
-  ctx.save();
-  ctx.strokeStyle = '#FFE55C';
-  ctx.shadowColor = '#FFD500';
-  ctx.shadowBlur = oscH * 0.08;
-  ctx.lineWidth = lw;
-  ctx.lineCap = 'round';
-  ctx.lineJoin = 'round';
-  ctx.fillStyle = '#FFE55C';
-
-  // Pedestal
-  const pedH = oscH * 0.18, pedW = oW * 0.85;
-  ctx.beginPath(); ctx.ellipse(x, y - pedH*0.10, pedW/2, pedH*0.10, 0, 0, Math.PI*2); ctx.stroke();
-  ctx.beginPath();
-  ctx.moveTo(x - pedW/2, y - pedH*0.18); ctx.lineTo(x - pedW*0.42, y - pedH);
-  ctx.moveTo(x + pedW/2, y - pedH*0.18); ctx.lineTo(x + pedW*0.42, y - pedH);
-  ctx.stroke();
-  ctx.beginPath(); ctx.ellipse(x, y - pedH, pedW*0.42, pedH*0.08, 0, 0, Math.PI*2); ctx.stroke();
-
-  // Body (toga)
-  const bBase = y - pedH, bH = oscH * 0.38, bBot = oW * 0.72, bTop = oW * 0.52;
-  ctx.beginPath();
-  ctx.moveTo(x - bBot/2, bBase);
-  ctx.bezierCurveTo(x - bBot/2 - oW*.04, bBase - bH*.3, x - bTop/2 - oW*.02, bBase - bH*.7, x - bTop/2, bBase - bH);
-  ctx.lineTo(x + bTop/2, bBase - bH);
-  ctx.bezierCurveTo(x + bTop/2 + oW*.02, bBase - bH*.7, x + bBot/2 + oW*.04, bBase - bH*.3, x + bBot/2, bBase);
-  ctx.stroke();
-
-  // Waist
-  const waistY = bBase - bH * 0.38;
-  ctx.beginPath(); ctx.moveTo(x - bTop*.44, waistY); ctx.lineTo(x + bTop*.44, waistY); ctx.stroke();
-
-  // Chest
-  const cBase = bBase - bH, cH = oscH * 0.10, cW = bTop * 0.75;
-  ctx.beginPath();
-  ctx.moveTo(x - bTop/2, cBase); ctx.lineTo(x - cW/2, cBase - cH);
-  ctx.lineTo(x + cW/2, cBase - cH); ctx.lineTo(x + bTop/2, cBase);
-  ctx.stroke();
-
-  // Arms
-  const sY = cBase - cH;
-  [-1, 1].forEach(d => {
-    ctx.beginPath();
-    ctx.moveTo(x + d*cW/2, sY);
-    ctx.lineTo(x + d*(cW/2 + oW*.18), sY - oscH*.06);
-    ctx.lineTo(x + d*(cW/2 + oW*.14), sY - oscH*.12);
-    ctx.lineTo(x + d*(cW/2 - oW*.02), sY - oscH*.04);
-    ctx.stroke();
-  });
-
-  // Sword
-  ctx.beginPath(); ctx.moveTo(x, sY - oscH*.02); ctx.lineTo(x, sY - oscH*.24); ctx.stroke();
-  ctx.beginPath(); ctx.moveTo(x - oW*.12, sY - oscH*.06); ctx.lineTo(x + oW*.12, sY - oscH*.06); ctx.stroke();
-
-  // Neck
-  const nH = oscH * 0.06, nW = oW * 0.20;
-  ctx.beginPath();
-  ctx.moveTo(x - nW/2, sY); ctx.lineTo(x - nW/2, sY - nH);
-  ctx.lineTo(x + nW/2, sY - nH); ctx.lineTo(x + nW/2, sY);
-  ctx.stroke();
-
-  // Head
-  const hR = oW * 0.22, hCY = sY - nH - hR * 0.85;
-  ctx.beginPath(); ctx.ellipse(x, hCY, hR, hR*1.1, 0, 0, Math.PI*2); ctx.stroke();
-
-  ctx.restore();
+function drawStamp(ctx, w, h, fi) {
+  const yBase = fi === 1 ? h - h * .12 - 10 : h - 22;
+  ctx.fillStyle = '#C9A84C';
+  ctx.font = `italic ${Math.round(w * .044)}px 'Playfair Display',Georgia,serif`;
+  ctx.textAlign = 'center';
+  ctx.fillText('Dalylah #40', w / 2, yBase);
 }
 
 function arabescoSpiral(ctx, w, h) {
   const sc = Math.min(w, h) / 420;
   const m = Math.round(14 * sc);
-  ctx.strokeStyle = '#C9A84C'; ctx.fillStyle = '#C9A84C';
+  ctx.strokeStyle = '#C9A84C';
+  ctx.fillStyle = '#C9A84C';
   [[m,m,1,1],[w-m,m,-1,1],[m,h-m,1,-1],[w-m,h-m,-1,-1]].forEach(([ox,oy,sx,sy]) => {
     ctx.save();
     ctx.translate(ox, oy);
@@ -319,308 +273,450 @@ function arabescoSpiral(ctx, w, h) {
   });
 }
 
-function rrect(ctx,x,y,w,h,r) {
+function rrect(ctx, x, y, w, h, r) {
   ctx.beginPath();
   ctx.moveTo(x+r,y); ctx.lineTo(x+w-r,y); ctx.quadraticCurveTo(x+w,y,x+w,y+r);
   ctx.lineTo(x+w,y+h-r); ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
   ctx.lineTo(x+r,y+h); ctx.quadraticCurveTo(x,y+h,x,y+h-r);
-  ctx.lineTo(x,y+r); ctx.quadraticCurveTo(x,y,x+r,y); ctx.closePath(); ctx.fill();
+  ctx.lineTo(x,y+r); ctx.quadraticCurveTo(x,y,x+r,y);
+  ctx.closePath();
+  ctx.fill();
 }
 
-/* ── STATE ── */
-let stream=null, photos=[], photoCount=0;
-let cdTimer=null, capturing=false, curUrl=null;
-let overlayRAF=null;
+/* ══════════════════════════════════════
+   INDEXEDDB — galeria persistente
+══════════════════════════════════════ */
+const DB_NAME = 'dalylah40db', DB_STORE = 'photos', DB_VER = 1;
+let db = null;
 
-const video=document.getElementById('video');
-const canvas=document.getElementById('canvas');
-const fOverlay=document.getElementById('fOverlay');
-const flash=document.getElementById('flash');
-const cdnum=document.getElementById('cdnum');
-const btnCap=document.getElementById('btnCap');
-const rImg=document.getElementById('rImg');
-const galGrid=document.getElementById('galGrid');
-const voiceDot=document.getElementById('voiceDot');
-const gfb=document.getElementById('gfb');
-const fbadge=document.getElementById('fbadge');
-
-/* ── SCREENS ── */
-function show(id) {
-  ['sIdle','sCam','sRes','sGal'].forEach(s=>{
-    const el=document.getElementById(s);
-    el.classList.remove('on','hide');
-    if(s==='sIdle') el.classList.remove('hide');
+function openDB() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(DB_NAME, DB_VER);
+    req.onupgradeneeded = e => {
+      const d = e.target.result;
+      if (!d.objectStoreNames.contains(DB_STORE)) {
+        d.createObjectStore(DB_STORE, { keyPath: 'id', autoIncrement: true });
+      }
+    };
+    req.onsuccess = e => { db = e.target.result; resolve(db); };
+    req.onerror = () => reject(req.error);
   });
-  if(id==='sIdle') return;
+}
+
+function savePhotoToDB(url) {
+  if (!db) return;
+  try {
+    const tx = db.transaction(DB_STORE, 'readwrite');
+    tx.objectStore(DB_STORE).add({ url, ts: new Date().toISOString() });
+  } catch(e) { console.warn('DB save error:', e); }
+}
+
+function loadPhotosFromDB() {
+  return new Promise(resolve => {
+    if (!db) return resolve([]);
+    try {
+      const tx = db.transaction(DB_STORE, 'readonly');
+      const req = tx.objectStore(DB_STORE).getAll();
+      req.onsuccess = () => resolve(req.result || []);
+      req.onerror = () => resolve([]);
+    } catch(e) { resolve([]); }
+  });
+}
+
+/* ══════════════════════════════════════
+   STATE
+══════════════════════════════════════ */
+let stream = null, photos = [], photoCount = 0;
+let cdTimer = null, capturing = false, curUrl = null;
+let overlayRAF = null;
+
+const video    = document.getElementById('video');
+const canvas   = document.getElementById('canvas');
+const fOverlay = document.getElementById('fOverlay');
+const flash    = document.getElementById('flash');
+const cdnum    = document.getElementById('cdnum');
+const btnCap   = document.getElementById('btnCap');
+const rImg     = document.getElementById('rImg');
+const galGrid  = document.getElementById('galGrid');
+const voiceDot = document.getElementById('voiceDot');
+const toastEl  = document.getElementById('toast');
+const fbadge   = document.getElementById('fbadge');
+
+/* ══════════════════════════════════════
+   SCREENS
+══════════════════════════════════════ */
+function show(id) {
+  ['sIdle','sCam','sRes','sGal'].forEach(s => {
+    const el = document.getElementById(s);
+    el.classList.remove('on', 'hide');
+  });
+  if (id === 'sIdle') return;
   document.getElementById('sIdle').classList.add('hide');
   document.getElementById(id).classList.add('on');
 }
-function goHome(){stopCam();show('sIdle')}
-function showGal(){renderGal();show('sGal')}
-function hideGal(){stream?show('sCam'):show('sIdle')}
-function retryCam(){show('sCam')}
-function getScreen(){
-  if(document.getElementById('sCam').classList.contains('on')) return 'cam';
-  if(document.getElementById('sRes').classList.contains('on')) return 'res';
-  if(document.getElementById('sGal').classList.contains('on')) return 'gal';
+
+function goHome()   { stopCam(); show('sIdle'); }
+function showGal()  { renderGal(); show('sGal'); }
+function hideGal()  { stream ? show('sCam') : show('sIdle'); }
+function retryCam() { show('sCam'); }
+
+function getScreen() {
+  if (document.getElementById('sCam').classList.contains('on')) return 'cam';
+  if (document.getElementById('sRes').classList.contains('on')) return 'res';
+  if (document.getElementById('sGal').classList.contains('on')) return 'gal';
   return 'idle';
 }
 
-/* ── CAMERA ── */
+/* ══════════════════════════════════════
+   CAMERA
+══════════════════════════════════════ */
 async function startCam() {
   show('sCam');
-  if(stream) return;
+  if (stream) return;
   try {
-    stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user',width:{ideal:1280},height:{ideal:720}},audio:false});
-    video.srcObject=stream;
-    video.onloadedmetadata=()=>{ resizeOverlay(); startOverlay(); };
-    startMotion();
-  } catch(e) { alert('Câmera indisponível. Verifique permissões.'); goHome(); }
-}
-function stopCam() {
-  if(stream){stream.getTracks().forEach(t=>t.stop());stream=null;video.srcObject=null;}
-  if(cdTimer){clearInterval(cdTimer);cdTimer=null;}
-  stopMotion();
-  if(overlayRAF){cancelAnimationFrame(overlayRAF);overlayRAF=null;}
-  cdnum.classList.remove('on'); btnCap.disabled=false; capturing=false;
-}
-function resizeOverlay(){fOverlay.width=fOverlay.offsetWidth;fOverlay.height=fOverlay.offsetHeight;}
-function startOverlay(){
-  function loop(){
-    if(!document.getElementById('sCam').classList.contains('on')){overlayRAF=null;return;}
-    const ctx=fOverlay.getContext('2d');
-    ctx.clearRect(0,0,fOverlay.width,fOverlay.height);
-    drawFrame(ctx,fOverlay.width,fOverlay.height,curF);
-    overlayRAF=requestAnimationFrame(loop);
-  }
-  loop();
-}
-
-/* ── FRAME DOTS ── */
-function initDots(){
-  const c=document.getElementById('fdots'); c.innerHTML='';
-  FRAMES.forEach((_,i)=>{
-    const d=document.createElement('div'); d.className='fdot'+(i===curF?' on':'');
-    d.onclick=()=>setFrame(i); c.appendChild(d);
-  });
-}
-function setFrame(i){
-  curF=i;
-  document.querySelectorAll('.fdot').forEach((d,j)=>d.classList.toggle('on',j===i));
-  fbadge.textContent=FRAMES[i]; fbadge.classList.add('on');
-  clearTimeout(fbadge._t); fbadge._t=setTimeout(()=>fbadge.classList.remove('on'),1800);
-}
-function nextFrame(){setFrame((curF+1)%FRAMES.length);toast('Moldura: '+FRAMES[curF]);}
-
-/* ── COUNTDOWN & CAPTURE ── */
-function startCD(byUser=false){
-  if(capturing) return; capturing=true; btnCap.disabled=true;
-  let n=3; cdnum.textContent=n; cdnum.classList.add('on');
-  cdTimer=setInterval(()=>{
-    n--;
-    if(n>0){cdnum.textContent=n;}
-    else{clearInterval(cdTimer);cdTimer=null;cdnum.classList.remove('on');capture(byUser);}
-  },1000);
-}
-function capture(byUser=false){
-  flash.classList.add('on'); setTimeout(()=>flash.classList.remove('on'),140);
-  const w=video.videoWidth||1280, h=video.videoHeight||720;
-  canvas.width=w; canvas.height=h;
-  const ctx=canvas.getContext('2d');
-  ctx.save(); ctx.translate(w,0); ctx.scale(-1,1); ctx.drawImage(video,0,0,w,h); ctx.restore();
-  drawFrame(ctx,w,h,curF);
-  drawStamp(ctx,w,h,curF);
-  drawOscar(ctx,w,h,curF);
-  const url=canvas.toDataURL('image/jpeg',.92);
-  curUrl=url; photoCount++;
-  document.getElementById('pcount').textContent=photoCount+' foto'+(photoCount!==1?'s':'');
-  photos.push({url,ts:new Date()});
-  if(byUser) dl(url);
-  rImg.src=url; btnCap.disabled=false; capturing=false;
-  show('sRes');
-}
-function dl(url){
-  try{const a=document.createElement('a');a.href=url;a.download='dalylah40-'+Date.now()+'.jpg';document.body.appendChild(a);a.click();document.body.removeChild(a);}catch(e){}
-}
-
-/* ── SHARE ── */
-async function sharePhoto(){
-  if(!curUrl) return;
-  if(!navigator.share){ toast('Use o botão Salvar Foto'); return; }
-  try{
-    const blob=toBlob(curUrl);
-    const file=new File([blob],'dalylah40-foto.jpg',{type:'image/jpeg'});
-    if(navigator.canShare&&navigator.canShare({files:[file]})){
-      await navigator.share({files:[file],title:'Dalylah #40',text:'Minha foto da festa!'});
-    } else {
-      await navigator.share({title:'Dalylah #40',text:'Minha foto da festa!'});
-    }
-  } catch(e){ if(e.name!=='AbortError') toast('Use o botão Salvar Foto'); }
-}
-function toBlob(url){
-  const [h,d]=url.split(','),mime=h.match(/:(.*?);/)[1],b=atob(d);
-  const a=new Uint8Array(b.length);
-  for(let i=0;i<b.length;i++) a[i]=b.charCodeAt(i);
-  return new Blob([a],{type:mime});
-}
-
-/* ── VOICE ── */
-let recog=null;
-function startVoice(){
-  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-  if(!SR) return;
-  recog=new SR(); recog.lang='pt-BR'; recog.continuous=true; recog.interimResults=false;
-  recog.onstart=()=>voiceDot.classList.add('on');
-  recog.onend=()=>{ voiceDot.classList.remove('on'); try{recog.start();}catch(e){} };
-  recog.onerror=(e)=>{ if(e.error==='not-allowed') return; };
-  recog.onresult=(e)=>{
-    const t=e.results[e.results.length-1][0].transcript.toLowerCase().trim();
-    handleVoice(t);
-  };
-  try{recog.start();}catch(e){}
-}
-function handleVoice(t){
-  const sc=getScreen();
-  if(/cheese|tirar foto|sorri|xis|foto/.test(t)){
-    toast('🎤 '+t);
-    if(sc==='cam') startCD(false);
-    else if(sc==='idle') startCam().then(()=>setTimeout(()=>startCD(false),600));
-  } else if(/nova foto|mais uma|repetir|outra/.test(t)){
-    toast('🎤 Nova foto');
-    if(sc==='res') retryCam(); else if(sc==='idle') startCam();
-  } else if(/compartilh/.test(t)){
-    toast('🎤 Compartilhar');
-    if(sc==='res') sharePhoto();
-  } else if(/trocar moldura|mudar moldura|próxima|troca moldura/.test(t)){
-    toast('🎤 Trocando moldura'); nextFrame();
-  } else if(/início|voltar/.test(t)){
+    stream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } },
+      audio: false
+    });
+    video.srcObject = stream;
+    video.onloadedmetadata = () => { resizeOverlay(); startOverlay(); };
+  } catch(e) {
+    alert('Câmera indisponível. Verifique permissões.');
     goHome();
   }
 }
 
-/* ── TOAST ── */
-let toastT=null;
-function toast(msg){
-  gfb.textContent=msg; gfb.classList.add('on');
-  clearTimeout(toastT); toastT=setTimeout(()=>gfb.classList.remove('on'),1600);
+function stopCam() {
+  if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; video.srcObject = null; }
+  if (cdTimer) { clearInterval(cdTimer); cdTimer = null; }
+  if (overlayRAF) { cancelAnimationFrame(overlayRAF); overlayRAF = null; }
+  cdnum.classList.remove('on');
+  btnCap.disabled = false;
+  capturing = false;
 }
 
-/* ── MOTION GESTURES ── */
-let mCanvas=null, mCtx=null, prevPx=null, mInv=null, handHist=[], gDebounce={};
-function startMotion(){
-  mCanvas=document.createElement('canvas'); mCanvas.width=64; mCanvas.height=48;
-  mCtx=mCanvas.getContext('2d'); prevPx=null; handHist=[];
-  mInv=setInterval(motionFrame,90);
-}
-function stopMotion(){ if(mInv){clearInterval(mInv);mInv=null;} prevPx=null; handHist=[]; }
-function motionFrame(){
-  if(!stream||!video.videoWidth||capturing) return;
-  const W=64,H=48;
-  mCtx.save(); mCtx.translate(W,0); mCtx.scale(-1,1); mCtx.drawImage(video,0,0,W,H); mCtx.restore();
-  const px=mCtx.getImageData(0,0,W,H).data;
-  if(!prevPx){prevPx=px.slice();return;}
-  let mx=0,my=0,cnt=0;
-  for(let y=0;y<H;y++) for(let x=0;x<W;x++){
-    const i=(y*W+x)*4;
-    if(Math.abs(px[i]-prevPx[i])+Math.abs(px[i+1]-prevPx[i+1])+Math.abs(px[i+2]-prevPx[i+2])>28){
-      mx+=x/W; my+=y/H; cnt++;
-    }
-  }
-  prevPx=px.slice();
-  const ratio=cnt/(W*H);
-  if(ratio>.04){
-    const cx=mx/cnt, cy=my/cnt, now=Date.now();
-    handHist.push({x:cx,y:cy,t:now});
-    handHist=handHist.filter(p=>now-p.t<1300);
-    analyzeGesture(ratio,cx,cy);
-  }
-}
-function analyzeGesture(ratio,cx,cy){
-  const h=handHist; if(h.length<6) return;
-  const f=h[0],l=h[h.length-1],dt=l.t-f.t,dx=l.x-f.x,dy=l.y-f.y;
-  const sc=getScreen();
-  // Swipe direita→esquerda: Nova Foto
-  if(dx<-.38&&Math.abs(dy)<.18&&dt<800&&!deb('sl')){
-    deb('sl',1500); handHist=[];
-    toast('← Nova Foto');
-    if(sc==='res') retryCam();
-    else if(sc==='cam') startCD(false);
-    return;
-  }
-  // Swipe esquerda→direita: Salvar + Compartilhar (só na tela de resultado)
-  if(dx>.38&&Math.abs(dy)<.18&&dt<800&&sc==='res'&&!deb('sr')){
-    deb('sr',2000); handHist=[];
-    toast('→ Salvando + Compartilhar');
-    dl(curUrl); setTimeout(sharePhoto,400);
-    return;
-  }
-  // Swipe baixo→cima: Trocar Moldura
-  if(dy<-.32&&Math.abs(dx)<.18&&dt<800&&!deb('su')){
-    deb('su',1500); handHist=[]; nextFrame(); return;
-  }
-}
-function angDisp(h){
-  const mx=h.reduce((s,p)=>s+p.x,0)/h.length, my=h.reduce((s,p)=>s+p.y,0)/h.length;
-  let tot=0;
-  for(let i=1;i<h.length;i++){
-    let da=Math.atan2(h[i].y-my,h[i].x-mx)-Math.atan2(h[i-1].y-my,h[i-1].x-mx);
-    if(da>Math.PI)da-=2*Math.PI; if(da<-Math.PI)da+=2*Math.PI; tot+=da;
-  }
-  return tot;
-}
-function deb(k,ms){
-  if(ms===undefined) return gDebounce[k]&&Date.now()<gDebounce[k];
-  gDebounce[k]=Date.now()+ms;
+function resizeOverlay() {
+  fOverlay.width  = fOverlay.offsetWidth;
+  fOverlay.height = fOverlay.offsetHeight;
 }
 
-/* ── TOUCH GESTURES ── */
-let tStart=null;
-document.addEventListener('touchstart',e=>{tStart={x:e.touches[0].clientX,y:e.touches[0].clientY,t:Date.now()};});
-document.addEventListener('touchend',e=>{
-  if(!tStart) return;
-  const dx=e.changedTouches[0].clientX-tStart.x, dy=e.changedTouches[0].clientY-tStart.y;
-  const dist=Math.sqrt(dx*dx+dy*dy), dt=Date.now()-tStart.t, sc=getScreen();
-  if(dist>58&&dt<420){
-    if(Math.abs(dx)>Math.abs(dy)){
-      if(dx<0&&sc==='res'){toast('← Nova Foto');retryCam();}
-      else if(dx>0&&sc==='res'){toast('→ Salvando + Compartilhar');dl(curUrl);setTimeout(sharePhoto,400);}
-      else if(dx<0&&sc==='cam'){toast('← Início');goHome();}
+function startOverlay() {
+  function loop() {
+    if (!document.getElementById('sCam').classList.contains('on')) { overlayRAF = null; return; }
+    const ctx = fOverlay.getContext('2d');
+    ctx.clearRect(0, 0, fOverlay.width, fOverlay.height);
+    drawFrame(ctx, fOverlay.width, fOverlay.height, curF);
+    overlayRAF = requestAnimationFrame(loop);
+  }
+  loop();
+}
+
+/* ══════════════════════════════════════
+   FRAME DOTS
+══════════════════════════════════════ */
+function initDots() {
+  const c = document.getElementById('fdots');
+  c.innerHTML = '';
+  FRAMES.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'fdot' + (i === curF ? ' on' : '');
+    // Usar mousedown/touchstart para mudar moldura SEM propagar para o touchend do documento
+    d.addEventListener('click', e => { e.stopPropagation(); setFrame(i); });
+    d.addEventListener('touchend', e => { e.stopPropagation(); e.preventDefault(); setFrame(i); });
+    c.appendChild(d);
+  });
+}
+
+function setFrame(i) {
+  curF = i;
+  document.querySelectorAll('.fdot').forEach((d, j) => d.classList.toggle('on', j === i));
+  fbadge.textContent = FRAMES[i];
+  fbadge.classList.add('on');
+  clearTimeout(fbadge._t);
+  fbadge._t = setTimeout(() => fbadge.classList.remove('on'), 1800);
+}
+
+function nextFrame() {
+  setFrame((curF + 1) % FRAMES.length);
+  showToast('Moldura: ' + FRAMES[curF]);
+}
+
+/* ══════════════════════════════════════
+   COUNTDOWN & CAPTURE
+══════════════════════════════════════ */
+function startCD() {
+  if (capturing || getScreen() !== 'cam') return;
+  capturing = true;
+  btnCap.disabled = true;
+  let n = 3;
+  cdnum.textContent = n;
+  cdnum.classList.add('on');
+  cdTimer = setInterval(() => {
+    n--;
+    if (n > 0) {
+      cdnum.textContent = n;
     } else {
-      if(dy<0)(sc==='cam'||sc==='res')&&nextFrame();
+      clearInterval(cdTimer);
+      cdTimer = null;
+      cdnum.classList.remove('on');
+      capture();
     }
-  } else if(dist<14&&dt<280&&sc==='cam'){
-    const vp=document.getElementById('camVp').getBoundingClientRect();
-    const tx=e.changedTouches[0].clientX,ty=e.changedTouches[0].clientY;
-    if(tx>=vp.left&&tx<=vp.right&&ty>=vp.top&&ty<=vp.bottom) startCD(false);
+  }, 1000);
+}
+
+function capture() {
+  flash.classList.add('on');
+  setTimeout(() => flash.classList.remove('on'), 140);
+
+  const w = video.videoWidth  || 1280;
+  const h = video.videoHeight || 720;
+  canvas.width  = w;
+  canvas.height = h;
+
+  const ctx = canvas.getContext('2d');
+  ctx.save();
+  ctx.translate(w, 0);
+  ctx.scale(-1, 1);
+  ctx.drawImage(video, 0, 0, w, h);
+  ctx.restore();
+  drawFrame(ctx, w, h, curF);
+  drawStamp(ctx, w, h, curF);
+
+  const url = canvas.toDataURL('image/jpeg', .92);
+  curUrl = url;
+  photoCount++;
+  document.getElementById('pcount').textContent = photoCount + ' foto' + (photoCount !== 1 ? 's' : '');
+
+  // Salva no banco local (IndexedDB)
+  savePhotoToDB(url);
+  photos.push({ url, ts: new Date() });
+
+  rImg.src = url;
+  btnCap.disabled = false;
+  capturing = false;
+  show('sRes');
+}
+
+function dl(url) {
+  try {
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'dalylah40-' + Date.now() + '.jpg';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  } catch(e) {}
+}
+
+/* ══════════════════════════════════════
+   SHARE
+══════════════════════════════════════ */
+async function sharePhoto() {
+  if (!curUrl) return;
+  if (!navigator.share) { showToast('Use o botão Salvar Foto'); return; }
+  try {
+    const blob = toBlob(curUrl);
+    const file = new File([blob], 'dalylah40-foto.jpg', { type: 'image/jpeg' });
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      await navigator.share({ files: [file], title: 'Dalylah #40', text: 'Minha foto da festa!' });
+    } else {
+      await navigator.share({ title: 'Dalylah #40', text: 'Minha foto da festa!' });
+    }
+  } catch(e) {
+    if (e.name !== 'AbortError') showToast('Use o botão Salvar Foto');
   }
-  tStart=null;
+}
+
+function toBlob(url) {
+  const [head, data] = url.split(',');
+  const mime = head.match(/:(.*?);/)[1];
+  const bin  = atob(data);
+  const arr  = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+  return new Blob([arr], { type: mime });
+}
+
+/* ══════════════════════════════════════
+   VOICE — reconhecimento robusto
+══════════════════════════════════════ */
+let recog = null;
+let voiceEnabled = false;
+
+function startVoice() {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) return;
+
+  voiceEnabled = true;
+
+  function buildRecog() {
+    const r = new SR();
+    r.lang = 'pt-BR';
+    r.continuous = true;
+    r.interimResults = false;
+    r.maxAlternatives = 1;
+
+    r.onstart = () => voiceDot.classList.add('on');
+
+    r.onend = () => {
+      voiceDot.classList.remove('on');
+      if (voiceEnabled) {
+        setTimeout(() => { try { r.start(); } catch(e) {} }, 800);
+      }
+    };
+
+    r.onerror = e => {
+      voiceDot.classList.remove('on');
+      if (e.error === 'not-allowed' || e.error === 'service-not-allowed') {
+        voiceEnabled = false; // não tenta mais se sem permissão
+      }
+    };
+
+    r.onresult = e => {
+      const last = e.results[e.results.length - 1];
+      if (!last.isFinal) return;
+      const t = last[0].transcript.toLowerCase().trim();
+      handleVoice(t);
+    };
+
+    return r;
+  }
+
+  recog = buildRecog();
+  try { recog.start(); } catch(e) {}
+}
+
+function handleVoice(t) {
+  const sc = getScreen();
+  if (/cheese|tirar foto|sorri|xis|foto/.test(t)) {
+    showToast('🎤 ' + t);
+    if (sc === 'cam') startCD();
+    else if (sc === 'idle') startCam().then(() => setTimeout(startCD, 1200));
+  } else if (/nova foto|mais uma|repetir|outra/.test(t)) {
+    showToast('🎤 Nova foto');
+    if (sc === 'res') retryCam();
+    else if (sc === 'idle') startCam();
+  } else if (/compartilh/.test(t)) {
+    showToast('🎤 Compartilhar');
+    if (sc === 'res') sharePhoto();
+  } else if (/trocar moldura|mudar moldura|próxima moldura|troca moldura/.test(t)) {
+    showToast('🎤 Trocando moldura');
+    nextFrame();
+  }
+  // Removido: comando de voz para voltar ao início (goHome)
+}
+
+/* ══════════════════════════════════════
+   TOAST
+══════════════════════════════════════ */
+let toastTimer = null;
+function showToast(msg) {
+  toastEl.textContent = msg;
+  toastEl.classList.add('on');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toastEl.classList.remove('on'), 1800);
+}
+
+/* ══════════════════════════════════════
+   TOUCH GESTURES
+   — Sem gesto para ir ao início
+   — Tap na área da câmera só se não for botão/dot
+══════════════════════════════════════ */
+let tStart = null;
+
+document.addEventListener('touchstart', e => {
+  tStart = {
+    x: e.touches[0].clientX,
+    y: e.touches[0].clientY,
+    t: Date.now(),
+    target: e.target
+  };
+}, { passive: true });
+
+document.addEventListener('touchend', e => {
+  if (!tStart) return;
+
+  const dx   = e.changedTouches[0].clientX - tStart.x;
+  const dy   = e.changedTouches[0].clientY - tStart.y;
+  const dist = Math.sqrt(dx * dx + dy * dy);
+  const dt   = Date.now() - tStart.t;
+  const sc   = getScreen();
+
+  if (dist > 60 && dt < 450) {
+    // ── SWIPES ──
+    if (Math.abs(dx) > Math.abs(dy)) {
+      // Horizontal
+      if (dx < 0 && sc === 'res') { showToast('← Nova Foto'); retryCam(); }
+      else if (dx > 0 && sc === 'res') { showToast('→ Salvar'); dl(curUrl); }
+      // Sem gesto horizontal para ir ao início
+    } else {
+      // Vertical: swipe para cima troca moldura
+      if (dy < 0 && (sc === 'cam' || sc === 'res')) nextFrame();
+    }
+
+  } else if (dist < 12 && dt < 300 && sc === 'cam') {
+    // ── TAP para tirar foto ──
+    // Ignora se o toque foi em botão, dot ou qualquer elemento interativo
+    const interacted = tStart.target.closest('button, .fdot, .btn-cap, .btn-d');
+    if (interacted) { tStart = null; return; }
+
+    const vp = document.getElementById('camVp').getBoundingClientRect();
+    const tx = e.changedTouches[0].clientX;
+    const ty = e.changedTouches[0].clientY;
+    if (tx >= vp.left && tx <= vp.right && ty >= vp.top && ty <= vp.bottom) {
+      startCD();
+    }
+  }
+
+  tStart = null;
 });
 
-/* ── KEYBOARD ── */
-document.addEventListener('keydown',e=>{
-  if(e.code==='Space'&&getScreen()==='cam'){e.preventDefault();startCD(true);}
-  if(e.code==='ArrowRight') nextFrame();
-  if(e.code==='Escape') goHome();
+/* ══════════════════════════════════════
+   KEYBOARD
+══════════════════════════════════════ */
+document.addEventListener('keydown', e => {
+  if (e.code === 'Space' && getScreen() === 'cam') { e.preventDefault(); startCD(); }
+  if (e.code === 'ArrowRight') nextFrame();
+  if (e.code === 'Escape') goHome();
 });
 
-/* ── GALLERY ── */
-function renderGal(){
-  if(!photos.length){galGrid.innerHTML='<p class="gal-empty">Nenhuma foto ainda.<br>Seja o primeiro!</p>';return;}
-  galGrid.innerHTML='';
-  [...photos].reverse().forEach((p,i)=>{
-    const img=document.createElement('img'); img.src=p.url; img.alt='Foto '+(photos.length-i);
-    img.onclick=()=>{curUrl=p.url;rImg.src=p.url;show('sRes');};
+/* ══════════════════════════════════════
+   GALLERY
+══════════════════════════════════════ */
+async function renderGal() {
+  // Recarrega do IndexedDB para mostrar todas as fotos, inclusive de sessões anteriores
+  const dbPhotos = await loadPhotosFromDB();
+
+  // Mescla com fotos da sessão atual (evita duplicatas pelo url)
+  const allUrls = new Set(photos.map(p => p.url));
+  dbPhotos.forEach(p => { if (!allUrls.has(p.url)) photos.push({ url: p.url, ts: new Date(p.ts) }); });
+
+  if (!photos.length) {
+    galGrid.innerHTML = '<p class="gal-empty">Nenhuma foto ainda.<br>Seja o primeiro!</p>';
+    return;
+  }
+
+  galGrid.innerHTML = '';
+  [...photos].reverse().forEach((p, i) => {
+    const img = document.createElement('img');
+    img.src = p.url;
+    img.alt = 'Foto ' + (photos.length - i);
+    img.loading = 'lazy';
+    img.onclick = () => { curUrl = p.url; rImg.src = p.url; show('sRes'); };
     galGrid.appendChild(img);
   });
 }
 
-/* ── UTILS ── */
-function fmtDate(d){return d.toLocaleDateString('pt-BR',{day:'2-digit',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'});}
+/* ══════════════════════════════════════
+   INIT
+══════════════════════════════════════ */
+async function init() {
+  await openDB().catch(() => {}); // IndexedDB — falha silenciosamente se não suportado
+  initDots();
+  startVoice();
+  show('sIdle');
+}
 
-/* ── INIT ── */
-initDots();
-startVoice();
-show('sIdle');
+init();
 </script>
 </body>
 </html>
