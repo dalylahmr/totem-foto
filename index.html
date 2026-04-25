@@ -17,7 +17,7 @@ html,body{width:100%;height:100%;background:var(--black);color:var(--white);font
 #flash{position:fixed;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:9999;transition:opacity .05s}
 #flash.on{opacity:1}
 
-/* IDLE */
+/* ── IDLE ─────────────────────────────── */
 #sIdle{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.8rem;padding:2rem;background:var(--black);z-index:100;transition:opacity .5s}
 #sIdle.hide{opacity:0;pointer-events:none}
 .ic{position:absolute;width:28px;height:28px;border-color:var(--gold);border-style:solid}
@@ -25,23 +25,23 @@ html,body{width:100%;height:100%;background:var(--black);color:var(--white);font
 .ic.tr{top:18px;right:18px;border-width:2px 2px 0 0}
 .ic.bl{bottom:18px;left:18px;border-width:0 0 2px 2px}
 .ic.br{bottom:18px;right:18px;border-width:0 2px 2px 0}
-.ttl{font-family:'Playfair Display',serif;font-size:clamp(3rem,10vw,7rem);font-weight:900;color:#fff;line-height:1;text-align:center}
+.ttl{font-family:'Playfair Display',serif;font-size:clamp(2.8rem,9vw,6.5rem);font-weight:900;color:#fff;line-height:1;text-align:center}
 .ttl em{color:var(--gold);font-style:italic;display:block}
-.sub{font-family:'Playfair Display',serif;font-size:clamp(1rem,2.5vw,1.5rem);font-style:italic;color:var(--white-dim);letter-spacing:.1em;text-align:center}
+.sub{font-family:'Playfair Display',serif;font-size:clamp(.9rem,2.2vw,1.4rem);font-style:italic;color:var(--white-dim);letter-spacing:.1em;text-align:center}
 .divl{width:70px;height:1px;background:var(--gold);opacity:.5}
-.hint{font-size:.85rem;color:var(--white-dim);letter-spacing:.15em;text-transform:uppercase;animation:pulse 2.5s ease-in-out infinite}
+.hint{font-size:.82rem;color:var(--white-dim);letter-spacing:.15em;text-transform:uppercase;animation:pulse 2.5s ease-in-out infinite}
 @keyframes pulse{0%,100%{opacity:.4}50%{opacity:1}}
 
-/* BUTTONS */
+/* ── BUTTONS ──────────────────────────── */
 .btn-g{background:transparent;border:1px solid var(--gold);color:var(--gold);padding:1rem 2.5rem;font-family:'Montserrat',sans-serif;font-size:.78rem;font-weight:600;letter-spacing:.3em;text-transform:uppercase;cursor:pointer;transition:.2s}
 .btn-g:hover,.btn-g:active{background:var(--gold);color:var(--black)}
 .btn-d{background:transparent;border:1px solid rgba(201,168,76,.35);color:var(--white-dim);padding:.65rem 1.4rem;font-family:'Montserrat',sans-serif;font-size:.62rem;font-weight:600;letter-spacing:.22em;text-transform:uppercase;cursor:pointer;transition:.2s}
 .btn-d:hover{border-color:var(--gold);color:var(--gold)}
 
-/* CAMERA */
-#sCam{position:fixed;inset:0;display:flex;flex-direction:column;background:var(--black);z-index:50;opacity:0;pointer-events:none;transition:opacity .5s}
+/* ── CAMERA ───────────────────────────── */
+#sCam{position:fixed;inset:0;display:flex;flex-direction:column;z-index:50;opacity:0;pointer-events:none;transition:opacity .5s}
 #sCam.on{opacity:1;pointer-events:all}
-.cam-hdr{width:100%;padding:.8rem 1.4rem;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(201,168,76,.18);flex-shrink:0}
+.cam-hdr{width:100%;padding:.8rem 1.4rem;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(201,168,76,.18);flex-shrink:0;background:var(--black);z-index:5}
 .cam-logo{font-family:'Playfair Display',serif;font-size:.95rem;font-style:italic;color:var(--gold)}
 .cam-info{display:flex;align-items:center;gap:10px}
 #voiceDot{width:8px;height:8px;border-radius:50%;background:#444;transition:background .3s}
@@ -49,56 +49,65 @@ html,body{width:100%;height:100%;background:var(--black);color:var(--white);font
 @keyframes vp{0%,100%{opacity:1}50%{opacity:.25}}
 #pcount{font-size:.62rem;letter-spacing:.28em;text-transform:uppercase;color:var(--white-dim)}
 
-.cam-vp{position:relative;flex:1;overflow:hidden;display:flex;align-items:center;justify-content:center}
-#video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scaleX(-1)}
+/* camVp: contém vídeo + overlay. O fundo é a cor da moldura */
+.cam-vp{position:relative;flex:1;overflow:hidden}
+/* Vídeo posicionado dentro da moldura via JS */
+#video{position:absolute;object-fit:cover;transform:scaleX(-1);transition:top .25s,bottom .25s,left .25s,right .25s}
+/* Overlay cobre tudo; bordas da moldura são desenhadas nele */
 #fOverlay{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:2}
-#cdnum{position:absolute;font-family:'Playfair Display',serif;font-size:20vw;font-weight:900;color:var(--gold);text-shadow:0 0 60px rgba(201,168,76,.8);opacity:0;transform:scale(.8);transition:opacity .25s,transform .25s;z-index:10;pointer-events:none}
-#cdnum.on{opacity:1;transform:scale(1)}
+#cdnum{position:absolute;font-family:'Playfair Display',serif;font-size:20vw;font-weight:900;color:var(--gold);text-shadow:0 0 60px rgba(201,168,76,.8);opacity:0;transform:scale(.8);transition:opacity .25s,transform .25s;z-index:10;pointer-events:none;left:50%;top:50%;transform:translate(-50%,-50%) scale(.8)}
+#cdnum.on{opacity:1;transform:translate(-50%,-50%) scale(1)}
 #fbadge{position:absolute;top:10px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.65);border:1px solid rgba(201,168,76,.5);color:var(--gold);font-size:.58rem;letter-spacing:.25em;text-transform:uppercase;padding:.28rem .8rem;opacity:0;transition:opacity .3s;pointer-events:none;z-index:6;white-space:nowrap}
 #fbadge.on{opacity:1}
-.fdots{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);display:flex;gap:14px;z-index:5;padding:10px}
-.fdot{width:12px;height:12px;border-radius:50%;background:rgba(201,168,76,.25);border:1px solid var(--gold);cursor:pointer;transition:background .2s;-webkit-tap-highlight-color:transparent}
+.fdots{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);display:flex;gap:16px;z-index:5;padding:12px}
+.fdot{width:13px;height:13px;border-radius:50%;background:rgba(201,168,76,.2);border:1.5px solid var(--gold);cursor:pointer;transition:background .2s;-webkit-tap-highlight-color:transparent}
 .fdot.on{background:var(--gold)}
-#toast{position:absolute;top:38%;left:50%;transform:translateX(-50%);background:rgba(201,168,76,.92);color:#000;font-size:.72rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase;padding:.42rem 1.1rem;border-radius:2px;opacity:0;transition:opacity .25s;pointer-events:none;z-index:20;white-space:nowrap}
+#toast{position:absolute;top:36%;left:50%;transform:translateX(-50%);background:rgba(201,168,76,.92);color:#000;font-size:.72rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase;padding:.42rem 1.1rem;border-radius:2px;opacity:0;transition:opacity .25s;pointer-events:none;z-index:20;white-space:nowrap}
 #toast.on{opacity:1}
 
-.cam-ftr{width:100%;padding:1rem 1.4rem;display:flex;align-items:center;justify-content:space-around;border-top:1px solid rgba(201,168,76,.18);flex-shrink:0}
+.cam-ftr{width:100%;padding:.9rem 1.4rem;display:flex;align-items:center;justify-content:space-around;border-top:1px solid rgba(201,168,76,.18);flex-shrink:0;background:var(--black);z-index:5}
 .btn-cap{width:72px;height:72px;border-radius:50%;border:3px solid var(--gold);background:transparent;cursor:pointer;position:relative;transition:transform .15s;flex-shrink:0;-webkit-tap-highlight-color:transparent}
 .btn-cap::after{content:'';position:absolute;inset:7px;border-radius:50%;background:var(--gold);transition:background .2s}
 .btn-cap:hover::after{background:var(--gold-light)}
 .btn-cap:active{transform:scale(.91)}
 .btn-cap:disabled{opacity:.35;cursor:not-allowed}
 
-/* RESULT */
-#sRes{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--black);z-index:80;opacity:0;pointer-events:none;transition:opacity .5s;padding:1rem;gap:1.2rem}
+/* ── RESULT ───────────────────────────── */
+#sRes{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--black);z-index:80;opacity:0;pointer-events:none;transition:opacity .5s;padding:1rem;gap:1rem}
 #sRes.on{opacity:1;pointer-events:all}
-.res-frm{position:relative;max-width:min(90vw,480px);max-height:52vh;border:1px solid rgba(201,168,76,.28);box-shadow:0 0 55px rgba(201,168,76,.12)}
+.res-frm{position:relative;max-width:min(88vw,460px);max-height:48vh;border:1px solid rgba(201,168,76,.28);box-shadow:0 0 55px rgba(201,168,76,.12)}
 .res-frm img{display:block;width:100%;height:100%;object-fit:contain}
-#uploadStatus{font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--white-dim);height:1.2em;text-align:center}
+/* QR + status na mesma linha */
+.res-info{display:flex;align-items:center;gap:1.2rem;flex-wrap:wrap;justify-content:center}
+#qrWrap{display:none;flex-direction:column;align-items:center;gap:.3rem}
+#qrImg{width:90px;height:90px;border:2px solid var(--gold);padding:3px;background:#fff;border-radius:2px}
+.qr-hint{font-size:.5rem;letter-spacing:.18em;text-transform:uppercase;color:var(--white-dim)}
+.res-status{display:flex;flex-direction:column;align-items:center;gap:.4rem}
+#uploadStatus{font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--white-dim)}
 #uploadStatus.ok{color:#4caf50}
-#uploadStatus.err{color:#e57373}
-.res-act{display:flex;gap:.9rem;flex-wrap:wrap;justify-content:center}
-.btn-a{padding:.85rem 1.8rem;font-family:'Montserrat',sans-serif;font-size:.68rem;font-weight:600;letter-spacing:.28em;text-transform:uppercase;cursor:pointer;transition:.2s;text-decoration:none;display:inline-flex;align-items:center;gap:.4rem;border:1px solid}
+#autoCount{font-family:'Playfair Display',serif;font-size:1.8rem;font-style:italic;color:var(--gold);min-width:2ch;text-align:center}
+.auto-label{font-size:.52rem;letter-spacing:.18em;text-transform:uppercase;color:var(--white-dim)}
+.res-act{display:flex;gap:.8rem;flex-wrap:wrap;justify-content:center}
+.btn-a{padding:.8rem 1.6rem;font-family:'Montserrat',sans-serif;font-size:.65rem;font-weight:600;letter-spacing:.25em;text-transform:uppercase;cursor:pointer;transition:.2s;display:inline-flex;align-items:center;gap:.4rem;border:1px solid}
 .btn-share{background:var(--gold);color:var(--black);border-color:var(--gold)}
 .btn-share:hover{background:var(--gold-light)}
 .btn-retry{background:transparent;color:var(--gold);border-color:var(--gold)}
 .btn-retry:hover{background:rgba(201,168,76,.08)}
 .btn-gal2{background:transparent;color:var(--gold);border-color:var(--gold)}
-.btn-gal2:hover{background:rgba(201,168,76,.08)}
 .btn-home2{background:transparent;color:var(--white-dim);border-color:rgba(255,255,255,.18)}
-.btn-home2:hover{border-color:rgba(255,255,255,.5);color:var(--white)}
+.btn-home2:hover{border-color:rgba(255,255,255,.4);color:var(--white)}
 
-/* GALLERY */
+/* ── GALLERY ──────────────────────────── */
 #sGal{position:fixed;inset:0;background:var(--black-soft);z-index:70;opacity:0;pointer-events:none;transition:opacity .5s;display:flex;flex-direction:column}
 #sGal.on{opacity:1;pointer-events:all}
 .gal-hdr{padding:.9rem 1.4rem;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(201,168,76,.18);flex-shrink:0}
-.gal-ttl{font-family:'Playfair Display',serif;font-size:1.15rem;font-style:italic;color:var(--gold)}
-.gal-count{font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--white-dim)}
-.gal-grid{flex:1;overflow-y:auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:3px;padding:.9rem}
-.gal-grid img{width:100%;aspect-ratio:3/4;object-fit:cover;cursor:pointer;transition:opacity .2s;border:1px solid rgba(201,168,76,.1)}
+.gal-ttl{font-family:'Playfair Display',serif;font-size:1.1rem;font-style:italic;color:var(--gold)}
+.gal-count{font-size:.58rem;letter-spacing:.2em;text-transform:uppercase;color:var(--white-dim)}
+.gal-grid{flex:1;overflow-y:auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:3px;padding:.9rem}
+.gal-grid img{width:100%;aspect-ratio:1;object-fit:cover;cursor:pointer;transition:opacity .2s;border:1px solid rgba(201,168,76,.1)}
 .gal-grid img:hover{opacity:.75}
 .gal-empty{grid-column:1/-1;text-align:center;color:var(--white-dim);padding:3rem;font-size:.82rem;letter-spacing:.12em}
-.gal-loading{grid-column:1/-1;text-align:center;color:var(--gold);padding:3rem;font-size:.75rem;letter-spacing:.2em;text-transform:uppercase;animation:pulse 1.5s infinite}
+.gal-loading{grid-column:1/-1;text-align:center;color:var(--gold);padding:3rem;font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;animation:pulse 1.5s infinite}
 
 #canvas{display:none}
 </style>
@@ -111,11 +120,11 @@ html,body{width:100%;height:100%;background:var(--black);color:var(--white);font
 <div id="sIdle">
   <div class="ic tl"></div><div class="ic tr"></div>
   <div class="ic bl"></div><div class="ic br"></div>
-  <p style="font-size:.52rem;letter-spacing:.5em;text-transform:uppercase;color:var(--gold);opacity:.8">Uma noite especial &bull; 2026</p>
+  <p style="font-size:.5rem;letter-spacing:.5em;text-transform:uppercase;color:var(--gold);opacity:.8">Uma noite especial &bull; 2026</p>
   <h1 class="ttl">Dalylah <em>Party</em></h1>
   <p class="sub">O Filme da Minha Vida</p>
   <div class="divl"></div>
-  <p class="sub" style="font-size:clamp(.85rem,2vw,1.1rem)">Dalylah Rezende</p>
+  <p class="sub" style="font-size:clamp(.8rem,2vw,1.1rem)">Dalylah Rezende</p>
   <button class="btn-g" onclick="startCam()">&#9654;&nbsp; Tirar Foto</button>
   <p class="hint">Toque ou diga &ldquo;Xis&rdquo;</p>
   <button class="btn-d" onclick="showGal()">&#9783; Ver Galeria</button>
@@ -126,7 +135,7 @@ html,body{width:100%;height:100%;background:var(--black);color:var(--white);font
   <div class="cam-hdr">
     <span class="cam-logo">Dalylah Party</span>
     <div class="cam-info">
-      <div id="voiceDot" title="Microfone ativo"></div>
+      <div id="voiceDot" title="Microfone"></div>
       <span id="pcount">0 fotos</span>
     </div>
   </div>
@@ -148,10 +157,20 @@ html,body{width:100%;height:100%;background:var(--black);color:var(--white);font
 <!-- RESULT -->
 <div id="sRes">
   <div class="res-frm"><img id="rImg" src="" alt="Foto"></div>
-  <p id="uploadStatus">Enviando para a nuvem...</p>
+  <div class="res-info">
+    <div id="qrWrap">
+      <img id="qrImg" src="" alt="QR Code">
+      <p class="qr-hint">Escaneie para salvar</p>
+    </div>
+    <div class="res-status">
+      <p id="uploadStatus">&#8987; Enviando...</p>
+      <p id="autoCount">10</p>
+      <p class="auto-label">segundos para próxima foto</p>
+    </div>
+  </div>
   <div class="res-act">
     <button class="btn-a btn-share" onclick="sharePhoto()">&#8679; Compartilhar</button>
-    <button class="btn-a btn-retry" onclick="retryCam()">&#9654; Nova Foto</button>
+    <button class="btn-a btn-retry" onclick="cancelAutoAndRetry()">&#9654; Nova Foto</button>
     <button class="btn-a btn-gal2" onclick="showGal()">&#9783; Galeria</button>
     <button class="btn-a btn-home2" onclick="goHome()">&#8962; Início</button>
   </div>
@@ -172,163 +191,177 @@ html,body{width:100%;height:100%;background:var(--black);color:var(--white);font
 </div>
 
 <script>
-/* ══════════════════════════════════════
-   CONFIG — Cloudinary + Firebase
-══════════════════════════════════════ */
+/* ══════════════════════════════════════════════════
+   CONFIG
+══════════════════════════════════════════════════ */
 const CLOUDINARY_CLOUD  = 'dalylahs';
 const CLOUDINARY_PRESET = 'dalylah-party';
 const FIREBASE_URL      = 'https://dalylah-party-default-rtdb.firebaseio.com';
 
-/* ══════════════════════════════════════
-   FRAMES
-══════════════════════════════════════ */
-const FRAMES = ['Clássica','Cinema','Art Déco','Polaroid'];
+/* ══════════════════════════════════════════════════
+   FRAMES — 2 molduras: Cinema e Polaroid
+   inner: área da câmera como fração do container
+   bg: cor de fundo da moldura (área fora da câmera)
+══════════════════════════════════════════════════ */
+const FRAMES = [
+  {
+    name: 'Cinema',
+    inner: { top: 0.10, bottom: 0.10, left: 0, right: 0 },
+    bg: '#000'
+  },
+  {
+    name: 'Polaroid',
+    inner: { top: 0.04, bottom: 0.19, left: 0.055, right: 0.055 },
+    bg: '#FAF6EE'
+  }
+];
 let curF = 0;
 
+/* Retorna posição/tamanho da área interna em pixels */
+function innerRect(w, h, fi) {
+  const f = FRAMES[fi].inner;
+  const x = Math.round(w * f.left);
+  const y = Math.round(h * f.top);
+  const iw = Math.round(w * (1 - f.left - f.right));
+  const ih = Math.round(h * (1 - f.top - f.bottom));
+  return { x, y, w: iw, h: ih };
+}
+
+/* Aplica posição do vídeo CSS para ficar dentro da moldura */
+function applyFrameToVideo(fi) {
+  const f = FRAMES[fi].inner;
+  video.style.top    = (f.top    * 100) + '%';
+  video.style.bottom = (f.bottom * 100) + '%';
+  video.style.left   = (f.left   * 100) + '%';
+  video.style.right  = (f.right  * 100) + '%';
+  document.getElementById('camVp').style.background = FRAMES[fi].bg;
+}
+
+/* ── drawFrame: desenha SOMENTE as bordas (inner fica transparente) ── */
 function drawFrame(ctx, w, h, fi) {
-  if (fi === 0) {
-    const g = ctx.createLinearGradient(0, h * .68, 0, h);
-    g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, 'rgba(0,0,0,.8)');
-    ctx.fillStyle = g; ctx.fillRect(0, h * .68, w, h * .32);
-    arabescoSpiral(ctx, w, h);
-  } else if (fi === 1) {
-    const s = h * .12;
-    ctx.fillStyle = 'rgba(0,0,0,.88)';
-    ctx.fillRect(0, 0, w, s); ctx.fillRect(0, h - s, w, s);
-    ctx.fillStyle = '#C9A84C';
-    for (let i = 0; i < 8; i++) {
-      const x = (w / 8) * i + (w / 16) - w * .02;
-      rrect(ctx, x, s * .22, w * .04, s * .48, s * .12);
-      rrect(ctx, x, h - s + s * .22, w * .04, s * .48, s * .12);
+  const ir = innerRect(w, h, fi);
+
+  if (fi === 0) { // Cinema — tira de filme
+    // Fundo preto nas barras
+    ctx.fillStyle = '#000';
+    ctx.fillRect(0, 0, w, ir.y);               // topo
+    ctx.fillRect(0, ir.y + ir.h, w, h - (ir.y + ir.h)); // base
+    // Furos dourados no topo
+    const holeW = w * 0.055, holeH = ir.y * 0.55, holeR = ir.y * 0.12;
+    const cols = 9;
+    for (let i = 0; i < cols; i++) {
+      const hx = (w / cols) * i + (w / cols) * 0.5 - holeW * 0.5;
+      // topo
+      rrect(ctx, hx, ir.y * 0.22, holeW, holeH, holeR);
+      // base
+      rrect(ctx, hx, ir.y + ir.h + ir.y * 0.22, holeW, holeH, holeR);
     }
-    ctx.strokeStyle = '#C9A84C'; ctx.lineWidth = 2;
-    ctx.strokeRect(w * .015, s + h * .012, w * .97, h - s * 2 - h * .024);
-  } else if (fi === 2) {
-    ctx.strokeStyle = '#C9A84C'; ctx.lineWidth = 3;
-    ctx.strokeRect(13, 13, w - 26, h - 26);
-    ctx.lineWidth = 1; ctx.globalAlpha = .5;
-    ctx.strokeRect(22, 22, w - 44, h - 44); ctx.globalAlpha = 1;
-    const ds = Math.min(w, h) * .11;
-    [[16,16,1,1],[w-16,16,-1,1],[16,h-16,1,-1],[w-16,h-16,-1,-1]].forEach(([cx,cy,dx,dy]) => {
-      ctx.fillStyle = '#C9A84C';
-      ctx.beginPath();
-      ctx.moveTo(cx, cy - dy * ds * .28); ctx.lineTo(cx + dx * ds * .28, cy);
-      ctx.lineTo(cx, cy + dy * ds * .28); ctx.lineTo(cx - dx * ds * .28, cy);
-      ctx.closePath(); ctx.fill();
-      ctx.strokeStyle = '#C9A84C'; ctx.lineWidth = 2;
-      ctx.beginPath(); ctx.moveTo(cx + dx * 4, cy); ctx.lineTo(cx + dx * ds * .7, cy); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(cx, cy + dy * 4); ctx.lineTo(cx, cy + dy * ds * .7); ctx.stroke();
-    });
-    ctx.fillStyle = '#C9A84C';
-    [[w/2,14,1],[w/2,h-14,-1]].forEach(([cx,cy,d]) => {
-      ctx.beginPath(); ctx.moveTo(cx - w * .07, cy); ctx.lineTo(cx, cy + d * 9); ctx.lineTo(cx + w * .07, cy); ctx.fill();
-    });
-    const g = ctx.createLinearGradient(0, h * .7, 0, h);
-    g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, 'rgba(0,0,0,.75)');
-    ctx.fillStyle = g; ctx.fillRect(0, h * .7, w, h * .3);
-  } else if (fi === 3) {
-    const bw = w * .06, bt = h * .06, bb = h * .22;
-    ctx.fillStyle = '#FAF6EE';
-    ctx.fillRect(0, 0, w, bt); ctx.fillRect(0, 0, bw, h);
-    ctx.fillRect(w - bw, 0, bw, h); ctx.fillRect(0, h - bb, w, bb);
-    ctx.strokeStyle = 'rgba(201,168,76,.5)'; ctx.lineWidth = 1;
-    ctx.beginPath(); ctx.moveTo(w * .18, h - bb + bb * .35); ctx.lineTo(w * .82, h - bb + bb * .35); ctx.stroke();
+    // Linha fina dourada separando a fita da imagem
+    ctx.strokeStyle = 'rgba(201,168,76,.5)';
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(0, ir.y); ctx.lineTo(w, ir.y); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(0, ir.y + ir.h); ctx.lineTo(w, ir.y + ir.h); ctx.stroke();
+
+  } else if (fi === 1) { // Polaroid — bordas brancas
+    const pol = '#FAF6EE';
+    ctx.fillStyle = pol;
+    ctx.fillRect(0, 0, w, ir.y);                       // topo
+    ctx.fillRect(0, ir.y + ir.h, w, h - (ir.y + ir.h)); // base (maior)
+    ctx.fillRect(0, 0, ir.x, h);                       // esquerda
+    ctx.fillRect(ir.x + ir.w, 0, w - (ir.x + ir.w), h); // direita
+    // Linha dourada sutil na área inferior
+    const lineY = ir.y + ir.h + (h - (ir.y + ir.h)) * 0.32;
+    ctx.strokeStyle = 'rgba(201,168,76,.35)';
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(ir.x + ir.w * 0.12, lineY); ctx.lineTo(ir.x + ir.w * 0.88, lineY); ctx.stroke();
+    // Sombra sutil na borda da foto
+    ctx.strokeStyle = 'rgba(0,0,0,.1)';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(ir.x, ir.y, ir.w, ir.h);
   }
 }
 
+/* ── drawStamp: texto na área da MOLDURA (fora da câmera) ── */
 function drawStamp(ctx, w, h, fi) {
-  const fontSize = Math.round(w * .026);
-  const marginR  = Math.round(w * .025);
-  const yBase    = fi === 1 ? h - h * .12 - 10
-                 : fi === 3 ? h - h * .22 * .5
-                 : h - 14;
+  const ir = innerRect(w, h, fi);
   ctx.save();
-  ctx.font         = `italic ${fontSize}px 'Playfair Display',Georgia,serif`;
-  ctx.textAlign    = 'right';
-  ctx.shadowColor  = 'rgba(0,0,0,.6)';
-  ctx.shadowBlur   = 4;
-  ctx.fillStyle    = '#C9A84C';
-  ctx.fillText('#DalylahParty', w - marginR, yBase);
+  ctx.shadowColor = 'rgba(0,0,0,.4)';
+  ctx.shadowBlur  = 3;
+  ctx.fillStyle   = '#C9A84C';
+  ctx.textAlign   = 'center';
+
+  if (fi === 0) { // Cinema — no rodapé da fita
+    const stripH = h - (ir.y + ir.h);
+    const fontSize = Math.round(stripH * 0.52);
+    ctx.font = `italic ${fontSize}px 'Playfair Display',Georgia,serif`;
+    ctx.fillText('#DalylahParty', w / 2, ir.y + ir.h + stripH * 0.72);
+  } else { // Polaroid — na área branca inferior
+    const footH = h - (ir.y + ir.h);
+    const fontSize = Math.round(footH * 0.36);
+    ctx.font = `italic ${fontSize}px 'Playfair Display',Georgia,serif`;
+    ctx.fillText("#Dalylah's Party", w / 2, ir.y + ir.h + footH * 0.62);
+  }
   ctx.restore();
 }
 
-function arabescoSpiral(ctx, w, h) {
-  const sc = Math.min(w, h) / 420, m = Math.round(14 * sc);
-  ctx.strokeStyle = '#C9A84C'; ctx.fillStyle = '#C9A84C';
-  [[m,m,1,1],[w-m,m,-1,1],[m,h-m,1,-1],[w-m,h-m,-1,-1]].forEach(([ox,oy,sx,sy]) => {
-    ctx.save(); ctx.translate(ox, oy); ctx.scale(sx * sc, sy * sc);
-    ctx.lineWidth = 1.5 / sc;
-    ctx.beginPath(); ctx.moveTo(0,0); ctx.bezierCurveTo(18,-2,36,8,42,0); ctx.bezierCurveTo(48,-8,44,-18,36,-16); ctx.bezierCurveTo(28,-14,28,-6,34,-4); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(0,0); ctx.bezierCurveTo(-2,18,8,36,0,42); ctx.bezierCurveTo(-8,48,-18,44,-16,36); ctx.bezierCurveTo(-14,28,-6,28,-4,34); ctx.stroke();
-    ctx.beginPath(); ctx.arc(0,0,3,0,Math.PI*2); ctx.fill();
-    ctx.beginPath(); ctx.arc(34,-4,2.5,0,Math.PI*2); ctx.fill();
-    ctx.beginPath(); ctx.arc(-4,34,2.5,0,Math.PI*2); ctx.fill();
-    ctx.lineWidth = 2.5 / sc;
-    ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(22,0); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(0,22); ctx.stroke();
-    ctx.restore();
-  });
-}
-
 function rrect(ctx, x, y, w, h, r) {
+  ctx.fillStyle = '#C9A84C';
   ctx.beginPath();
   ctx.moveTo(x+r,y); ctx.lineTo(x+w-r,y); ctx.quadraticCurveTo(x+w,y,x+w,y+r);
   ctx.lineTo(x+w,y+h-r); ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
   ctx.lineTo(x+r,y+h); ctx.quadraticCurveTo(x,y+h,x,y+h-r);
-  ctx.lineTo(x,y+r); ctx.quadraticCurveTo(x,y,x+r,y); ctx.closePath(); ctx.fill();
+  ctx.lineTo(x,y+r); ctx.quadraticCurveTo(x,y,x+r,y);
+  ctx.closePath(); ctx.fill();
 }
 
-/* ══════════════════════════════════════
-   CLOUDINARY — upload de imagem
-══════════════════════════════════════ */
+/* ══════════════════════════════════════════════════
+   CLOUDINARY
+══════════════════════════════════════════════════ */
 async function uploadToCloudinary(dataUrl) {
-  const blob = toBlob(dataUrl);
-  const fd   = new FormData();
-  fd.append('file', blob, 'photo.jpg');
+  const fd = new FormData();
+  fd.append('file', toBlob(dataUrl), 'photo.jpg');
   fd.append('upload_preset', CLOUDINARY_PRESET);
-  const res  = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/image/upload`, {
-    method: 'POST', body: fd
-  });
-  if (!res.ok) throw new Error('Cloudinary error ' + res.status);
-  const data = await res.json();
-  return data.secure_url;
+  const res = await fetch(
+    `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/image/upload`,
+    { method: 'POST', body: fd }
+  );
+  if (!res.ok) throw new Error('Cloudinary ' + res.status);
+  return (await res.json()).secure_url;
 }
 
-/* ══════════════════════════════════════
-   FIREBASE RTDB — lista compartilhada de URLs
-══════════════════════════════════════ */
+/* ══════════════════════════════════════════════════
+   FIREBASE RTDB
+══════════════════════════════════════════════════ */
 async function saveToFirebase(url) {
   const res = await fetch(`${FIREBASE_URL}/photos.json`, {
-    method : 'POST',
+    method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body   : JSON.stringify({ url, ts: Date.now() })
+    body: JSON.stringify({ url, ts: Date.now() })
   });
-  if (!res.ok) throw new Error('Firebase error ' + res.status);
+  if (!res.ok) throw new Error('Firebase ' + res.status);
 }
-
 async function loadFromFirebase() {
-  const res  = await fetch(`${FIREBASE_URL}/photos.json`);
-  if (!res.ok) throw new Error('Firebase read error');
+  const res = await fetch(`${FIREBASE_URL}/photos.json`);
+  if (!res.ok) throw new Error('Firebase read');
   const data = await res.json();
   if (!data) return [];
   return Object.values(data).sort((a, b) => a.ts - b.ts);
 }
 
-/* ══════════════════════════════════════
+/* ══════════════════════════════════════════════════
    INDEXEDDB — fallback local
-══════════════════════════════════════ */
+══════════════════════════════════════════════════ */
 const DB_NAME = 'dalylahpartydb', DB_STORE = 'photos', DB_VER = 1;
 let db = null;
-
 function openDB() {
-  return new Promise((resolve, reject) => {
+  return new Promise(resolve => {
     const req = indexedDB.open(DB_NAME, DB_VER);
     req.onupgradeneeded = e => {
       if (!e.target.result.objectStoreNames.contains(DB_STORE))
         e.target.result.createObjectStore(DB_STORE, { keyPath: 'id', autoIncrement: true });
     };
     req.onsuccess = e => { db = e.target.result; resolve(); };
-    req.onerror   = () => resolve(); // falha silenciosa
+    req.onerror   = () => resolve();
   });
 }
 function saveToIDB(url) {
@@ -346,40 +379,45 @@ function loadFromIDB() {
   });
 }
 
-/* ══════════════════════════════════════
+/* ══════════════════════════════════════════════════
    STATE
-══════════════════════════════════════ */
+══════════════════════════════════════════════════ */
 let stream = null, photoCount = 0;
 let cdTimer = null, capturing = false, curUrl = null;
-let overlayRAF = null;
+let overlayRAF = null, autoReturnTimer = null;
 
-const video          = document.getElementById('video');
-const canvas         = document.getElementById('canvas');
-const fOverlay       = document.getElementById('fOverlay');
-const flash          = document.getElementById('flash');
-const cdnum          = document.getElementById('cdnum');
-const btnCap         = document.getElementById('btnCap');
-const rImg           = document.getElementById('rImg');
-const galGrid        = document.getElementById('galGrid');
-const voiceDot       = document.getElementById('voiceDot');
-const toastEl        = document.getElementById('toast');
-const fbadge         = document.getElementById('fbadge');
-const camVp          = document.getElementById('camVp');
-const uploadStatus   = document.getElementById('uploadStatus');
+const video        = document.getElementById('video');
+const canvas       = document.getElementById('canvas');
+const fOverlay     = document.getElementById('fOverlay');
+const flash        = document.getElementById('flash');
+const cdnum        = document.getElementById('cdnum');
+const btnCap       = document.getElementById('btnCap');
+const rImg         = document.getElementById('rImg');
+const galGrid      = document.getElementById('galGrid');
+const voiceDot     = document.getElementById('voiceDot');
+const toastEl      = document.getElementById('toast');
+const fbadge       = document.getElementById('fbadge');
+const camVp        = document.getElementById('camVp');
+const uploadStatus = document.getElementById('uploadStatus');
+const autoCountEl  = document.getElementById('autoCount');
+const qrWrap       = document.getElementById('qrWrap');
+const qrImg        = document.getElementById('qrImg');
 
-/* ══════════════════════════════════════
+/* ══════════════════════════════════════════════════
    SCREENS
-══════════════════════════════════════ */
+══════════════════════════════════════════════════ */
 function show(id) {
   ['sIdle','sCam','sRes','sGal'].forEach(s => document.getElementById(s).classList.remove('on','hide'));
   if (id === 'sIdle') return;
   document.getElementById('sIdle').classList.add('hide');
   document.getElementById(id).classList.add('on');
 }
-function goHome()   { stopCam(); show('sIdle'); }
-function showGal()  { renderGal(); show('sGal'); }
+function goHome()   { cancelAuto(); stopCam(); show('sIdle'); }
+function showGal()  { cancelAuto(); renderGal(); show('sGal'); }
 function hideGal()  { stream ? show('sCam') : show('sIdle'); }
 function retryCam() { show('sCam'); resizeOverlay(); if (!overlayRAF) startOverlay(); }
+function cancelAutoAndRetry() { cancelAuto(); retryCam(); }
+function cancelAuto() { clearInterval(autoReturnTimer); autoReturnTimer = null; }
 function getScreen() {
   if (document.getElementById('sCam').classList.contains('on')) return 'cam';
   if (document.getElementById('sRes').classList.contains('on')) return 'res';
@@ -387,9 +425,9 @@ function getScreen() {
   return 'idle';
 }
 
-/* ══════════════════════════════════════
+/* ══════════════════════════════════════════════════
    CAMERA
-══════════════════════════════════════ */
+══════════════════════════════════════════════════ */
 async function startCam() {
   show('sCam');
   if (stream) { resizeOverlay(); if (!overlayRAF) startOverlay(); return; }
@@ -429,9 +467,9 @@ function startOverlay() {
 
 window.addEventListener('resize', () => { if (stream) resizeOverlay(); });
 
-/* ══════════════════════════════════════
+/* ══════════════════════════════════════════════════
    FRAME DOTS
-══════════════════════════════════════ */
+══════════════════════════════════════════════════ */
 function initDots() {
   const c = document.getElementById('fdots'); c.innerHTML = '';
   FRAMES.forEach((_, i) => {
@@ -442,17 +480,21 @@ function initDots() {
     c.appendChild(d);
   });
 }
+
 function setFrame(i) {
   curF = i;
   document.querySelectorAll('.fdot').forEach((d, j) => d.classList.toggle('on', j === i));
-  fbadge.textContent = FRAMES[i]; fbadge.classList.add('on');
+  applyFrameToVideo(i);
+  fbadge.textContent = FRAMES[i].name; fbadge.classList.add('on');
   clearTimeout(fbadge._t); fbadge._t = setTimeout(() => fbadge.classList.remove('on'), 1800);
 }
-function nextFrame() { setFrame((curF + 1) % FRAMES.length); showToast('Moldura: ' + FRAMES[curF]); }
 
-/* ══════════════════════════════════════
-   COUNTDOWN & CAPTURE — alta qualidade
-══════════════════════════════════════ */
+function nextFrame() { setFrame((curF + 1) % FRAMES.length); showToast('Moldura: ' + FRAMES[curF].name); }
+
+/* ══════════════════════════════════════════════════
+   COUNTDOWN & CAPTURE
+   Câmera capturada na área INTERNA da moldura (alta qualidade)
+══════════════════════════════════════════════════ */
 function startCD() {
   if (capturing || getScreen() !== 'cam') return;
   capturing = true; btnCap.disabled = true;
@@ -467,87 +509,109 @@ function startCD() {
 async function capture() {
   flash.classList.add('on'); setTimeout(() => flash.classList.remove('on'), 140);
 
-  // Dimensões do container (preview)
   const cW = camVp.offsetWidth, cH = camVp.offsetHeight;
-  // Resolução nativa da câmera
   const vW = video.videoWidth || 1280, vH = video.videoHeight || 720;
 
-  // Crop equivalente ao object-fit:cover — mantém enquadramento fiel ao preview
-  const scale = Math.max(cW / vW, cH / vH);
-  const srcW  = Math.round(cW / scale);
-  const srcH  = Math.round(cH / scale);
-  const srcX  = Math.round((vW - srcW) / 2);
-  const srcY  = Math.round((vH - srcH) / 2);
+  // Área interna da moldura em pixels
+  const ir = innerRect(cW, cH, curF);
 
-  // Canvas na resolução NATIVA (máxima qualidade para impressão)
-  canvas.width  = srcW;
-  canvas.height = srcH;
+  // Crop do vídeo para preencher a área interna (object-fit:cover)
+  const iAR = ir.w / ir.h;
+  const vAR = vW / vH;
+  let srcX, srcY, srcW, srcH;
+  if (vAR > iAR) { srcH = vH; srcW = vH * iAR; srcY = 0; srcX = (vW - srcW) / 2; }
+  else           { srcW = vW; srcH = vW / iAR; srcX = 0; srcY = (vH - srcH) / 2; }
 
+  // Canvas na resolução nativa da área interna (alta qualidade)
+  canvas.width  = cW;
+  canvas.height = cH;
   const ctx = canvas.getContext('2d');
-  ctx.save(); ctx.translate(srcW, 0); ctx.scale(-1, 1);
-  ctx.drawImage(video, srcX, srcY, srcW, srcH, 0, 0, srcW, srcH);
+
+  // 1. Fundo da moldura
+  ctx.fillStyle = FRAMES[curF].bg;
+  ctx.fillRect(0, 0, cW, cH);
+
+  // 2. Vídeo dentro da área interna (espelhado — selfie natural)
+  ctx.save();
+  ctx.translate(ir.x + ir.w, ir.y);
+  ctx.scale(-1, 1);
+  ctx.drawImage(video, srcX, srcY, srcW, srcH, 0, 0, ir.w, ir.h);
   ctx.restore();
-  drawFrame(ctx, srcW, srcH, curF);
-  drawStamp(ctx, srcW, srcH, curF);
 
-  // JPEG alta qualidade
+  // 3. Decorações da moldura por cima
+  drawFrame(ctx, cW, cH, curF);
+  // 4. Stamp na área de borda
+  drawStamp(ctx, cW, cH, curF);
+
   const localUrl = canvas.toDataURL('image/jpeg', .95);
-
   curUrl = localUrl;
   photoCount++;
   document.getElementById('pcount').textContent = photoCount + ' foto' + (photoCount !== 1 ? 's' : '');
 
-  // Mostra resultado imediatamente com prévia local
+  // Mostra resultado imediatamente
   rImg.src = localUrl;
   uploadStatus.textContent = '⏳ Enviando para a nuvem...';
   uploadStatus.className = '';
+  qrWrap.style.display = 'none';
+  autoCountEl.textContent = '10';
   btnCap.disabled = false; capturing = false;
   show('sRes');
 
-  // Upload em background: Cloudinary → Firebase
+  // Inicia contagem regressiva de 10s imediatamente
+  startAutoReturn();
+
+  // Upload em background
   try {
     const cloudUrl = await uploadToCloudinary(localUrl);
     await saveToFirebase(cloudUrl);
-    curUrl = cloudUrl; // atualiza URL para compartilhamento
-    uploadStatus.textContent = '✓ Salva na nuvem';
+    curUrl = cloudUrl;
+    uploadStatus.textContent = '✓ Salva na nuvem!';
     uploadStatus.className = 'ok';
+    if (getScreen() === 'res') showQR(cloudUrl);
   } catch(e) {
-    // Fallback local
     saveToIDB(localUrl);
     uploadStatus.textContent = '✓ Salva no dispositivo';
-    uploadStatus.className = 'err';
-    console.warn('Upload falhou, salvo localmente:', e);
+    console.warn('Upload failed:', e);
   }
 }
 
-/* ══════════════════════════════════════
+/* Mostra QR Code com link da foto */
+function showQR(url) {
+  qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=140x140&color=C9A84C&bgcolor=0D0D0D&data=${encodeURIComponent(url)}`;
+  qrWrap.style.display = 'flex';
+}
+
+/* Contagem regressiva de 10s → volta para câmera */
+function startAutoReturn() {
+  cancelAuto();
+  let n = 10;
+  autoCountEl.textContent = n;
+  autoReturnTimer = setInterval(() => {
+    n--;
+    autoCountEl.textContent = n;
+    if (n <= 0) { cancelAuto(); retryCam(); }
+  }, 1000);
+}
+
+/* ══════════════════════════════════════════════════
    SHARE
-══════════════════════════════════════ */
+══════════════════════════════════════════════════ */
 async function sharePhoto() {
   if (!curUrl) return;
-  // Se tiver URL do Cloudinary, compartilha direto o link
   if (curUrl.startsWith('https://res.cloudinary.com')) {
     if (navigator.share) {
-      try {
-        await navigator.share({ url: curUrl, title: '#DalylahParty', text: 'Minha foto da festa!' });
-        return;
-      } catch(e) { if (e.name === 'AbortError') return; }
+      try { await navigator.share({ url: curUrl, title: '#DalylahParty', text: "Minha foto da festa! 🎉" }); return; }
+      catch(e) { if (e.name === 'AbortError') return; }
     }
-    // Fallback: copia link
     try { await navigator.clipboard.writeText(curUrl); showToast('Link copiado!'); } catch(e) {}
     return;
   }
-  // Fallback: compartilha arquivo local
-  if (!navigator.share) { showToast('Foto salva no dispositivo'); return; }
+  if (!navigator.share) { showToast('Aguarde o upload...'); return; }
   try {
-    const blob = toBlob(curUrl);
-    const file = new File([blob], 'dalylah-party.jpg', { type: 'image/jpeg' });
-    if (navigator.canShare && navigator.canShare({ files: [file] })) {
-      await navigator.share({ files: [file], title: '#DalylahParty', text: 'Minha foto da festa!' });
-    } else {
-      await navigator.share({ title: '#DalylahParty', text: 'Minha foto da festa!' });
-    }
-  } catch(e) { if (e.name !== 'AbortError') showToast('Não foi possível compartilhar'); }
+    const file = new File([toBlob(curUrl)], 'dalylah-party.jpg', { type: 'image/jpeg' });
+    if (navigator.canShare?.({ files: [file] })) await navigator.share({ files: [file], title: '#DalylahParty' });
+    else await navigator.share({ title: '#DalylahParty', text: "Minha foto da festa! 🎉" });
+  } catch(e) { if (e.name !== 'AbortError') showToast('Aguarde o upload concluir'); }
 }
 
 function toBlob(url) {
@@ -557,16 +621,14 @@ function toBlob(url) {
   return new Blob([a], { type: mime });
 }
 
-/* ══════════════════════════════════════
-   VOICE — todos os comandos
-══════════════════════════════════════ */
+/* ══════════════════════════════════════════════════
+   VOICE
+══════════════════════════════════════════════════ */
 let recog = null, voiceEnabled = false;
-
 function startVoice() {
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (!SR) return;
   voiceEnabled = true;
-
   function build() {
     const r = new SR();
     r.lang = 'pt-BR'; r.continuous = true; r.interimResults = false; r.maxAlternatives = 3;
@@ -590,42 +652,31 @@ function handleVoice(t) {
     if (sc === 'cam') { startCD(); return true; }
     if (sc === 'idle') { startCam().then(() => setTimeout(startCD, 1200)); return true; }
   }
-  if (/compartilh/.test(t)) {
-    showToast('🎤 Compartilhar');
-    if (sc === 'res') { sharePhoto(); return true; }
-  }
+  if (/compartilh/.test(t)) { showToast('🎤 Compartilhar'); if (sc === 'res') { sharePhoto(); return true; } }
   if (/nova foto|mais uma|outra foto|repetir/.test(t)) {
     showToast('🎤 Nova foto');
-    if (sc === 'res') { retryCam(); return true; }
+    if (sc === 'res') { cancelAutoAndRetry(); return true; }
     if (sc === 'idle') { startCam(); return true; }
   }
-  if (/início|ir para o início|ir pro início|home|voltar/.test(t)) {
-    showToast('🎤 Início'); goHome(); return true;
-  }
-  if (/trocar moldura|mudar moldura|próxima moldura|troca/.test(t)) {
-    showToast('🎤 Trocando moldura'); nextFrame(); return true;
-  }
-  if (/fechar galeria|fechar|sair da galeria/.test(t)) {
-    showToast('🎤 Fechar galeria'); if (sc === 'gal') { hideGal(); return true; }
-  }
-  if (/abrir galeria|ver galeria|galeria/.test(t)) {
-    showToast('🎤 Galeria'); showGal(); return true;
-  }
+  if (/início|ir para o início|ir pro início|home|voltar/.test(t)) { showToast('🎤 Início'); goHome(); return true; }
+  if (/trocar moldura|mudar moldura|próxima moldura|troca/.test(t)) { showToast('🎤 Trocando moldura'); nextFrame(); return true; }
+  if (/fechar galeria|fechar|sair da galeria/.test(t)) { showToast('🎤 Fechar'); if (sc === 'gal') { hideGal(); return true; } }
+  if (/abrir galeria|ver galeria|galeria/.test(t)) { showToast('🎤 Galeria'); showGal(); return true; }
   return false;
 }
 
-/* ══════════════════════════════════════
+/* ══════════════════════════════════════════════════
    TOAST
-══════════════════════════════════════ */
+══════════════════════════════════════════════════ */
 let toastTimer = null;
 function showToast(msg) {
   toastEl.textContent = msg; toastEl.classList.add('on');
   clearTimeout(toastTimer); toastTimer = setTimeout(() => toastEl.classList.remove('on'), 1800);
 }
 
-/* ══════════════════════════════════════
+/* ══════════════════════════════════════════════════
    TOUCH GESTURES
-══════════════════════════════════════ */
+══════════════════════════════════════════════════ */
 let tStart = null;
 document.addEventListener('touchstart', e => {
   tStart = { x: e.touches[0].clientX, y: e.touches[0].clientY, t: Date.now(), target: e.target };
@@ -636,10 +687,9 @@ document.addEventListener('touchend', e => {
   const dx = e.changedTouches[0].clientX - tStart.x;
   const dy = e.changedTouches[0].clientY - tStart.y;
   const dist = Math.sqrt(dx*dx+dy*dy), dt = Date.now()-tStart.t, sc = getScreen();
-
   if (dist > 60 && dt < 450) {
     if (Math.abs(dx) > Math.abs(dy)) {
-      if (dx < 0 && sc === 'res') { showToast('← Nova Foto'); retryCam(); }
+      if (dx < 0 && sc === 'res') { showToast('← Nova Foto'); cancelAutoAndRetry(); }
       else if (dx > 0 && sc === 'res') { showToast('→ Compartilhar'); sharePhoto(); }
     } else {
       if (dy < 0 && (sc === 'cam' || sc === 'res')) nextFrame();
@@ -653,61 +703,43 @@ document.addEventListener('touchend', e => {
   tStart = null;
 });
 
-/* ══════════════════════════════════════
+/* ══════════════════════════════════════════════════
    KEYBOARD
-══════════════════════════════════════ */
+══════════════════════════════════════════════════ */
 document.addEventListener('keydown', e => {
   if (e.code === 'Space'      && getScreen() === 'cam') { e.preventDefault(); startCD(); }
   if (e.code === 'ArrowRight') nextFrame();
   if (e.code === 'Escape')     goHome();
 });
 
-/* ══════════════════════════════════════
-   GALLERY — carrega do Firebase (compartilhada)
-   com fallback para IndexedDB local
-══════════════════════════════════════ */
+/* ══════════════════════════════════════════════════
+   GALLERY
+══════════════════════════════════════════════════ */
 async function renderGal() {
   galGrid.innerHTML = '<p class="gal-loading">Carregando fotos da festa...</p>';
   document.getElementById('galCount').textContent = '';
-
   let items = [];
-  try {
-    items = await loadFromFirebase();
-  } catch(e) {
-    // Firebase falhou — usa local
-    const local = await loadFromIDB();
-    items = local.map(p => ({ url: p.url, ts: p.ts }));
-  }
+  try { items = await loadFromFirebase(); }
+  catch(e) { const local = await loadFromIDB(); items = local; }
 
-  if (!items.length) {
-    galGrid.innerHTML = '<p class="gal-empty">Nenhuma foto ainda.<br>Seja a primeira!</p>';
-    return;
-  }
-
+  if (!items.length) { galGrid.innerHTML = '<p class="gal-empty">Nenhuma foto ainda.<br>Seja a primeira! 🎉</p>'; return; }
   document.getElementById('galCount').textContent = items.length + ' foto' + (items.length !== 1 ? 's' : '');
   galGrid.innerHTML = '';
   [...items].reverse().forEach((p, i) => {
     const img = document.createElement('img');
-    img.src     = p.url;
-    img.alt     = 'Foto ' + (items.length - i);
-    img.loading = 'lazy';
-    img.onclick = () => {
-      curUrl  = p.url;
-      rImg.src = p.url;
-      uploadStatus.textContent = '✓ Salva na nuvem';
-      uploadStatus.className   = 'ok';
-      show('sRes');
-    };
+    img.src = p.url; img.alt = 'Foto ' + (items.length - i); img.loading = 'lazy';
+    img.onclick = () => { cancelAuto(); curUrl = p.url; rImg.src = p.url; uploadStatus.textContent = '✓ Salva na nuvem'; uploadStatus.className = 'ok'; qrWrap.style.display = 'none'; show('sRes'); };
     galGrid.appendChild(img);
   });
 }
 
-/* ══════════════════════════════════════
+/* ══════════════════════════════════════════════════
    INIT
-══════════════════════════════════════ */
+══════════════════════════════════════════════════ */
 async function init() {
   await openDB();
   initDots();
+  applyFrameToVideo(curF); // posiciona vídeo na moldura inicial (Cinema)
   startVoice();
   show('sIdle');
 }
