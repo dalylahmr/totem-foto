@@ -17,6 +17,25 @@ html,body{width:100%;height:100%;background:#000;color:var(--white);font-family:
 #flash{position:fixed;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:9999;transition:opacity .05s}
 #flash.on{opacity:1}
 
+/* ── GLOBAL TOAST (visível em todas as telas) ── */
+#toast{position:fixed;top:35%;left:50%;transform:translateX(-50%);background:rgba(201,168,76,.93);color:#000;font-size:.7rem;font-weight:600;letter-spacing:.18em;text-transform:uppercase;padding:.4rem 1rem;border-radius:2px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:8000;white-space:nowrap}
+#toast.on{opacity:1}
+
+/* ── PIN ── */
+#sPin{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.9rem;padding:2rem;background:var(--black);z-index:500}
+#sPin.hide{display:none}
+.pin-title{font-family:'Playfair Display',serif;font-size:clamp(2rem,7vw,3.5rem);font-weight:900;color:#fff;text-align:center;line-height:1.1}
+.pin-title em{color:var(--gold);font-style:italic}
+.pin-sub{font-size:.62rem;letter-spacing:.22em;text-transform:uppercase;color:var(--white-dim);text-align:center}
+.pin-dots{display:flex;gap:10px;margin:.2rem 0}
+.pd{width:13px;height:13px;border-radius:50%;border:2px solid var(--gold);background:transparent;transition:background .15s}
+.pd.filled{background:var(--gold)}
+.pin-pad{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;width:210px;margin-top:.3rem;transition:transform .08s}
+.pin-btn{background:rgba(201,168,76,.06);border:1px solid rgba(201,168,76,.22);color:var(--white);padding:.85rem;font-family:'Montserrat',sans-serif;font-size:1.25rem;font-weight:300;cursor:pointer;border-radius:3px;transition:.15s;-webkit-tap-highlight-color:transparent}
+.pin-btn:active,.pin-btn:hover{background:rgba(201,168,76,.22);border-color:var(--gold)}
+.pin-btn.del{font-size:.85rem;color:var(--gold)}
+#pinErr{font-size:.56rem;color:#e55;letter-spacing:.15em;text-transform:uppercase;opacity:0;transition:opacity .3s;min-height:1em;text-align:center}
+
 /* ── IDLE ── */
 #sIdle{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.6rem;padding:2rem;background:var(--black);z-index:100;transition:opacity .5s}
 #sIdle.hide{opacity:0;pointer-events:none}
@@ -74,10 +93,6 @@ html,body{width:100%;height:100%;background:#000;color:var(--white);font-family:
 .fdot{width:12px;height:12px;border-radius:50%;background:rgba(201,168,76,.2);border:1.5px solid var(--gold);cursor:pointer;transition:background .2s;-webkit-tap-highlight-color:transparent}
 .fdot.on{background:var(--gold)}
 
-/* Toast */
-#toast{position:absolute;top:35%;left:50%;transform:translateX(-50%);background:rgba(201,168,76,.93);color:#000;font-size:.7rem;font-weight:600;letter-spacing:.18em;text-transform:uppercase;padding:.4rem 1rem;border-radius:2px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:20;white-space:nowrap}
-#toast.on{opacity:1}
-
 .cam-ftr{width:100%;padding:.8rem 1.2rem;display:flex;align-items:center;justify-content:space-around;border-top:1px solid rgba(201,168,76,.15);flex-shrink:0;background:#000}
 .btn-cap{width:68px;height:68px;border-radius:50%;border:3px solid var(--gold);background:transparent;cursor:pointer;position:relative;transition:transform .15s;flex-shrink:0;-webkit-tap-highlight-color:transparent}
 .btn-cap::after{content:'';position:absolute;inset:6px;border-radius:50%;background:var(--gold);transition:background .2s}
@@ -88,10 +103,8 @@ html,body{width:100%;height:100%;background:#000;color:var(--white);font-family:
 /* ── RESULT ── */
 #sRes{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--black);z-index:80;opacity:0;pointer-events:none;transition:opacity .5s;padding:.8rem;gap:.9rem}
 #sRes.on{opacity:1;pointer-events:all}
-/* Foto em 9:16 */
 .res-frm{position:relative;border:1px solid rgba(201,168,76,.3);box-shadow:0 0 40px rgba(201,168,76,.1);flex-shrink:0}
 .res-frm img{display:block;width:100%;height:100%;object-fit:contain}
-/* Info: QR + status + countdown */
 .res-info{display:flex;align-items:center;justify-content:center;gap:1.2rem;flex-wrap:wrap;width:100%}
 #qrWrap{display:none;flex-direction:column;align-items:center;gap:.25rem}
 #qrImg{width:80px;height:80px;border:2px solid var(--gold);padding:2px;background:#fff;border-radius:2px}
@@ -129,6 +142,26 @@ html,body{width:100%;height:100%;background:#000;color:var(--white);font-family:
 <div id="flash"></div>
 <canvas id="canvas"></canvas>
 
+<!-- TOAST GLOBAL -->
+<div id="toast"></div>
+
+<!-- PIN -->
+<div id="sPin">
+  <div class="ic tl"></div><div class="ic tr"></div>
+  <div class="ic bl"></div><div class="ic br"></div>
+  <p style="font-size:.44rem;letter-spacing:.5em;text-transform:uppercase;color:var(--gold);opacity:.7">Acesso Exclusivo &bull; 2026</p>
+  <h1 class="pin-title">Dalylah <em>Party</em></h1>
+  <p class="pin-sub">Digite o código de acesso</p>
+  <div class="pin-dots" id="pinDots">
+    <span class="pd"></span><span class="pd"></span>
+    <span class="pd"></span><span class="pd"></span>
+    <span class="pd"></span><span class="pd"></span>
+    <span class="pd"></span><span class="pd"></span>
+  </div>
+  <div class="pin-pad" id="pinPad"></div>
+  <p id="pinErr">&nbsp;</p>
+</div>
+
 <!-- IDLE -->
 <div id="sIdle">
   <div class="ic tl"></div><div class="ic tr"></div>
@@ -159,7 +192,6 @@ html,body{width:100%;height:100%;background:#000;color:var(--white);font-family:
       <div id="cdnum"></div>
       <div id="fbadge"></div>
       <div class="fdots" id="fdots"></div>
-      <div id="toast"></div>
     </div>
   </div>
   <div class="cam-ftr">
@@ -181,7 +213,7 @@ html,body{width:100%;height:100%;background:#000;color:var(--white);font-family:
     </div>
     <div class="res-status">
       <p id="uploadStatus">&#8987; Enviando...</p>
-      <div class="res-count-wrap">
+      <div class="res-count-wrap" id="autoCountWrap">
         <p id="autoCount">10</p>
         <p class="auto-label">próxima foto em</p>
       </div>
@@ -214,6 +246,7 @@ html,body{width:100%;height:100%;background:#000;color:var(--white);font-family:
 const CLOUDINARY_CLOUD  = 'dalylahs';
 const CLOUDINARY_PRESET = 'dalylah-party';
 const FIREBASE_URL      = 'https://dalylah-party-default-rtdb.firebaseio.com';
+const ACCESS_PIN        = '16052026'; // ← altere aqui o código de acesso
 
 /* Saída sempre em 9:16 Full HD */
 const OUT_W = 1080, OUT_H = 1920;
@@ -224,21 +257,18 @@ const OUT_W = 1080, OUT_H = 1920;
 const FRAMES = [
   {
     name: 'Cinema',
-    // câmera ocupa 80% central (10% fita topo + 10% fita base)
     inner: { top: 0.10, bottom: 0.10, left: 0, right: 0 },
     bg: '#0a0a0a',
     bw: false
   },
   {
     name: 'Polaroid',
-    // câmera dentro da borda branca
     inner: { top: 0.042, bottom: 0.195, left: 0.055, right: 0.055 },
     bg: '#FAF6EE',
     bw: false
   },
   {
     name: 'P&B',
-    // câmera ocupa tudo — efeito é só filtro + vinheta
     inner: { top: 0, bottom: 0, left: 0, right: 0 },
     bg: '#000',
     bw: true
@@ -246,7 +276,6 @@ const FRAMES = [
 ];
 let curF = 0;
 
-/* Área interna da moldura em pixels */
 function innerRect(w, h, fi) {
   const f = FRAMES[fi].inner;
   const x  = Math.round(w * f.left);
@@ -256,18 +285,18 @@ function innerRect(w, h, fi) {
   return { x, y, w: iw, h: ih };
 }
 
-/* ── drawFrame: só bordas, inner fica transparente ── */
+/* ── drawFrame: bordas, inner fica transparente ── */
 function drawFrame(ctx, w, h, fi) {
   const ir = innerRect(w, h, fi);
 
   if (fi === 0) {
     /* ── Cinema ── */
-    const stripT = ir.y;            // altura da fita = 10%
-    const stripB = h - ir.y - ir.h; // mesma
+    const stripT = ir.y;
+    const stripB = h - ir.y - ir.h;
 
     ctx.fillStyle = '#0a0a0a';
-    ctx.fillRect(0, 0, w, stripT);           // fita topo
-    ctx.fillRect(0, ir.y + ir.h, w, stripB); // fita base
+    ctx.fillRect(0, 0, w, stripT);
+    ctx.fillRect(0, ir.y + ir.h, w, stripB);
 
     /* furos dourados */
     ctx.fillStyle = '#C9A84C';
@@ -286,17 +315,15 @@ function drawFrame(ctx, w, h, fi) {
   } else if (fi === 1) {
     /* ── Polaroid ── */
     ctx.fillStyle = '#FAF6EE';
-    ctx.fillRect(0, 0, w, ir.y);                         // topo
-    ctx.fillRect(0, ir.y+ir.h, w, h-ir.y-ir.h);          // base
-    ctx.fillRect(0, 0, ir.x, h);                         // esquerda
-    ctx.fillRect(ir.x+ir.w, 0, w-ir.x-ir.w, h);          // direita
-    /* linha decorativa */
+    ctx.fillRect(0, 0, w, ir.y);
+    ctx.fillRect(0, ir.y+ir.h, w, h-ir.y-ir.h);
+    ctx.fillRect(0, 0, ir.x, h);
+    ctx.fillRect(ir.x+ir.w, 0, w-ir.x-ir.w, h);
     const footH = h - ir.y - ir.h;
     const lineY = ir.y + ir.h + footH*0.30;
     ctx.strokeStyle = 'rgba(201,168,76,.3)';
     ctx.lineWidth = 1;
     ctx.beginPath(); ctx.moveTo(ir.x+ir.w*0.1, lineY); ctx.lineTo(ir.x+ir.w*0.9, lineY); ctx.stroke();
-    /* sombra sutil na borda da foto */
     ctx.strokeStyle = 'rgba(0,0,0,.08)';
     ctx.lineWidth = 1;
     ctx.strokeRect(ir.x, ir.y, ir.w, ir.h);
@@ -309,7 +336,6 @@ function drawFrame(ctx, w, h, fi) {
     vg.addColorStop(1, 'rgba(0,0,0,.6)');
     ctx.fillStyle = vg;
     ctx.fillRect(0, 0, w, h);
-    /* borda fina branca */
     ctx.strokeStyle = 'rgba(255,255,255,.28)';
     ctx.lineWidth = Math.max(2, Math.round(w*0.007));
     const m = Math.round(w*0.022);
@@ -317,35 +343,40 @@ function drawFrame(ctx, w, h, fi) {
   }
 }
 
-/* ── drawStamp: texto sempre na área da moldura ── */
+/* ── drawStamp: #Dalylah'sParty em todas as molduras ── */
 function drawStamp(ctx, w, h, fi) {
   const ir = innerRect(w, h, fi);
+  const STAMP = "#Dalylah’sParty"; // #Dalylah'sParty
   ctx.save();
-  ctx.shadowColor = 'rgba(0,0,0,.5)'; ctx.shadowBlur = 4;
+  ctx.shadowColor = 'rgba(0,0,0,.6)'; ctx.shadowBlur = 5;
   ctx.textAlign = 'center';
 
   if (fi === 0) {
-    /* cinema: stamp na fita inferior */
+    /* Cinema: abaixo dos furos, na área livre inferior da fita.
+       Furos: 24%-76% da fita. Topo do texto deve ser > 76%.
+       fs=14% → baseline=94% → topo=80% ✓ */
     const stripH = h - ir.y - ir.h;
-    const fs = Math.round(stripH * 0.48);
+    const fs = Math.round(stripH * 0.14);
     ctx.font = `italic ${fs}px 'Playfair Display',Georgia,serif`;
     ctx.fillStyle = '#C9A84C';
-    ctx.fillText('#DalylahParty', w/2, ir.y + ir.h + stripH*0.72);
+    ctx.fillText(STAMP, w/2, ir.y + ir.h + stripH * 0.94);
+
   } else if (fi === 1) {
-    /* polaroid: stamp na área branca inferior */
+    /* Polaroid: na área branca inferior */
     const footH = h - ir.y - ir.h;
-    const fs = Math.round(footH * 0.32);
+    const fs = Math.round(footH * 0.28);
     ctx.font = `italic ${fs}px 'Playfair Display',Georgia,serif`;
     ctx.fillStyle = '#C9A84C';
-    ctx.fillText("#Dalylah's Party", w/2, ir.y + ir.h + footH*0.60);
+    ctx.fillText(STAMP, w/2, ir.y + ir.h + footH * 0.60);
+
   } else {
-    /* P&B: stamp pequeno no canto inferior direito */
-    const fs = Math.round(w * 0.038);
+    /* P&B: canto inferior direito, pequeno */
+    const fs = Math.round(w * 0.036);
     const mg = Math.round(w * 0.05);
     ctx.font = `italic ${fs}px 'Playfair Display',Georgia,serif`;
     ctx.fillStyle = 'rgba(255,255,255,.65)';
     ctx.textAlign = 'right';
-    ctx.fillText('#DalylahParty', w - mg, h - mg);
+    ctx.fillText(STAMP, w - mg, h - mg);
   }
   ctx.restore();
 }
@@ -424,15 +455,69 @@ const camVp        = document.getElementById('camVp');
 const camInner     = document.getElementById('camInner');
 const uploadStatus = document.getElementById('uploadStatus');
 const autoCountEl  = document.getElementById('autoCount');
+const autoCountWrap= document.getElementById('autoCountWrap');
 const qrWrap       = document.getElementById('qrWrap');
 const qrImg        = document.getElementById('qrImg');
 const resFrm       = document.getElementById('resFrm');
 
 /* ══════════════════════════════════════
+   PIN
+══════════════════════════════════════ */
+let pinBuffer = '';
+const PIN_LEN = ACCESS_PIN.length; // 8
+
+function initPin() {
+  const pad = document.getElementById('pinPad');
+  // Layout: 1-9, vazio, 0, ⌫
+  const keys = ['1','2','3','4','5','6','7','8','9','','0','⌫'];
+  keys.forEach(k => {
+    const b = document.createElement('button');
+    b.className = 'pin-btn' + (k === '⌫' ? ' del' : '');
+    b.textContent = k || '';
+    if (k === '') { b.style.visibility = 'hidden'; b.style.pointerEvents = 'none'; }
+    b.addEventListener('click', () => {
+      if (k === '⌫') {
+        pinBuffer = pinBuffer.slice(0, -1);
+      } else if (k !== '' && pinBuffer.length < PIN_LEN) {
+        pinBuffer += k;
+      }
+      updatePinDots();
+      if (pinBuffer.length === PIN_LEN) setTimeout(checkPin, 120);
+    });
+    pad.appendChild(b);
+  });
+}
+
+function updatePinDots() {
+  document.querySelectorAll('.pd').forEach((d, i) => d.classList.toggle('filled', i < pinBuffer.length));
+}
+
+function checkPin() {
+  if (pinBuffer === ACCESS_PIN) {
+    sessionStorage.setItem('dp_auth', '1');
+    document.getElementById('sPin').classList.add('hide');
+    show('sIdle');
+    startVoice();
+  } else {
+    pinBuffer = '';
+    updatePinDots();
+    const err = document.getElementById('pinErr');
+    err.textContent = 'Código incorreto';
+    err.style.opacity = '1';
+    setTimeout(() => { err.style.opacity = '0'; setTimeout(()=>{ err.textContent=' '; },300); }, 1600);
+    /* shake */
+    const pad = document.getElementById('pinPad');
+    pad.style.transform = 'translateX(-9px)';
+    setTimeout(() => pad.style.transform = 'translateX(9px)', 80);
+    setTimeout(() => pad.style.transform = 'translateX(-5px)', 160);
+    setTimeout(() => pad.style.transform = '', 240);
+  }
+}
+
+/* ══════════════════════════════════════
    9:16 — dimensiona camInner e foto resultado
 ══════════════════════════════════════ */
 function resizeAll() {
-  /* camInner: máximo 9:16 que cabe em camVp */
   const availW = camVp.offsetWidth, availH = camVp.offsetHeight;
   let iw, ih;
   if (availW / availH < 9/16) { iw=availW; ih=Math.round(availW*16/9); }
@@ -442,7 +527,6 @@ function resizeAll() {
   fOverlay.width  = iw;
   fOverlay.height = ih;
 
-  /* res-frm: foto em 9:16 */
   const sRes = document.getElementById('sRes');
   const rAvailH = sRes.offsetHeight * 0.52;
   const rAvailW = sRes.offsetWidth  * 0.88;
@@ -463,7 +547,6 @@ function applyFrameToVideo(fi) {
   video.style.left   = (f.left   * 100) + '%';
   video.style.right  = (f.right  * 100) + '%';
   camInner.style.background = FRAMES[fi].bg;
-  /* Filtro P&B no preview */
   video.style.filter = FRAMES[fi].bw ? 'grayscale(100%) contrast(1.08)' : '';
 }
 
@@ -480,7 +563,11 @@ function show(id) {
 function goHome()    { cancelAuto(); stopCam(); show('sIdle'); }
 function showGal()   { cancelAuto(); renderGal(); show('sGal'); }
 function hideGal()   { stream ? show('sCam') : show('sIdle'); }
-function retryCam()  { show('sCam'); if(!overlayRAF) startOverlay(); }
+function retryCam()  {
+  if (!stream) { startCam(); return; }   // câmera não iniciada: inicia agora
+  show('sCam');
+  if (!overlayRAF) startOverlay();
+}
 function cancelAutoAndRetry() { cancelAuto(); retryCam(); }
 function cancelAuto(){ clearInterval(autoReturnTimer); autoReturnTimer=null; }
 function getScreen() {
@@ -498,8 +585,9 @@ async function startCam() {
   resizeAll();
   if (stream) { if(!overlayRAF) startOverlay(); return; }
   try {
+    /* Preferência por portrait para selfie — evita rotação no capture */
     stream = await navigator.mediaDevices.getUserMedia({
-      video:{ facingMode:'user', width:{ideal:1920}, height:{ideal:1080} }, audio:false
+      video:{ facingMode:'user', width:{ideal:1080}, height:{ideal:1920} }, audio:false
     });
     video.srcObject = stream;
     video.onloadedmetadata = () => { applyFrameToVideo(curF); startOverlay(); };
@@ -564,37 +652,73 @@ function startCD() {
 async function capture() {
   flash.classList.add('on'); setTimeout(()=>flash.classList.remove('on'),140);
 
-  const vW = video.videoWidth||1280, vH = video.videoHeight||720;
+  const vNatW = video.videoWidth  || 1080;
+  const vNatH = video.videoHeight || 1920;
 
-  /* Canvas fixo em 1080×1920 — alta qualidade para Instagram e impressão */
+  /* ── Detecção de rotação ──
+     Alguns Android entregam o stream em landscape (vNatW>vNatH) mas
+     exibem em portrait. Detectamos comparando o AR do stream com o AR
+     do elemento video na tela. */
+  const vRect    = video.getBoundingClientRect();
+  const displayW = vRect.width  || camInner.offsetWidth;
+  const displayH = vRect.height || camInner.offsetHeight;
+  const streamAR  = vNatW / vNatH;
+  const displayAR = displayW / displayH;
+  /* Rotacionado = stream landscape mas display portrait (ou vice-versa) */
+  const isRotated = (streamAR > 1.15 && displayAR < 0.90);
+
+  /* Canvas fixo em 1080×1920 */
   canvas.width=OUT_W; canvas.height=OUT_H;
   const ctx = canvas.getContext('2d');
 
-  /* Fundo da moldura */
   ctx.fillStyle = FRAMES[curF].bg;
-  ctx.fillRect(0,0,OUT_W,OUT_H);
+  ctx.fillRect(0, 0, OUT_W, OUT_H);
 
-  /* Área interna na resolução de saída */
   const ir = innerRect(OUT_W, OUT_H, curF);
 
-  /* Crop do vídeo para preencher a área interna (object-fit:cover equivalente) */
-  const iAR = ir.w/ir.h, vAR = vW/vH;
-  let srcX,srcY,srcW,srcH;
-  if(vAR>iAR){ srcH=vH; srcW=vH*iAR; srcY=0; srcX=(vW-srcW)/2; }
-  else        { srcW=vW; srcH=vW/iAR; srcX=0; srcY=(vH-srcH)/2; }
+  if (FRAMES[curF].bw) ctx.filter = 'grayscale(100%) contrast(1.08)';
 
-  /* Aplica filtro P&B se necessário */
-  if(FRAMES[curF].bw) ctx.filter='grayscale(100%) contrast(1.08)';
+  if (isRotated) {
+    /* Stream é landscape mas deve ser exibido como portrait.
+       Rotacionamos 90° para corrigir antes de recortar. */
+    const tmp = document.createElement('canvas');
+    tmp.width  = vNatH;  // após rotação: largura = altura original
+    tmp.height = vNatW;  // após rotação: altura  = largura original
+    const tCtx = tmp.getContext('2d');
+    tCtx.translate(0, vNatW);
+    tCtx.rotate(-Math.PI / 2);
+    tCtx.drawImage(video, 0, 0, vNatW, vNatH);
 
-  /* Desenha vídeo espelhado (selfie natural) dentro da área interna */
-  ctx.save();
-  ctx.translate(ir.x+ir.w, ir.y);
-  ctx.scale(-1,1);
-  ctx.drawImage(video, srcX,srcY,srcW,srcH, 0,0,ir.w,ir.h);
-  ctx.restore();
-  ctx.filter='none';
+    /* Agora tmp é portrait (vNatH × vNatW). Calcular crop object-fit:cover */
+    const effW = vNatH, effH = vNatW;
+    const effAR = effW / effH;
+    const iAR   = ir.w / ir.h;
+    let sx, sy, sw, sh;
+    if (effAR > iAR) { sh=effH; sw=effH*iAR; sy=0; sx=(effW-sw)/2; }
+    else              { sw=effW; sh=effW/iAR; sx=0; sy=(effH-sh)/2; }
 
-  /* Decorações da moldura + stamp */
+    ctx.save();
+    ctx.translate(ir.x + ir.w, ir.y);
+    ctx.scale(-1, 1);
+    ctx.drawImage(tmp, sx, sy, sw, sh, 0, 0, ir.w, ir.h);
+    ctx.restore();
+  } else {
+    /* Stream já em portrait (ou landscape sem rotação detectada) */
+    const iAR = ir.w / ir.h;
+    const vAR = vNatW / vNatH;
+    let srcX, srcY, srcW, srcH;
+    if (vAR > iAR) { srcH=vNatH; srcW=vNatH*iAR; srcY=0; srcX=(vNatW-srcW)/2; }
+    else            { srcW=vNatW; srcH=vNatW/iAR; srcX=0; srcY=(vNatH-srcH)/2; }
+
+    ctx.save();
+    ctx.translate(ir.x + ir.w, ir.y);
+    ctx.scale(-1, 1);
+    ctx.drawImage(video, srcX, srcY, srcW, srcH, 0, 0, ir.w, ir.h);
+    ctx.restore();
+  }
+
+  ctx.filter = 'none';
+
   drawFrame(ctx, OUT_W, OUT_H, curF);
   drawStamp(ctx, OUT_W, OUT_H, curF);
 
@@ -605,11 +729,12 @@ async function capture() {
   /* Exibe resultado imediatamente */
   rImg.src=localUrl;
   uploadStatus.textContent='⏳ Enviando...'; uploadStatus.className='';
-  qrWrap.style.display='none'; autoCountEl.textContent='10';
+  qrWrap.style.display='none';
+  autoCountWrap.style.display='flex';
+  autoCountEl.textContent='10';
   btnCap.disabled=false; capturing=false;
   show('sRes');
 
-  /* Countdown de 10s começa já */
   startAutoReturn();
 
   /* Upload em background */
@@ -617,7 +742,7 @@ async function capture() {
     const cloudUrl = await uploadToCloudinary(localUrl);
     await saveToFirebase(cloudUrl);
     curUrl=cloudUrl;
-    uploadStatus.textContent='✓ Salva na nuvem!'; uploadStatus.className='ok';
+    uploadStatus.textContent='✓ Salva na nuvem'; uploadStatus.className='ok';
     if(getScreen()==='res') showQR(cloudUrl);
   } catch(e) {
     saveToIDB(localUrl);
@@ -645,16 +770,18 @@ function startAutoReturn() {
 ══════════════════════════════════════ */
 async function sharePhoto() {
   if(!curUrl) return;
+  const SHARE_TITLE = "#Dalylah’sParty";
+  const SHARE_TEXT  = "Minha foto da festa! 🎉";
   if(curUrl.startsWith('https://res.cloudinary.com')) {
-    if(navigator.share){ try{ await navigator.share({url:curUrl,title:'#DalylahParty',text:"Minha foto da festa! 🎉"}); return; }catch(e){if(e.name==='AbortError') return;} }
+    if(navigator.share){ try{ await navigator.share({url:curUrl,title:SHARE_TITLE,text:SHARE_TEXT}); return; }catch(e){if(e.name==='AbortError') return;} }
     try{ await navigator.clipboard.writeText(curUrl); showToast('Link copiado!'); }catch(e){}
     return;
   }
   if(!navigator.share){ showToast('Aguarde o upload...'); return; }
   try{
     const file=new File([toBlob(curUrl)],'dalylah-party.jpg',{type:'image/jpeg'});
-    if(navigator.canShare?.({files:[file]})) await navigator.share({files:[file],title:'#DalylahParty'});
-    else await navigator.share({title:'#DalylahParty',text:"Minha foto da festa! 🎉"});
+    if(navigator.canShare?.({files:[file]})) await navigator.share({files:[file],title:SHARE_TITLE});
+    else await navigator.share({title:SHARE_TITLE,text:SHARE_TEXT});
   }catch(e){ if(e.name!=='AbortError') showToast('Aguarde o upload...'); }
 }
 
@@ -748,7 +875,17 @@ async function renderGal() {
   [...items].reverse().forEach((p,i)=>{
     const img=document.createElement('img');
     img.src=p.url; img.alt='Foto '+(items.length-i); img.loading='lazy';
-    img.onclick=()=>{ cancelAuto(); curUrl=p.url; rImg.src=p.url; uploadStatus.textContent='✓ Salva na nuvem'; uploadStatus.className='ok'; qrWrap.style.display='none'; show('sRes'); };
+    img.onclick=()=>{
+      cancelAuto();
+      curUrl=p.url;
+      rImg.src=p.url;
+      uploadStatus.textContent='✓ Salva na nuvem'; uploadStatus.className='ok';
+      /* Esconde contador regressivo (não faz sentido ao visualizar galeria) */
+      autoCountWrap.style.display='none';
+      /* Exibe QR code da foto do Cloudinary */
+      showQR(p.url);
+      show('sRes');
+    };
     galGrid.appendChild(img);
   });
 }
@@ -759,10 +896,17 @@ async function renderGal() {
 async function init() {
   await openDB();
   initDots();
+  initPin();
   resizeAll();
   applyFrameToVideo(curF);
-  startVoice();
-  show('sIdle');
+
+  /* Verifica se já está autenticado nesta sessão */
+  if (sessionStorage.getItem('dp_auth') === '1') {
+    document.getElementById('sPin').classList.add('hide');
+    show('sIdle');
+    startVoice();
+  }
+  /* Se não autenticado, a tela PIN permanece visível (z-index 500) */
 }
 init();
 </script>
