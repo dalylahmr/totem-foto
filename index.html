@@ -585,9 +585,9 @@ async function startCam() {
   resizeAll();
   if (stream) { if(!overlayRAF) startOverlay(); return; }
   try {
-    /* Preferência por portrait para selfie — evita rotação no capture */
+    /* Landscape amplo: melhor FOV para selfie (retrato gerado no canvas) */
     stream = await navigator.mediaDevices.getUserMedia({
-      video:{ facingMode:'user', width:{ideal:1080}, height:{ideal:1920} }, audio:false
+      video:{ facingMode:'user', width:{ideal:1920}, height:{ideal:1080} }, audio:false
     });
     video.srcObject = stream;
     video.onloadedmetadata = () => { applyFrameToVideo(curF); startOverlay(); };
@@ -652,22 +652,10 @@ function startCD() {
 async function capture() {
   flash.classList.add('on'); setTimeout(()=>flash.classList.remove('on'),140);
 
-  const vNatW = video.videoWidth  || 1080;
-  const vNatH = video.videoHeight || 1920;
+  const vNatW = video.videoWidth  || 1920;
+  const vNatH = video.videoHeight || 1080;
 
-  /* ── Detecção de rotação ──
-     Alguns Android entregam o stream em landscape (vNatW>vNatH) mas
-     exibem em portrait. Detectamos comparando o AR do stream com o AR
-     do elemento video na tela. */
-  const vRect    = video.getBoundingClientRect();
-  const displayW = vRect.width  || camInner.offsetWidth;
-  const displayH = vRect.height || camInner.offsetHeight;
-  const streamAR  = vNatW / vNatH;
-  const displayAR = displayW / displayH;
-  /* Rotacionado = stream landscape mas display portrait (ou vice-versa) */
-  const isRotated = (streamAR > 1.15 && displayAR < 0.90);
-
-  /* Canvas fixo em 1080×1920 */
+  /* Canvas fixo em 1080×1920 — alta qualidade */
   canvas.width=OUT_W; canvas.height=OUT_H;
   const ctx = canvas.getContext('2d');
 
@@ -678,44 +666,21 @@ async function capture() {
 
   if (FRAMES[curF].bw) ctx.filter = 'grayscale(100%) contrast(1.08)';
 
-  if (isRotated) {
-    /* Stream é landscape mas deve ser exibido como portrait.
-       Rotacionamos 90° para corrigir antes de recortar. */
-    const tmp = document.createElement('canvas');
-    tmp.width  = vNatH;  // após rotação: largura = altura original
-    tmp.height = vNatW;  // após rotação: altura  = largura original
-    const tCtx = tmp.getContext('2d');
-    tCtx.translate(0, vNatW);
-    tCtx.rotate(-Math.PI / 2);
-    tCtx.drawImage(video, 0, 0, vNatW, vNatH);
+  /* Crop idêntico ao object-fit:cover do preview:
+     escala pelo lado que transborda o container retrato e
+     centraliza no eixo oposto. */
+  const iAR = ir.w / ir.h;
+  const vAR = vNatW / vNatH;
+  let srcX, srcY, srcW, srcH;
+  if (vAR > iAR) { srcH=vNatH; srcW=vNatH*iAR; srcY=0; srcX=(vNatW-srcW)/2; }
+  else            { srcW=vNatW; srcH=vNatW/iAR; srcX=0; srcY=(vNatH-srcH)/2; }
 
-    /* Agora tmp é portrait (vNatH × vNatW). Calcular crop object-fit:cover */
-    const effW = vNatH, effH = vNatW;
-    const effAR = effW / effH;
-    const iAR   = ir.w / ir.h;
-    let sx, sy, sw, sh;
-    if (effAR > iAR) { sh=effH; sw=effH*iAR; sy=0; sx=(effW-sw)/2; }
-    else              { sw=effW; sh=effW/iAR; sx=0; sy=(effH-sh)/2; }
-
-    ctx.save();
-    ctx.translate(ir.x + ir.w, ir.y);
-    ctx.scale(-1, 1);
-    ctx.drawImage(tmp, sx, sy, sw, sh, 0, 0, ir.w, ir.h);
-    ctx.restore();
-  } else {
-    /* Stream já em portrait (ou landscape sem rotação detectada) */
-    const iAR = ir.w / ir.h;
-    const vAR = vNatW / vNatH;
-    let srcX, srcY, srcW, srcH;
-    if (vAR > iAR) { srcH=vNatH; srcW=vNatH*iAR; srcY=0; srcX=(vNatW-srcW)/2; }
-    else            { srcW=vNatW; srcH=vNatW/iAR; srcX=0; srcY=(vNatH-srcH)/2; }
-
-    ctx.save();
-    ctx.translate(ir.x + ir.w, ir.y);
-    ctx.scale(-1, 1);
-    ctx.drawImage(video, srcX, srcY, srcW, srcH, 0, 0, ir.w, ir.h);
-    ctx.restore();
-  }
+  /* Desenha espelhado (selfie natural) dentro da área interna */
+  ctx.save();
+  ctx.translate(ir.x + ir.w, ir.y);
+  ctx.scale(-1, 1);
+  ctx.drawImage(video, srcX, srcY, srcW, srcH, 0, 0, ir.w, ir.h);
+  ctx.restore();
 
   ctx.filter = 'none';
 
