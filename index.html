@@ -75,7 +75,8 @@ html,body{width:100%;height:100%;background:#000;color:var(--white);font-family:
 #camInner{position:relative;overflow:hidden;background:#000}
 
 /* Vídeo posicionado DENTRO da moldura via JS */
-#video{position:absolute;object-fit:cover;transform:scaleX(-1);transition:top .2s,bottom .2s,left .2s,right .2s,filter .3s}
+/* object-fit:contain → zero zoom, câmera mostrada inteira */
+#video{position:absolute;top:0;left:0;right:0;bottom:0;width:100%;height:100%;object-fit:contain;transform:scaleX(-1);transition:filter .3s;background:#000}
 
 /* Canvas overlay: bordas da moldura */
 #fOverlay{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:2}
@@ -539,13 +540,8 @@ function resizeAll() {
 
 window.addEventListener('resize', () => { resizeAll(); if(stream) applyFrameToVideo(curF); });
 
-/* Posiciona vídeo CSS dentro da moldura */
+/* Vídeo sempre preenche todo o camInner sem zoom — moldura desenhada no overlay */
 function applyFrameToVideo(fi) {
-  const f = FRAMES[fi].inner;
-  video.style.top    = (f.top    * 100) + '%';
-  video.style.bottom = (f.bottom * 100) + '%';
-  video.style.left   = (f.left   * 100) + '%';
-  video.style.right  = (f.right  * 100) + '%';
   camInner.style.background = FRAMES[fi].bg;
   video.style.filter = FRAMES[fi].bw ? 'grayscale(100%) contrast(1.08)' : '';
 }
@@ -585,9 +581,9 @@ async function startCam() {
   resizeAll();
   if (stream) { if(!overlayRAF) startOverlay(); return; }
   try {
-    /* Landscape amplo: melhor FOV para selfie (retrato gerado no canvas) */
+    /* Sem restrições: celular usa modo nativo com máximo FOV */
     stream = await navigator.mediaDevices.getUserMedia({
-      video:{ facingMode:'user', width:{ideal:1920}, height:{ideal:1080} }, audio:false
+      video:{ facingMode:'user' }, audio:false
     });
     video.srcObject = stream;
     video.onloadedmetadata = () => { applyFrameToVideo(curF); startOverlay(); };
@@ -666,9 +662,9 @@ async function capture() {
 
   if (FRAMES[curF].bw) ctx.filter = 'grayscale(100%) contrast(1.08)';
 
-  /* Crop idêntico ao object-fit:cover do preview:
-     escala pelo lado que transborda o container retrato e
-     centraliza no eixo oposto. */
+  /* Crop portrait central do stream nativo:
+     se stream é paisagem recorta a faixa portrait central;
+     se stream já é portrait usa diretamente. */
   const iAR = ir.w / ir.h;
   const vAR = vNatW / vNatH;
   let srcX, srcY, srcW, srcH;
