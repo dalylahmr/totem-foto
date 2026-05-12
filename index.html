@@ -74,8 +74,8 @@ html,body{width:100%;height:100%;background:#000;color:var(--white);font-family:
 /* camInner: caixa 9:16 — dimensionada via JS */
 #camInner{position:relative;overflow:hidden;background:#000}
 
-/* Vídeo invisível — apenas fonte de pixels; preview e capture desenhados no canvas */
-#video{position:absolute;top:0;left:0;width:1px;height:1px;opacity:0;pointer-events:none}
+/* Vídeo tamanho real mas invisível — browser precisa decodificar frames normalmente */
+#video{position:absolute;top:0;left:0;width:100%;height:100%;opacity:0;pointer-events:none}
 
 /* Canvas overlay: bordas da moldura */
 #fOverlay{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:2}
@@ -790,7 +790,24 @@ function startVoice() {
 }
 function handleVoice(t) {
   const sc=getScreen();
-  if(/xis|x{2,}|cheese|foto|sorri/.test(t)){ showToast('🎤 '+t); if(sc==='cam'){startCD();return true;} if(sc==='idle'){startCam().then(()=>setTimeout(startCD,1200));return true;} if(sc==='res'){cancelAutoAndRetry();return true;} }
+
+  if(/xis|x{2,}|cheese|foto|sorri/.test(t)){
+    showToast('🎤 '+t);
+    if(sc==='gal'){ hideGal(); return true; }           // fecha galeria e fica na câmera
+    if(sc==='res'){
+      cancelAutoAndRetry();
+      setTimeout(()=>{ capturing=false; startCD(); }, 700); // volta e já dispara contagem
+      return true;
+    }
+    if(sc==='idle'){
+      startCam().then(()=>setTimeout(()=>{ capturing=false; startCD(); }, 2000));
+      return true;
+    }
+    capturing=false;   // reseta estado preso
+    startCD();         // dispara (funciona em 'cam' e qualquer estado inesperado)
+    return true;
+  }
+
   if(/compartilh/.test(t)){ showToast('🎤 Compartilhar'); if(sc==='res'){sharePhoto();return true;} }
   if(/nova foto|mais uma|outra foto|repetir|diga xis/.test(t)){ showToast('🎤 Nova foto'); if(sc==='res'){cancelAutoAndRetry();return true;} if(sc==='idle'){startCam();return true;} }
   if(/início|ir para o início|home|voltar/.test(t)){ showToast('🎤 Início'); goHome(); return true; }
