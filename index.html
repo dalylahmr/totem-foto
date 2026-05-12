@@ -790,9 +790,9 @@ function startVoice() {
 }
 function handleVoice(t) {
   const sc=getScreen();
-  if(/xis|x{2,}|cheese|foto|sorri/.test(t)){ showToast('🎤 '+t); if(sc==='cam'){startCD();return true;} if(sc==='idle'){startCam().then(()=>setTimeout(startCD,1200));return true;} }
+  if(/xis|x{2,}|cheese|foto|sorri/.test(t)){ showToast('🎤 '+t); if(sc==='cam'){startCD();return true;} if(sc==='idle'){startCam().then(()=>setTimeout(startCD,1200));return true;} if(sc==='res'){cancelAutoAndRetry();return true;} }
   if(/compartilh/.test(t)){ showToast('🎤 Compartilhar'); if(sc==='res'){sharePhoto();return true;} }
-  if(/nova foto|mais uma|outra foto|repetir/.test(t)){ showToast('🎤 Nova foto'); if(sc==='res'){cancelAutoAndRetry();return true;} if(sc==='idle'){startCam();return true;} }
+  if(/nova foto|mais uma|outra foto|repetir|diga xis/.test(t)){ showToast('🎤 Nova foto'); if(sc==='res'){cancelAutoAndRetry();return true;} if(sc==='idle'){startCam();return true;} }
   if(/início|ir para o início|home|voltar/.test(t)){ showToast('🎤 Início'); goHome(); return true; }
   if(/trocar moldura|mudar moldura|próxima moldura|troca/.test(t)){ showToast('🎤 Moldura'); nextFrame(); return true; }
   if(/fechar galeria|fechar|sair da galeria/.test(t)){ showToast('🎤 Fechar'); if(sc==='gal'){hideGal();return true;} }
