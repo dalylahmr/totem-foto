@@ -494,7 +494,7 @@ function updatePinDots() {
 
 function checkPin() {
   if (pinBuffer === ACCESS_PIN) {
-    sessionStorage.setItem('dp_auth', '1');
+    localStorage.setItem('dp_auth_ts', Date.now()); // guarda timestamp do login
     document.getElementById('sPin').classList.add('hide');
     show('sIdle');
     startVoice();
@@ -881,7 +881,9 @@ async function init() {
   applyFrameToVideo(curF);
 
   /* Verifica se já está autenticado nesta sessão */
-  if (sessionStorage.getItem('dp_auth') === '1') {
+  const AUTH_TTL = 6 * 60 * 60 * 1000; // 6 horas em ms
+  const authTs   = parseInt(localStorage.getItem('dp_auth_ts') || '0');
+  if (Date.now() - authTs < AUTH_TTL) {
     document.getElementById('sPin').classList.add('hide');
     show('sIdle');
     startVoice();
