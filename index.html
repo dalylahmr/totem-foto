@@ -74,9 +74,8 @@ html,body{width:100%;height:100%;background:#000;color:var(--white);font-family:
 /* camInner: caixa 9:16 — dimensionada via JS */
 #camInner{position:relative;overflow:hidden;background:#000}
 
-/* Vídeo posicionado DENTRO da moldura via JS */
-/* cover → preenche a altura da moldura, centraliza horizontalmente */
-#video{position:absolute;object-fit:cover;transform:scaleX(-1);transition:top .2s,bottom .2s,left .2s,right .2s,filter .3s}
+/* Vídeo invisível — apenas fonte de pixels; preview e capture desenhados no canvas */
+#video{position:absolute;top:0;left:0;width:1px;height:1px;opacity:0;pointer-events:none}
 
 /* Canvas overlay: bordas da moldura */
 #fOverlay{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:2}
@@ -540,16 +539,9 @@ function resizeAll() {
 
 window.addEventListener('resize', () => { resizeAll(); if(stream) applyFrameToVideo(curF); });
 
-/* Vídeo posicionado nos limites internos de cada moldura:
-   cover preenche a altura, centraliza horizontalmente */
+/* Preview desenhado no canvas — só atualiza bg do container */
 function applyFrameToVideo(fi) {
-  const f = FRAMES[fi].inner;
-  video.style.top    = (f.top    * 100) + '%';
-  video.style.bottom = (f.bottom * 100) + '%';
-  video.style.left   = (f.left   * 100) + '%';
-  video.style.right  = (f.right  * 100) + '%';
   camInner.style.background = FRAMES[fi].bg;
-  video.style.filter = FRAMES[fi].bw ? 'grayscale(100%) contrast(1.08)' : '';
 }
 
 /* ══════════════════════════════════════
@@ -603,13 +595,34 @@ function stopCam() {
   cdnum.classList.remove('on'); btnCap.disabled=false; capturing=false;
 }
 
+/* Desenha um frame do vídeo no canvas — idêntico ao que o capture vai gerar */
+function drawVideoOnCanvas(ctx, w, h, fi) {
+  if (!video.readyState || video.readyState < 2) return;
+  const ir  = innerRect(w, h, fi);
+  const vW  = video.videoWidth  || 1920;
+  const vH  = video.videoHeight || 1080;
+  const iAR = ir.w / ir.h;
+  const vAR = vW / vH;
+  let sx, sy, sw, sh;
+  if (vAR > iAR) { sh=vH; sw=vH*iAR; sy=0; sx=(vW-sw)/2; }
+  else            { sw=vW; sh=vW/iAR; sx=0; sy=(vH-sh)/2; }
+  if (FRAMES[fi].bw) ctx.filter = 'grayscale(100%) contrast(1.08)';
+  ctx.save();
+  ctx.translate(ir.x + ir.w, ir.y);
+  ctx.scale(-1, 1);
+  ctx.drawImage(video, sx, sy, sw, sh, 0, 0, ir.w, ir.h);
+  ctx.restore();
+  ctx.filter = 'none';
+}
+
 function startOverlay() {
   if(overlayRAF) return;
   function loop() {
     if(!document.getElementById('sCam').classList.contains('on')){ overlayRAF=null; return; }
     const ctx = fOverlay.getContext('2d');
     ctx.clearRect(0, 0, fOverlay.width, fOverlay.height);
-    drawFrame(ctx, fOverlay.width, fOverlay.height, curF);
+    drawVideoOnCanvas(ctx, fOverlay.width, fOverlay.height, curF); // preview = mesmo crop do capture
+    drawFrame(ctx, fOverlay.width, fOverlay.height, curF);         // moldura por cima
     overlayRAF = requestAnimationFrame(loop);
   }
   loop();
