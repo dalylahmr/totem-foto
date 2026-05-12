@@ -135,11 +135,40 @@ html,body{width:100%;height:100%;background:#000;color:var(--white);font-family:
 .gal-empty,.gal-loading{grid-column:1/-1;text-align:center;padding:3rem;font-size:.78rem;letter-spacing:.12em;color:var(--white-dim)}
 .gal-loading{color:var(--gold);text-transform:uppercase;animation:pulse 1.5s infinite}
 
+/* ── SHARE PAGE (via QR code) ── */
+#sShare{position:fixed;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:1.1rem;padding:1.5rem 1.2rem;background:var(--black);z-index:600;overflow:hidden}
+#sShare.on{display:flex}
+#sShare .ic{position:absolute;width:22px;height:22px;border-color:var(--gold);border-style:solid}
+#sShare .ic.tl{top:14px;left:14px;border-width:2px 0 0 2px}
+#sShare .ic.tr{top:14px;right:14px;border-width:2px 2px 0 0}
+#sShare .ic.bl{bottom:14px;left:14px;border-width:0 0 2px 2px}
+#sShare .ic.br{bottom:14px;right:14px;border-width:0 2px 2px 0}
+#sharePhotoWrap{position:relative;border:1px solid rgba(201,168,76,.3);box-shadow:0 0 40px rgba(201,168,76,.08);flex-shrink:0}
+#sharePhotoWrap img{display:block;width:100%;height:100%;object-fit:contain;background:#000}
+#shareBtn{width:100%;padding:1.1rem;font-family:'Montserrat',sans-serif;font-size:.8rem;font-weight:600;letter-spacing:.3em;text-transform:uppercase;background:var(--gold);color:var(--black);border:none;cursor:pointer;transition:.2s;display:flex;align-items:center;justify-content:center;gap:.5rem}
+#shareBtn:active{background:var(--gold-light)}
+#shareBtn.loading{opacity:.6;pointer-events:none}
+#shareTakeMine{font-size:.52rem;letter-spacing:.2em;text-transform:uppercase;color:var(--white-dim);text-decoration:none;opacity:.55;margin-top:.3rem;transition:opacity .2s}
+#shareTakeMine:hover{opacity:1}
+
 #canvas{display:none}
 </style>
 </head>
 <body>
 <div id="flash"></div>
+<!-- SHARE PAGE — acessada via QR code, pula o PIN -->
+<div id="sShare">
+  <div class="ic tl"></div><div class="ic tr"></div>
+  <div class="ic bl"></div><div class="ic br"></div>
+  <p style="font-size:.44rem;letter-spacing:.48em;text-transform:uppercase;color:var(--gold);opacity:.7">Dalylah Party &bull; 2026</p>
+  <h2 style="font-family:'Playfair Display',serif;font-size:clamp(1.4rem,5vw,2.2rem);font-weight:900;color:#fff;text-align:center;line-height:1.1">Sua foto <em style="color:var(--gold);font-style:italic">está pronta!</em></h2>
+  <div id="sharePhotoWrap">
+    <img id="sShareImg" src="" alt="Sua foto da festa">
+  </div>
+  <button id="shareBtn" onclick="doShareFromQR()">&#8679;&nbsp; Compartilhar</button>
+  <a id="shareTakeMine" href="?">Tirar minha foto &#8594;</a>
+</div>
+
 <canvas id="canvas"></canvas>
 
 <!-- TOAST GLOBAL -->
@@ -732,8 +761,55 @@ async function capture() {
 }
 
 function showQR(url) {
-  qrImg.src=`https://api.qrserver.com/v1/create-qr-code/?size=140x140&color=C9A84C&bgcolor=080808&data=${encodeURIComponent(url)}`;
+  /* QR aponta para o totem com ?photo= → abre tela de compartilhar direto */
+  const sharePageUrl = location.origin + location.pathname + '?photo=' + encodeURIComponent(url);
+  qrImg.src=`https://api.qrserver.com/v1/create-qr-code/?size=140x140&color=C9A84C&bgcolor=080808&data=${encodeURIComponent(sharePageUrl)}`;
   qrWrap.style.display='flex';
+}
+
+/* ══════════════════════════════════════
+   SHARE PAGE — acionada via QR code
+══════════════════════════════════════ */
+let _qrPhotoUrl = '';
+
+async function doShareFromQR() {
+  if (!_qrPhotoUrl) return;
+  const btn   = document.getElementById('shareBtn');
+  const TITLE = "#Dalylah'sParty";
+  const TEXT  = "Minha foto da festa! 🎉";
+
+  btn.classList.add('loading');
+  btn.textContent = 'Preparando...';
+
+  try {
+    /* Tenta compartilhar como ARQUIVO (abre Instagram, WhatsApp etc. com a imagem) */
+    const resp = await fetch(_qrPhotoUrl, { mode: 'cors' });
+    const blob = await resp.blob();
+    const file = new File([blob], 'dalylah-party.jpg', { type: 'image/jpeg' });
+
+    if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+      btn.classList.remove('loading'); btn.innerHTML = '&#8679;&nbsp; Compartilhar';
+      await navigator.share({ files: [file], title: TITLE, text: TEXT });
+      return;
+    }
+  } catch(e) { /* cai no próximo fallback */ }
+
+  btn.classList.remove('loading'); btn.innerHTML = '&#8679;&nbsp; Compartilhar';
+
+  /* Fallback: compartilha a URL */
+  if (navigator.share) {
+    try { await navigator.share({ url: _qrPhotoUrl, title: TITLE, text: TEXT }); return; }
+    catch(e) { if (e.name === 'AbortError') return; }
+  }
+
+  /* Último recurso: copia o link */
+  try {
+    await navigator.clipboard.writeText(_qrPhotoUrl);
+    btn.textContent = '✓ Link copiado!';
+    setTimeout(() => { btn.innerHTML = '&#8679;&nbsp; Compartilhar'; }, 2500);
+  } catch(e) {
+    window.open(_qrPhotoUrl, '_blank');
+  }
 }
 
 function startAutoReturn() {
@@ -892,6 +968,30 @@ async function renderGal() {
 ══════════════════════════════════════ */
 async function init() {
   await openDB();
+
+  /* ── Modo compartilhar via QR code ── */
+  const photoParam = new URLSearchParams(location.search).get('photo');
+  if (photoParam && photoParam.startsWith('https://res.cloudinary.com/dalylahs/')) {
+    _qrPhotoUrl = photoParam;
+    /* Dimensiona a foto: mesma lógica do resFrm */
+    const wrap = document.getElementById('sharePhotoWrap');
+    const avH  = window.innerHeight * 0.60;
+    const avW  = window.innerWidth  * 0.88;
+    let rw, rh;
+    if (avW / avH < 9/16) { rw=avW; rh=Math.round(avW*16/9); }
+    else                   { rh=avH; rw=Math.round(avH*9/16); }
+    wrap.style.width  = Math.min(rw, avW) + 'px';
+    wrap.style.height = Math.min(rh, avH) + 'px';
+    document.getElementById('sShareImg').src = photoParam;
+    document.getElementById('sShare').classList.add('on');
+    document.getElementById('sPin').classList.add('hide');
+    /* Ajusta largura do botão e link para a foto */
+    const bw = Math.min(rw, avW) + 'px';
+    document.getElementById('shareBtn').style.maxWidth = bw;
+    document.getElementById('shareTakeMine').style.maxWidth = bw;
+    return; /* não inicializa o totem — só a tela de share */
+  }
+
   initDots();
   initPin();
   resizeAll();
