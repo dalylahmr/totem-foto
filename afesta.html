@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>A Festa — Dalylah Party 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --gold:#C9A84C; --gold-light:#E8C97A;
+  --black:#080808; --black-soft:#111;
+  --white:#FAF6EE; --white-dim:#C8C0B0;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{width:100%;background:var(--black);color:var(--white);font-family:'Montserrat',sans-serif;overflow-x:hidden}
+
+/* ── TOAST ── */
+#toast{position:fixed;top:30%;left:50%;transform:translateX(-50%);background:rgba(201,168,76,.93);color:#000;font-size:.7rem;font-weight:600;letter-spacing:.18em;text-transform:uppercase;padding:.4rem 1rem;border-radius:2px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:9000;white-space:nowrap}
+#toast.on{opacity:1}
+
+/* ── CANTOS DECORATIVOS ── */
+.ic{position:absolute;width:26px;height:26px;border-color:var(--gold);border-style:solid}
+.ic.tl{top:18px;left:18px;border-width:2px 0 0 2px}
+.ic.tr{top:18px;right:18px;border-width:2px 2px 0 0}
+.ic.bl{bottom:18px;left:18px;border-width:0 0 2px 2px}
+.ic.br{bottom:18px;right:18px;border-width:0 2px 2px 0}
+
+/* ── PIN ── */
+#sPin{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.9rem;padding:2rem;background:var(--black);z-index:700}
+#sPin.hide{display:none}
+.pin-title{font-family:'Playfair Display',serif;font-size:clamp(2rem,7vw,3.5rem);font-weight:900;color:#fff;text-align:center;line-height:1.1}
+.pin-title em{color:var(--gold);font-style:italic}
+.pin-sub{font-size:.62rem;letter-spacing:.22em;text-transform:uppercase;color:var(--white-dim);text-align:center}
+.pin-dots{display:flex;gap:10px;margin:.2rem 0}
+.pd{width:13px;height:13px;border-radius:50%;border:2px solid var(--gold);background:transparent;transition:background .15s}
+.pd.filled{background:var(--gold)}
+.pin-pad{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;width:210px;margin-top:.3rem;transition:transform .08s}
+.pin-btn{background:rgba(201,168,76,.06);border:1px solid rgba(201,168,76,.22);color:var(--white);padding:.85rem;font-family:'Montserrat',sans-serif;font-size:1.25rem;font-weight:300;cursor:pointer;border-radius:3px;transition:.15s;-webkit-tap-highlight-color:transparent}
+.pin-btn:active,.pin-btn:hover{background:rgba(201,168,76,.22);border-color:var(--gold)}
+.pin-btn.del{font-size:.85rem;color:var(--gold)}
+#pinErr{font-size:.56rem;color:#e55;letter-spacing:.15em;text-transform:uppercase;opacity:0;transition:opacity .3s;min-height:1em;text-align:center}
+#pinNameStep{display:flex;flex-direction:column;align-items:center;gap:.7rem;width:100%;max-width:260px}
+#pinNameInput{width:100%;background:rgba(201,168,76,.06);border:1px solid rgba(201,168,76,.35);color:var(--white);font-family:'Montserrat',sans-serif;font-size:1rem;font-weight:300;padding:.85rem 1rem;border-radius:3px;text-align:center;outline:none;letter-spacing:.05em;caret-color:var(--gold)}
+#pinNameInput::placeholder{color:rgba(201,168,76,.4);font-style:italic}
+#pinNameInput:focus{border-color:var(--gold)}
+#pinNameContinue{width:100%;padding:.85rem;background:var(--gold);border:none;color:var(--black);font-family:'Montserrat',sans-serif;font-size:.72rem;font-weight:600;letter-spacing:.28em;text-transform:uppercase;cursor:pointer;border-radius:3px;transition:.2s}
+#pinNameContinue:hover{background:var(--gold-light)}
+
+/* ── MAIN ── */
+#main{display:none}
+
+/* ── SECTION ── */
+.section{padding:3.5rem 1.4rem;border-bottom:1px solid rgba(201,168,76,.1);position:relative}
+.sec-label{font-size:.5rem;letter-spacing:.55em;text-transform:uppercase;color:var(--gold);opacity:.7;margin-bottom:.55rem}
+.sec-title{font-family:'Playfair Display',serif;font-size:clamp(1.8rem,6vw,3rem);font-weight:900;color:#fff;line-height:1.1}
+.sec-title em{color:var(--gold);font-style:italic}
+.sec-divider{width:40px;height:1px;background:var(--gold);opacity:.4;margin:1rem 0 1.4rem}
+
+/* ── HEADER ── */
+#sHeader{min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:1.2rem;padding:3rem 2rem;background:var(--black);border-bottom:1px solid rgba(201,168,76,.15);position:relative}
+.hdr-year{font-size:.45rem;letter-spacing:.6em;text-transform:uppercase;color:var(--gold);opacity:.6}
+.hdr-main{font-family:'Playfair Display',serif;font-size:clamp(3.5rem,14vw,8rem);font-weight:900;color:#fff;line-height:.9}
+.hdr-main em{color:var(--gold);font-style:italic;display:block}
+.hdr-sub{font-family:'Playfair Display',serif;font-size:clamp(.85rem,2.2vw,1.2rem);font-style:italic;color:var(--white-dim);letter-spacing:.08em}
+.hdr-rule{width:50px;height:1px;background:var(--gold);opacity:.4}
+.hdr-hint{font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--white-dim);animation:pulse 2.5s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:.3}50%{opacity:.9}}
+.hdr-totem{display:inline-block;font-size:.58rem;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);border:1px solid rgba(201,168,76,.35);padding:.5rem 1.1rem;text-decoration:none;margin-top:.4rem;transition:.2s}
+.hdr-totem:hover{background:rgba(201,168,76,.1)}
+
+/* ── CARDÁPIO ── */
+.menu-grid{display:flex;flex-direction:column;gap:1rem}
+.menu-cat{border:1px solid rgba(201,168,76,.14);padding:1rem 1.2rem;border-radius:2px;background:rgba(255,255,255,.01)}
+.menu-cat-ttl{font-size:.5rem;letter-spacing:.4em;text-transform:uppercase;color:var(--gold);margin-bottom:.65rem}
+.menu-items{display:flex;flex-wrap:wrap;gap:.45rem}
+.menu-chip{background:rgba(201,168,76,.07);border:1px solid rgba(201,168,76,.14);font-size:.68rem;font-weight:300;letter-spacing:.04em;padding:.28rem .7rem;border-radius:20px;color:var(--white)}
+.menu-note{font-size:.63rem;color:var(--white-dim);font-style:italic;line-height:1.65;margin-top:1.3rem;border-left:2px solid var(--gold);padding-left:.9rem;opacity:.85}
+.menu-salad{margin-top:1rem;font-size:.6rem;letter-spacing:.08em;color:var(--white-dim);text-align:center;padding:.6rem;border:1px dashed rgba(201,168,76,.2);border-radius:2px}
+
+/* ── DRINKS ── */
+.drinks-hint{font-size:.6rem;letter-spacing:.12em;color:var(--white-dim);margin-bottom:.8rem}
+.drinks-carousel{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;gap:1rem;padding:.5rem 0 1.5rem;scrollbar-width:none}
+.drinks-carousel::-webkit-scrollbar{display:none}
+.drink-card{scroll-snap-align:center;flex:0 0 82vw;max-width:300px;background:var(--black-soft);border:1px solid rgba(201,168,76,.2);padding:1.4rem;border-radius:3px;display:flex;flex-direction:column;gap:.65rem}
+.d-emoji{font-size:2rem;line-height:1}
+.d-name{font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:700;color:#fff;line-height:1.1}
+.d-sub{font-size:.53rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold)}
+.d-rule{width:28px;height:1px;background:var(--gold);opacity:.4}
+.d-list{list-style:none;display:flex;flex-direction:column;gap:.38rem}
+.d-list li{font-size:.67rem;font-weight:300;letter-spacing:.03em;color:var(--white-dim);padding-left:.8rem;position:relative;line-height:1.4}
+.d-list li::before{content:'·';position:absolute;left:0;color:var(--gold)}
+.d-dica{font-size:.59rem;font-style:italic;color:var(--white-dim);opacity:.65}
+.d-bola{font-size:.53rem;letter-spacing:.1em;color:var(--gold);border:1px solid rgba(201,168,76,.2);padding:.22rem .55rem;border-radius:2px;display:inline-block;margin-top:.2rem}
+.drinks-nav{display:flex;justify-content:center;gap:.4rem;margin-top:.2rem}
+.dn-dot{width:5px;height:5px;border-radius:50%;background:rgba(201,168,76,.22);transition:background .3s;cursor:pointer}
+.dn-dot.on{background:var(--gold)}
+
+/* ── OSCAR ── */
+.oscar-intro{font-size:.67rem;font-weight:300;color:var(--white-dim);line-height:1.75;margin-bottom:1.4rem}
+.oscar-cats{display:flex;flex-direction:column;gap:1.1rem}
+.oscar-cat{border:1px solid rgba(201,168,76,.18);border-radius:3px;overflow:hidden}
+.ocat-hdr{display:flex;align-items:center;gap:.75rem;padding:.9rem 1.1rem;background:rgba(201,168,76,.04);border-bottom:1px solid rgba(201,168,76,.1)}
+.ocat-emoji{font-size:1.4rem;flex-shrink:0}
+.ocat-info{flex:1;min-width:0}
+.ocat-title{font-family:'Playfair Display',serif;font-size:.95rem;color:#fff;font-weight:700;line-height:1.2}
+.ocat-desc{font-size:.52rem;letter-spacing:.1em;text-transform:uppercase;color:var(--white-dim);margin-top:.15rem}
+.ocat-status{font-size:.5rem;letter-spacing:.15em;text-transform:uppercase;padding:.2rem .55rem;border-radius:20px;flex-shrink:0}
+.ocat-status.closed{background:rgba(255,255,255,.06);color:var(--white-dim)}
+.ocat-status.open{background:rgba(76,201,100,.14);color:#4cc964;animation:blink 1.6s infinite}
+.ocat-status.result{background:rgba(201,168,76,.18);color:var(--gold)}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.35}}
+.ocat-body{padding:1.1rem}
+.oscar-locked{text-align:center;padding:.7rem;color:var(--white-dim);font-size:.63rem;letter-spacing:.08em;opacity:.45}
+.oscar-voted{text-align:center;padding:.8rem;font-size:.65rem;color:var(--gold);letter-spacing:.08em}
+.oscar-voted span{display:block;font-size:.54rem;color:var(--white-dim);opacity:.6;margin-top:.35rem}
+/* Form */
+.o-form{display:flex;flex-direction:column;gap:.75rem}
+.o-lbl{font-size:.55rem;letter-spacing:.22em;text-transform:uppercase;color:var(--gold)}
+.o-name{width:100%;background:rgba(201,168,76,.06);border:1px solid rgba(201,168,76,.28);color:var(--white);font-family:'Montserrat',sans-serif;font-size:.85rem;padding:.65rem .9rem;border-radius:3px;outline:none}
+.o-name:focus{border-color:var(--gold)}
+.o-chars{display:grid;grid-template-columns:1fr 1fr;gap:.45rem;max-height:250px;overflow-y:auto}
+.o-char{background:rgba(201,168,76,.04);border:1px solid rgba(201,168,76,.13);color:var(--white);padding:.55rem .45rem;font-family:'Montserrat',sans-serif;font-size:.58rem;font-weight:300;cursor:pointer;border-radius:3px;transition:.12s;text-align:center;line-height:1.3;-webkit-tap-highlight-color:transparent}
+.o-char span{display:block;font-size:.48rem;color:var(--white-dim);margin-top:.18rem;line-height:1.3}
+.o-char.sel{background:rgba(201,168,76,.18);border-color:var(--gold);color:#fff}
+.o-char.sel span{color:var(--gold)}
+.o-sub{width:100%;padding:.85rem;background:var(--gold);border:none;color:var(--black);font-family:'Montserrat',sans-serif;font-size:.7rem;font-weight:600;letter-spacing:.28em;text-transform:uppercase;cursor:pointer;border-radius:3px;transition:.2s;margin-top:.3rem}
+.o-sub:hover{background:var(--gold-light)}
+.o-sub:disabled{opacity:.5;pointer-events:none}
+/* Result */
+.oscar-winner{text-align:center;padding:.8rem .5rem;animation:winReveal .55s ease-out}
+@keyframes winReveal{from{opacity:0;transform:scale(.85) translateY(16px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.ow-lbl{font-size:.48rem;letter-spacing:.55em;text-transform:uppercase;color:var(--gold);opacity:.75;margin-bottom:.5rem}
+.ow-nome{font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:900;color:#fff}
+.ow-char{font-size:.63rem;letter-spacing:.08em;color:var(--white-dim);margin-top:.3rem}
+.ow-obra{font-size:.55rem;color:var(--gold);opacity:.7;margin-top:.15rem}
+.ow-votes{font-size:.52rem;color:var(--gold);opacity:.55;margin-top:.6rem;letter-spacing:.1em}
+
+/* ── VIDEO ── */
+.video-wrap{margin-top:.5rem;position:relative;width:100%;aspect-ratio:16/9;background:var(--black-soft);border:1px solid rgba(201,168,76,.15);border-radius:2px;overflow:hidden}
+.video-wrap iframe{position:absolute;inset:0;width:100%;height:100%;border:none}
+
+/* ── GALERIA ── */
+.gal-totem-link{display:flex;align-items:center;justify-content:center;gap:.5rem;border:1px solid rgba(201,168,76,.3);color:var(--gold);text-decoration:none;font-size:.58rem;letter-spacing:.25em;text-transform:uppercase;padding:.7rem 1.4rem;margin-bottom:1.4rem;transition:.2s;border-radius:2px}
+.gal-totem-link:hover{background:rgba(201,168,76,.1)}
+.gal-top-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:4px}
+.gal-top-item{position:relative;aspect-ratio:9/16;overflow:hidden;border:1px solid rgba(201,168,76,.1)}
+.gal-top-item img{width:100%;height:100%;object-fit:cover;display:block}
+.gal-top-badge{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,.82));padding:.4rem .5rem .55rem;display:flex;align-items:center;gap:.3rem}
+.gal-top-heart{font-size:.75rem}
+.gal-top-count{font-size:.5rem;color:var(--white-dim)}
+.gal-empty{text-align:center;padding:3rem 1rem;font-size:.68rem;color:var(--white-dim);opacity:.5;letter-spacing:.1em;line-height:1.8}
+
+/* ── FOOTER ── */
+footer{padding:2.5rem 1.4rem;text-align:center;border-top:1px solid rgba(201,168,76,.1)}
+.ft-txt{font-size:.5rem;letter-spacing:.28em;text-transform:uppercase;color:var(--white-dim);opacity:.35}
+.admin-ghost{background:none;border:none;color:transparent;font-size:1px;cursor:pointer;padding:1.2rem;user-select:none;display:block;margin:0 auto}
+
+/* ── ADMIN PIN MODAL ── */
+#adminPinModal{position:fixed;inset:0;background:rgba(0,0,0,.96);z-index:800;display:none;flex-direction:column;align-items:center;justify-content:center;gap:.9rem;padding:2rem}
+#adminPinModal.on{display:flex}
+
+/* ── ADMIN PANEL ── */
+#adminPanel{position:fixed;inset:0;background:rgba(0,0,0,.97);z-index:800;display:none;flex-direction:column;padding:1.5rem;overflow-y:auto}
+#adminPanel.on{display:flex}
+.adm-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem;border-bottom:1px solid rgba(201,168,76,.15);padding-bottom:1rem}
+.adm-title{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;color:var(--gold)}
+.adm-close{background:transparent;border:1px solid rgba(255,255,255,.18);color:var(--white-dim);padding:.45rem 1rem;font-family:'Montserrat',sans-serif;font-size:.58rem;letter-spacing:.18em;cursor:pointer;border-radius:2px}
+.adm-cat-card{background:var(--black-soft);border:1px solid rgba(201,168,76,.15);border-radius:3px;padding:1rem;margin-bottom:.8rem}
+.adm-cat-name{font-size:.7rem;font-weight:600;color:#fff;margin-bottom:.2rem}
+.adm-cat-votes{font-size:.56rem;color:var(--gold);margin-bottom:.8rem;letter-spacing:.05em}
+.adm-btns{display:flex;gap:.5rem;flex-wrap:wrap}
+.adm-btn{font-family:'Montserrat',sans-serif;font-size:.54rem;font-weight:600;letter-spacing:.15em;text-transform:uppercase;padding:.45rem .8rem;cursor:pointer;border-radius:2px;transition:.15s;border:1px solid;white-space:nowrap}
+.adm-btn-open{background:rgba(76,201,100,.1);border-color:#4cc964;color:#4cc964}
+.adm-btn-close{background:rgba(230,80,80,.1);border-color:#e55;color:#e55}
+.adm-btn-result{background:rgba(201,168,76,.1);border-color:var(--gold);color:var(--gold)}
+.adm-btn-reset{background:rgba(200,200,200,.08);border-color:rgba(200,200,200,.25);color:var(--white-dim)}
+.adm-btn:disabled{opacity:.4;pointer-events:none}
+.adm-refresh{display:block;margin:0 auto .5rem;background:transparent;border:1px solid rgba(201,168,76,.25);color:var(--gold);padding:.5rem 1.2rem;font-family:'Montserrat',sans-serif;font-size:.58rem;letter-spacing:.2em;cursor:pointer;border-radius:2px}
+</style>
+</head>
+<body>
+
+<div id="toast"></div>
+
+<!-- ══ PIN ══ -->
+<div id="sPin">
+  <div class="ic tl"></div><div class="ic tr"></div>
+  <div class="ic bl"></div><div class="ic br"></div>
+  <p style="font-size:.44rem;letter-spacing:.5em;text-transform:uppercase;color:var(--gold);opacity:.7">Acesso Exclusivo &bull; 2026</p>
+  <h1 class="pin-title">Dalylah <em>Party</em></h1>
+  <div id="pinNameStep">
+    <p class="pin-sub">Como você se chama?</p>
+    <input id="pinNameInput" type="text" placeholder="Seu nome" maxlength="30" autocomplete="name"
+           onkeydown="if(event.key==='Enter')confirmPinName()">
+    <button id="pinNameContinue" onclick="confirmPinName()">Continuar &#8594;</button>
+  </div>
+  <div id="pinCodeStep" style="display:none;flex-direction:column;align-items:center;gap:.7rem">
+    <p class="pin-sub" id="pinWelcomeMsg">Digite o código de acesso</p>
+    <div class="pin-dots" id="pinDots"></div>
+    <div class="pin-pad" id="pinPad"></div>
+    <p id="pinErr">&nbsp;</p>
+  </div>
+</div>
+
+<!-- ══ MAIN ══ -->
+<div id="main">
+
+  <!-- HEADER -->
+  <section id="sHeader">
+    <div class="ic tl"></div><div class="ic tr"></div>
+    <div class="ic bl"></div><div class="ic br"></div>
+    <p class="hdr-year">Dalylah Party &bull; 2026</p>
+    <h1 class="hdr-main">A<em>Festa</em></h1>
+    <p class="hdr-sub">Uma noite de personagens inesquecíveis</p>
+    <div class="hdr-rule"></div>
+    <p class="hdr-hint">Role para baixo ↓</p>
+    <a href="https://dalylahmr.github.io/totem-foto/" class="hdr-totem">📸 Totem de Fotos &#8594;</a>
+  </section>
+
+  <!-- CARDÁPIO -->
+  <section class="section">
+    <p class="sec-label">O que tem de bom</p>
+    <h2 class="sec-title">Cardápio <em>Poke & Saladas</em></h2>
+    <div class="sec-divider"></div>
+    <p class="menu-note">"Monte seu poke em 5 passos: escolha 1 ou 2 bases, 1 ou 2 proteínas, 1 legume, 1 fruta e finalize com molho e secos a gosto. Prefere levinho? Troque a base por folhas frescas e monte sua salada."</p>
+    <div class="menu-grid" id="menuGrid" style="margin-top:1.3rem"></div>
+    <p class="menu-salad">🥗 Opção Salada: substitua qualquer base por folhas frescas</p>
+  </section>
+
+  <!-- DRINKS -->
+  <section class="section">
+    <p class="sec-label">Para beber</p>
+    <h2 class="sec-title">Bar <em>&amp; Drinks</em></h2>
+    <div class="sec-divider"></div>
+    <p class="drinks-hint">← Arraste os cards para ver as receitas →</p>
+    <div class="drinks-carousel" id="drinksCarousel"></div>
+    <div class="drinks-nav" id="drinksNav"></div>
+  </section>
+
+  <!-- OSCAR -->
+  <section class="section">
+    <p class="sec-label">And the Oscar goes to…</p>
+    <h2 class="sec-title">Oscar <em>da Festa</em></h2>
+    <div class="sec-divider"></div>
+    <p class="oscar-intro" id="oscarIntro"></p>
+    <div class="oscar-cats" id="oscarCats"></div>
+  </section>
+
+  <!-- VÍDEO -->
+  <section class="section">
+    <p class="sec-label">Memórias</p>
+    <h2 class="sec-title">O <em>Vídeo</em></h2>
+    <div class="sec-divider"></div>
+    <div class="video-wrap">
+      <iframe src="https://www.youtube.com/embed/" allowfullscreen loading="lazy"
+              title="Vídeo da Festa"></iframe>
+    </div>
+  </section>
+
+  <!-- GALERIA TOP 10 -->
+  <section class="section">
+    <p class="sec-label">Totem Fotográfico</p>
+    <h2 class="sec-title">Top 10 <em>Curtidas</em></h2>
+    <div class="sec-divider"></div>
+    <a href="https://dalylahmr.github.io/totem-foto/" class="gal-totem-link">
+      📸 Não tirou foto ainda? Clique aqui e vá ao totem &#8594;
+    </a>
+    <div id="galTop" class="gal-top-grid">
+      <p class="gal-empty" style="grid-column:1/-1">Carregando fotos…</p>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <p class="ft-txt">Dalylah Party &bull; 2026 &bull; com amor ❤️</p>
+    <button class="admin-ghost" onclick="openAdminPin()">adm</button>
+  </footer>
+
+</div><!-- /#main -->
+
+<!-- ══ ADMIN PIN MODAL ══ -->
+<div id="adminPinModal">
+  <div class="ic tl"></div><div class="ic tr"></div>
+  <div class="ic bl"></div><div class="ic br"></div>
+  <p style="font-size:.44rem;letter-spacing:.5em;text-transform:uppercase;color:var(--gold);opacity:.7">Área Restrita</p>
+  <h2 style="font-family:'Playfair Display',serif;font-size:1.5rem;color:#fff">Admin <em style="color:var(--gold);font-style:italic">PIN</em></h2>
+  <p class="pin-sub">Digite o código admin</p>
+  <div class="pin-dots" id="admDots"></div>
+  <div class="pin-pad" id="admPad"></div>
+  <p id="admErr">&nbsp;</p>
+  <button onclick="closeAdminPin()" style="background:transparent;border:1px solid rgba(255,255,255,.18);color:var(--white-dim);padding:.5rem 1.2rem;font-family:'Montserrat',sans-serif;font-size:.58rem;letter-spacing:.18em;cursor:pointer;border-radius:2px;margin-top:.3rem">Cancelar</button>
+</div>
+
+<!-- ══ ADMIN PANEL ══ -->
+<div id="adminPanel">
+  <div class="adm-hdr">
+    <span class="adm-title">⚙ Painel Oscar</span>
+    <button class="adm-close" onclick="closeAdminPanel()">Fechar</button>
+  </div>
+  <button class="adm-refresh" onclick="refreshAdminPanel()">↻ Atualizar contagens</button>
+  <div id="admCats"></div>
+</div>
+
+<script>
+/* ══════════════════════════════════════
+   CONFIG
+══════════════════════════════════════ */
+const FIREBASE_URL = 'https://dalylah-party-default-rtdb.firebaseio.com';
+const ACCESS_PIN   = '16052026';
+const ADMIN_PIN    = '16051986';
+const AUTH_TTL     = 6 * 60 * 60 * 1000;
+
+/* ══════════════════════════════════════
+   DADOS
+══════════════════════════════════════ */
+const MENU_CATS = [
+  { cat:'Bases',             items:['Bifum (macarrão japonês)','Arroz japonês','Macarrão de abobrinha'] },
+  { cat:'Proteínas',         items:['Frango','Ovo de codorna','Tilápia'] },
+  { cat:'Verduras & Legumes',items:['Tomate cereja','Pepino japonês','Cenoura','Cebola roxa','Gengibre em conserva'] },
+  { cat:'Frutas',            items:['Abacate','Manga','Abacaxi'] },
+  { cat:'Molhos',            items:['Shoyu','Ponzu (shoyu com limão, laranja e especiarias)','Teriyaki','Azeite'] },
+  { cat:'Secos & Crocantes', items:['Gergelim','Batata doce chips','Banana chips','Mandioca chips','Castanha de caju com gergelim'] },
+];
+
+const DRINKS = [
+  { nome:'Aperol Spritz',     emoji:'🍊', sub:'O clássico da festa',
+    ing:['1 dose de Aperol','2 doses de espumante','2 doses de água com gás','Rodela de limão'],
+    dica:'Mexa suavemente. Saúde! 🥂', bola:true },
+  { nome:'Gin Tônica',        emoji:'🌿', sub:'Refrescante e aromático',
+    ing:['2 doses de gin','4 doses de tônica','Rodelas de limão a gosto'],
+    dica:'Não mexa muito — preserve as bolhas!', bola:true },
+  { nome:'Gin Lemonade',      emoji:'🍋', sub:'Para quem ama limão',
+    ing:['2 doses de gin','Esprema ½ limão direto na taça','3 doses de água com gás','Limão picado por cima'],
+    dica:'Mexa e sirva.', bola:true },
+  { nome:'Vodka Maracujá',    emoji:'🌺', sub:'Tropical e irresistível',
+    ing:['2 doses de vodka','3 doses de suco de maracujá','1 dose de água com gás','Limão picado a gosto'],
+    dica:'Mexa e aproveite!', bola:true },
+  { nome:'Vodka Tônica',      emoji:'🫧', sub:'Simples e certeiro',
+    ing:['2 doses de vodka','4 doses de tônica','Rodela de limão'],
+    dica:'Mexa levemente.', bola:true },
+  { nome:'Vodka com Coca Zero',emoji:'🥤', sub:'O clássico de todo mundo',
+    ing:['2 doses de vodka','Complete com Coca Zero','Limão picado a gosto'],
+    dica:'Rápido, fácil e gostoso!', bola:true },
+  { nome:'Kir Royale',        emoji:'👑', sub:'Elegante e sofisticado',
+    ing:['1 dose de suco de uva','Complete com espumante gelado'],
+    dica:'Sem gelo — espumante gelado já resolve. Festivo! 🥂', bola:false },
+  { nome:'Wine Spritzer',     emoji:'🍷', sub:'Vinho com leveza',
+    ing:['3 doses de vinho branco ou rosé','2 doses de água com gás','Rodela de limão'],
+    dica:'Leve e refrescante!', bola:true },
+  { nome:'Spritz de Maracujá',emoji:'🌟', sub:'✦ Sem álcool · Para todos',
+    ing:['3 doses de suco de maracujá','3 doses de água com gás','Esprema um pouco de limão','Rodela de limão para enfeitar'],
+    dica:'Tropical e sem álcool!', bola:true },
+  { nome:'Uva com Gás',       emoji:'🍇', sub:'✦ Sem álcool · Para brindar',
+    ing:['3 doses de suco de uva gelado','2 doses de água com gás'],
+    dica:'Sofisticado e sem álcool! 🥂', bola:false },
+];
+
+const CHARACTERS = [
+  { char:'Brittany & Tiffany Wilson', obra:'As Branquelas',             nome:'Joyce & Lucas' },
+  { char:'Audrey Hepburn',            obra:'Bonequinha de Luxo',        nome:'Vivian' },
+  { char:'Naksu',                     obra:'Alquimia das Almas',        nome:'Dalylah' },
+  { char:'Xena: Warrior Princess',    obra:'Xena',                     nome:'Duda' },
+  { char:'Louisa Clark',              obra:'Como Eu Era Antes de Você', nome:'Ghilzi' },
+  { char:'Wandinha',                  obra:'Família Addams',            nome:'Silvia' },
+  { char:'Estudante de Hogwarts',     obra:'Harry Potter',              nome:'Joana' },
+  { char:'Sally Bowles',              obra:'Cabaret',                   nome:'Ana Cristina' },
+  { char:'Sandy',                     obra:'Grease',                   nome:'Karen' },
+  { char:'Vivian Ward',               obra:'Uma Linda Mulher',          nome:'Alenira' },
+  { char:'Beatrix Kiddo',             obra:'Kill Bill',                 nome:'Amanda Santana' },
+  { char:'Yennefer',                  obra:'The Witcher',               nome:'Amanda Furtado' },
+  { char:'Lara Croft',                obra:'Tomb Raider',               nome:'Leticia' },
+  { char:'Emily',                     obra:'Emily em Paris',            nome:'Sheila' },
+  { char:'Willy Wonka',               obra:'Wonka (Chalamet)',          nome:'Mateus' },
+  { char:'Velma Dinkley',             obra:'Scooby-Doo',               nome:'Ágata' },
+  { char:'Rainha Vermelha',           obra:'Alice no País das Maravilhas',nome:'Cleide' },
+  { char:'Teeter',                    obra:'Yellowstone',               nome:'Livia' },
+  { char:'Cruella de Vil',            obra:'Cruella',                  nome:'Cárita' },
+  { char:'Melindrosa',                obra:'The Flapper (1920)',        nome:'Sinderley' },
+  { char:'Vênus Williams',            obra:'King Richard',             nome:'Gissely' },
+  { char:'Cady Heron',                obra:'Meninas Malvadas',          nome:'Lorena' },
+  { char:'Jenna Rink',                obra:'De Repente 30',            nome:'Giovana' },
+  { char:'Mãe Gothel',                obra:'Enrolados',                nome:'Mariah' },
+  { char:'Hebreia',                   obra:'The Chosen',               nome:'Rebeca' },
+  { char:'Cleópatra',                 obra:'Cleópatra',                nome:'Alliny' },
+  { char:'Mulher-Gato',               obra:'Catwoman',                 nome:'Nubia' },
+  { char:'Beth Dutton',               obra:'Yellowstone',              nome:'Janaína' },
+];
+
+const OSCAR_CATS = [
+  { id:'glamurosa',     emoji:'🌟', title:'Personagem mais glamurosa', desc:'Make, cabelo, elegância' },
+  { id:'divertida',     emoji:'😂', title:'Personagem mais divertida',  desc:'Energia, humor, animação' },
+  { id:'caracterizada', emoji:'🎭', title:'Melhor caracterização',      desc:'Acessórios, composição, detalhes' },
+  { id:'surpresa',      emoji:'💫', title:'A surpresa da noite',        desc:'Ninguém esperava aquele look!' },
+];
+
+/* ══════════════════════════════════════
+   TOAST
+══════════════════════════════════════ */
+let _toastT;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('on');
+  clearTimeout(_toastT); _toastT = setTimeout(() => t.classList.remove('on'), 2400);
+}
+
+/* ══════════════════════════════════════
+   PIN HELPERS
+══════════════════════════════════════ */
+function buildDots(containerId, len) {
+  const c = document.getElementById(containerId); c.innerHTML = '';
+  for (let i = 0; i < len; i++) { const s = document.createElement('span'); s.className = 'pd'; c.appendChild(s); }
+}
+function syncDots(dotsId, val) {
+  document.querySelectorAll(`#${dotsId} .pd`).forEach((d,i) => d.classList.toggle('filled', i < val.length));
+}
+function buildPad(padId, buf, onComplete) {
+  const pad = document.getElementById(padId); pad.innerHTML = '';
+  ['1','2','3','4','5','6','7','8','9','','0','⌫'].forEach(k => {
+    const b = document.createElement('button'); b.className = 'pin-btn' + (k==='⌫'?' del':'');
+    b.textContent = k || '';
+    if (!k) { b.style.visibility='hidden'; b.style.pointerEvents='none'; }
+    b.addEventListener('click', () => {
+      if (k==='⌫') buf.v = buf.v.slice(0,-1);
+      else if (k && buf.v.length < buf.len) buf.v += k;
+      syncDots(buf.dotsId, buf.v);
+      if (buf.v.length === buf.len) setTimeout(onComplete, 120);
+    });
+    pad.appendChild(b);
+  });
+}
+function shakeAndError(padId, errId, msg) {
+  const err = document.getElementById(errId);
+  err.textContent = msg; err.style.opacity = '1';
+  setTimeout(() => { err.style.opacity='0'; setTimeout(()=>err.textContent=' ',300); }, 1700);
+  const p = document.getElementById(padId);
+  p.style.transform='translateX(-9px)'; setTimeout(()=>p.style.transform='translateX(9px)',80);
+  setTimeout(()=>p.style.transform='translateX(-5px)',160); setTimeout(()=>p.style.transform='',240);
+}
+
+/* ══════════════════════════════════════
+   PIN PÚBLICO
+══════════════════════════════════════ */
+let userName = localStorage.getItem('dp_user_name') || '';
+const pubBuf = { v:'', len:8, dotsId:'pinDots' };
+
+function confirmPinName() {
+  const inp = document.getElementById('pinNameInput');
+  const n   = inp.value.trim();
+  if (!n) { inp.focus(); inp.style.borderColor='#e55'; setTimeout(()=>inp.style.borderColor='',1300); return; }
+  userName = n; localStorage.setItem('dp_user_name', n);
+  document.getElementById('pinNameStep').style.display = 'none';
+  const s2 = document.getElementById('pinCodeStep'); s2.style.display = 'flex';
+  document.getElementById('pinWelcomeMsg').textContent = 'Olá, ' + n.split(' ')[0] + '! Digite o código de acesso';
+}
+
+function checkPubPin() {
+  if (pubBuf.v === ACCESS_PIN) {
+    localStorage.setItem('dp_auth_ts', Date.now());
+    document.getElementById('sPin').classList.add('hide');
+    document.getElementById('main').style.display = 'block';
+    startApp();
+  } else {
+    pubBuf.v = ''; syncDots('pinDots', '');
+    shakeAndError('pinPad', 'pinErr', 'Código incorreto');
+  }
+}
+
+/* ══════════════════════════════════════
+   ADMIN PIN
+══════════════════════════════════════ */
+let isAdmin = false;
+const admBuf = { v:'', len:8, dotsId:'admDots' };
+
+function openAdminPin() {
+  if (isAdmin) { openAdminPanel(); return; }
+  admBuf.v = ''; syncDots('admDots', '');
+  document.getElementById('adminPinModal').classList.add('on');
+}
+function closeAdminPin() { document.getElementById('adminPinModal').classList.remove('on'); admBuf.v=''; }
+function checkAdminPin() {
+  if (admBuf.v === ADMIN_PIN) {
+    isAdmin = true;
+    document.getElementById('adminPinModal').classList.remove('on');
+    openAdminPanel();
+  } else {
+    admBuf.v = ''; syncDots('admDots', '');
+    shakeAndError('admPad', 'admErr', 'PIN incorreto');
+  }
+}
+async function openAdminPanel() {
+  document.getElementById('adminPanel').classList.add('on');
+  await refreshAdminPanel();
+}
+function closeAdminPanel() { document.getElementById('adminPanel').classList.remove('on'); }
+
+async function refreshAdminPanel() {
+  const cont = document.getElementById('admCats'); cont.innerHTML = '';
+  const allStatuses = await fetchAllStatuses();
+  for (const cat of OSCAR_CATS) {
+    const st    = allStatuses[cat.id] || 'closed';
+    const votes = await getOscarVotes(cat.id);
+    const total = Object.keys(votes).length;
+    const div   = document.createElement('div'); div.className = 'adm-cat-card';
+    const btns  = [];
+    if (st !== 'open')   btns.push(`<button class="adm-btn adm-btn-open"   onclick="admSet('${cat.id}','open',  this)">▶ Abrir votação</button>`);
+    if (st === 'open')   btns.push(`<button class="adm-btn adm-btn-close"  onclick="admSet('${cat.id}','closed',this)">■ Fechar votação</button>`);
+    if (st !== 'result') btns.push(`<button class="adm-btn adm-btn-result" onclick="admSet('${cat.id}','result',this)">🏆 Liberar resultado</button>`);
+    if (st === 'result') btns.push(`<button class="adm-btn adm-btn-reset"  onclick="admSet('${cat.id}','closed',this)">↺ Resetar</button>`);
+    div.innerHTML = `<p class="adm-cat-name">${cat.emoji} ${cat.title}</p>
+      <p class="adm-cat-votes">${total} voto${total!==1?'s':''} · status: <strong style="color:var(--gold)">${st}</strong></p>
+      <div class="adm-btns">${btns.join('')}</div>`;
+    cont.appendChild(div);
+  }
+}
+
+async function admSet(catId, status, btn) {
+  btn.disabled = true;
+  await fetch(`${FIREBASE_URL}/oscar_status/${catId}.json`, {
+    method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify(status)
+  });
+  lastStatuses[catId] = null; // força re-render da categoria
+  await Promise.all([refreshAdminPanel(), renderOscar()]);
+}
+
+/* ══════════════════════════════════════
+   OSCAR — Firebase
+══════════════════════════════════════ */
+async function fetchAllStatuses() {
+  try { const r = await fetch(`${FIREBASE_URL}/oscar_status.json`); return (await r.json()) || {}; }
+  catch { return {}; }
+}
+async function getOscarVotes(catId) {
+  try { const r = await fetch(`${FIREBASE_URL}/oscar_votes/${catId}.json`); return (await r.json()) || {}; }
+  catch { return {}; }
+}
+async function submitVote(catId, voterName, charName) {
+  const key = voterName.normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-zA-Z0-9]/g,'_').slice(0,40);
+  await fetch(`${FIREBASE_URL}/oscar_votes/${catId}/${key}.json`, {
+    method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify(charName)
+  });
+  localStorage.setItem(`dp_oscar_${catId}`, '1');
+}
+function calcWinner(votes) {
+  const cnt = {}; Object.values(votes).forEach(v => cnt[v] = (cnt[v]||0)+1);
+  let best = null, max = 0;
+  Object.entries(cnt).forEach(([k,v]) => { if(v>max){max=v;best=k;} });
+  return { char:best, count:max };
+}
+
+/* ══════════════════════════════════════
+   OSCAR — Render
+══════════════════════════════════════ */
+let lastStatuses = {};
+let oscarPollTimer = null;
+
+async function renderOscar() {
+  const statuses = await fetchAllStatuses();
+  for (const cat of OSCAR_CATS) {
+    const st = statuses[cat.id] || 'closed';
+    if (st === lastStatuses[cat.id] && document.getElementById(`ocat_${cat.id}`)) continue; // sem mudança
+    lastStatuses[cat.id] = st;
+    await renderOscarCat(cat, st);
+  }
+}
+
+async function renderOscarCat(cat, status) {
+  const container = document.getElementById('oscarCats');
+  let div = document.getElementById(`ocat_${cat.id}`);
+  const creating = !div;
+  if (creating) { div = document.createElement('div'); div.className = 'oscar-cat'; div.id = `ocat_${cat.id}`; }
+
+  const hasVoted = !!localStorage.getItem(`dp_oscar_${cat.id}`);
+  const stLabel  = status==='open' ? 'Aberta' : status==='result' ? 'Resultado' : 'Em breve';
+  const stClass  = status==='open' ? 'open'   : status==='result' ? 'result'    : 'closed';
+
+  let bodyHTML = '';
+  if (status === 'closed') {
+    bodyHTML = `<p class="oscar-locked">🔒 A votação para esta categoria ainda não foi aberta.</p>`;
+  } else if (status === 'open') {
+    if (hasVoted) {
+      bodyHTML = `<div class="oscar-voted">✅ Seu voto foi registrado!<span>Aguarde o resultado ser anunciado.</span></div>`;
+    } else {
+      bodyHTML = `<div class="o-form">
+        <label class="o-lbl">Confirme seu nome</label>
+        <input class="o-name" id="oname_${cat.id}" type="text" value="${escHtml(userName)}" placeholder="Seu nome" maxlength="30">
+        <label class="o-lbl" style="margin-top:.2rem">Escolha sua favorita</label>
+        <div class="o-chars" id="ochars_${cat.id}"></div>
+        <button class="o-sub" id="osub_${cat.id}" onclick="doVote('${cat.id}')">Confirmar meu voto</button>
+      </div>`;
+    }
+  } else if (status === 'result') {
+    const votes = await getOscarVotes(cat.id);
+    const w     = calcWinner(votes);
+    const info  = CHARACTERS.find(c => c.char === w.char);
+    bodyHTML = w.char
+      ? `<div class="oscar-winner">
+          <p class="ow-lbl">✨ And the Oscar goes to…</p>
+          <p class="ow-nome">${escHtml(info ? info.nome : w.char)}</p>
+          <p class="ow-char">${escHtml(w.char)}</p>
+          ${info ? `<p class="ow-obra">${escHtml(info.obra)}</p>` : ''}
+          <p class="ow-votes">${w.count} voto${w.count!==1?'s':''}</p>
+        </div>`
+      : `<p class="oscar-locked">Nenhum voto registrado ainda.</p>`;
+  }
+
+  div.innerHTML = `
+    <div class="ocat-hdr">
+      <span class="ocat-emoji">${cat.emoji}</span>
+      <div class="ocat-info">
+        <div class="ocat-title">${cat.title}</div>
+        <div class="ocat-desc">${cat.desc}</div>
+      </div>
+      <span class="ocat-status ${stClass}">${stLabel}</span>
+    </div>
+    <div class="ocat-body">${bodyHTML}</div>`;
+
+  if (creating) container.appendChild(div);
+
+  /* Popula personagens se votação aberta e não votou */
+  if (status === 'open' && !hasVoted) {
+    const grid = document.getElementById(`ochars_${cat.id}`);
+    CHARACTERS.forEach(c => {
+      const btn = document.createElement('button');
+      btn.className = 'o-char'; btn.dataset.char = c.char;
+      btn.innerHTML = `${escHtml(c.nome)}<span>${escHtml(c.char)}</span>`;
+      btn.onclick = () => {
+        grid.querySelectorAll('.o-char').forEach(b=>b.classList.remove('sel'));
+        btn.classList.add('sel');
+      };
+      grid.appendChild(btn);
+    });
+  }
+}
+
+async function doVote(catId) {
+  const nInp = document.getElementById(`oname_${catId}`);
+  const grid = document.getElementById(`ochars_${catId}`);
+  const sub  = document.getElementById(`osub_${catId}`);
+  const name = nInp.value.trim();
+  if (!name) { nInp.style.borderColor='#e55'; setTimeout(()=>nInp.style.borderColor='',1200); showToast('Digite seu nome!'); return; }
+  const sel = grid ? grid.querySelector('.o-char.sel') : null;
+  if (!sel) { showToast('Escolha uma personagem!'); return; }
+  sub.disabled = true; sub.textContent = 'Enviando…';
+  await submitVote(catId, name, sel.dataset.char);
+  userName = name; localStorage.setItem('dp_user_name', name);
+  lastStatuses[catId] = null;
+  await renderOscarCat(OSCAR_CATS.find(c=>c.id===catId), 'open');
+  showToast('Voto registrado! ✅');
+}
+
+function escHtml(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+/* ══════════════════════════════════════
+   GALERIA TOP 10
+══════════════════════════════════════ */
+function photoIdFromUrl(url) {
+  try {
+    const m = url.match(/\/upload\/(?:v\d+\/)?(.+?)(?:\.[a-z]+)?$/i);
+    if (!m) return null;
+    return m[1].replace(/\//g,'_').replace(/[^a-zA-Z0-9_-]/g,'').slice(0,60);
+  } catch { return null; }
+}
+
+async function loadTopPhotos() {
+  const box = document.getElementById('galTop');
+  try {
+    const [pr, lr] = await Promise.all([
+      fetch(`${FIREBASE_URL}/photos.json`),
+      fetch(`${FIREBASE_URL}/likes.json`),
+    ]);
+    const pd = await pr.json();
+    const ld = (await lr.json()) || {};
+    if (!pd) { box.innerHTML='<p class="gal-empty" style="grid-column:1/-1">Nenhuma foto ainda.<br>Vá ao totem e tire a sua! 📸</p>'; return; }
+    const photos = Object.values(pd);
+    const scored = photos.map(p => {
+      const id    = photoIdFromUrl(p.url);
+      const count = id ? Object.keys(ld[id]||{}).length : 0;
+      return { url:p.url, count };
+    }).sort((a,b)=>b.count-a.count).slice(0,10);
+    box.innerHTML = '';
+    scored.forEach(p => {
+      const el = document.createElement('div'); el.className = 'gal-top-item';
+      el.innerHTML = `<img src="${escHtml(p.url)}" alt="Top foto" loading="lazy">
+        <div class="gal-top-badge">
+          <span class="gal-top-heart">❤️</span>
+          <span class="gal-top-count">${p.count} curtida${p.count!==1?'s':''}</span>
+        </div>`;
+      box.appendChild(el);
+    });
+    if (!scored.length) box.innerHTML='<p class="gal-empty" style="grid-column:1/-1">Nenhuma foto com curtidas ainda.</p>';
+  } catch {
+    box.innerHTML='<p class="gal-empty" style="grid-column:1/-1">Erro ao carregar fotos.</p>';
+  }
+}
+
+/* ══════════════════════════════════════
+   RENDER CARDÁPIO
+══════════════════════════════════════ */
+function renderMenu() {
+  const g = document.getElementById('menuGrid');
+  MENU_CATS.forEach(mc => {
+    const d = document.createElement('div'); d.className = 'menu-cat';
+    d.innerHTML = `<p class="menu-cat-ttl">${mc.cat}</p>
+      <div class="menu-items">${mc.items.map(i=>`<span class="menu-chip">${escHtml(i)}</span>`).join('')}</div>`;
+    g.appendChild(d);
+  });
+}
+
+/* ══════════════════════════════════════
+   RENDER DRINKS
+══════════════════════════════════════ */
+function renderDrinks() {
+  const car = document.getElementById('drinksCarousel');
+  const nav = document.getElementById('drinksNav');
+  DRINKS.forEach((d, i) => {
+    const card = document.createElement('div'); card.className = 'drink-card';
+    const ing  = d.ing.map(x=>`<li>${escHtml(x)}</li>`).join('');
+    card.innerHTML = `
+      <div><div class="d-emoji">${d.emoji}</div>
+        <div class="d-name">${escHtml(d.nome)}</div>
+        <div class="d-sub">${escHtml(d.sub)}</div></div>
+      <div class="d-rule"></div>
+      <ul class="d-list">${ing}</ul>
+      <p class="d-dica">${escHtml(d.dica)}</p>
+      ${d.bola ? '<span class="d-bola">Taça bola (400ml)? Dobre as doses</span>' : ''}`;
+    car.appendChild(card);
+    const dot = document.createElement('div'); dot.className = 'dn-dot'+(i===0?' on':'');
+    dot.onclick = () => car.scrollTo({ left: i * car.offsetWidth, behavior:'smooth' });
+    nav.appendChild(dot);
+  });
+  car.addEventListener('scroll', () => {
+    const idx = Math.round(car.scrollLeft / (car.scrollWidth / DRINKS.length));
+    nav.querySelectorAll('.dn-dot').forEach((d,i)=>d.classList.toggle('on',i===idx));
+  }, { passive:true });
+}
+
+/* ══════════════════════════════════════
+   OSCAR INTRO
+══════════════════════════════════════ */
+function renderOscarIntro() {
+  const first = userName ? userName.split(' ')[0] : '';
+  document.getElementById('oscarIntro').textContent = first
+    ? `${first}, é hora de votar! Escolha sua personagem favorita em cada categoria. Cada pessoa vota uma vez por categoria.`
+    : 'É hora de votar! Escolha sua personagem favorita em cada categoria. Cada pessoa vota uma vez por categoria.';
+}
+
+/* ══════════════════════════════════════
+   INIT
+══════════════════════════════════════ */
+async function startApp() {
+  renderMenu();
+  renderDrinks();
+  renderOscarIntro();
+  await renderOscar();
+  await loadTopPhotos();
+  oscarPollTimer = setInterval(renderOscar, 8000);
+}
+
+function init() {
+  /* Monta PINs */
+  buildDots('pinDots', 8);
+  buildDots('admDots', 8);
+  buildPad('pinPad', pubBuf, checkPubPin);
+  buildPad('admPad', admBuf, checkAdminPin);
+
+  /* Se nome já salvo, pula passo 1 */
+  if (userName) {
+    document.getElementById('pinNameStep').style.display = 'none';
+    document.getElementById('pinCodeStep').style.display = 'flex';
+    document.getElementById('pinWelcomeMsg').textContent = 'Olá, ' + userName.split(' ')[0] + '! Digite o código de acesso';
+  }
+
+  /* Verifica auth */
+  const authTs = parseInt(localStorage.getItem('dp_auth_ts')||'0');
+  if (Date.now() - authTs < AUTH_TTL) {
+    document.getElementById('sPin').classList.add('hide');
+    document.getElementById('main').style.display = 'block';
+    startApp();
+  }
+}
+init();
+</script>
+</body>
+</html>
