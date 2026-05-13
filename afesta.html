@@ -58,13 +58,19 @@ body{width:100%;background:var(--black);color:var(--white);font-family:'Montserr
 .sec-divider{width:40px;height:1px;background:var(--gold);opacity:.4;margin:1rem 0 1.4rem}
 
 /* ── HEADER ── */
-#sHeader{min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:1.2rem;padding:3rem 2rem;background:var(--black);border-bottom:1px solid rgba(201,168,76,.15);position:relative}
-.hdr-year{font-size:.45rem;letter-spacing:.6em;text-transform:uppercase;color:var(--gold);opacity:.6}
-.hdr-main{font-family:'Playfair Display',serif;font-size:clamp(3.5rem,14vw,8rem);font-weight:900;color:#fff;line-height:.9}
-.hdr-main em{color:var(--gold);font-style:italic;display:block}
-.hdr-sub{font-family:'Playfair Display',serif;font-size:clamp(.85rem,2.2vw,1.2rem);font-style:italic;color:var(--white-dim);letter-spacing:.08em}
-.hdr-rule{width:50px;height:1px;background:var(--gold);opacity:.4}
-.hdr-hint{font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--white-dim);animation:pulse 2.5s ease-in-out infinite}
+#sHeader{min-height:65dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:.9rem;padding:2.5rem 2rem;
+  background:
+    linear-gradient(180deg,rgba(0,0,0,.55) 0%,rgba(90,0,0,.45) 40%,rgba(0,0,0,.6) 100%),
+    repeating-linear-gradient(0deg,rgba(0,0,0,0) 0px,rgba(0,0,0,0) 5px,rgba(0,0,0,.07) 5px,rgba(0,0,0,.07) 6px),
+    repeating-linear-gradient(90deg,rgba(255,255,255,0) 0px,rgba(255,255,255,0) 12px,rgba(150,0,0,.04) 12px,rgba(150,0,0,.04) 13px),
+    #6B0000;
+  border-bottom:2px solid rgba(201,168,76,.3);position:relative}
+.hdr-year{font-size:.44rem;letter-spacing:.6em;text-transform:uppercase;color:var(--gold);opacity:.75}
+.hdr-main{font-family:'Playfair Display',serif;font-size:clamp(2.3rem,9.5vw,5.5rem);font-weight:900;color:#fff;line-height:.95;text-shadow:0 2px 20px rgba(0,0,0,.5)}
+.hdr-main em{color:var(--gold-light);font-style:italic;display:block}
+.hdr-sub{font-family:'Playfair Display',serif;font-size:clamp(.78rem,2vw,1.05rem);font-style:italic;color:rgba(255,240,200,.75);letter-spacing:.1em}
+.hdr-rule{width:50px;height:1px;background:var(--gold);opacity:.5}
+.hdr-hint{font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,220,180,.55);animation:pulse 2.5s ease-in-out infinite}
 @keyframes pulse{0%,100%{opacity:.3}50%{opacity:.9}}
 .hdr-totem{display:inline-block;font-size:.58rem;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);border:1px solid rgba(201,168,76,.35);padding:.5rem 1.1rem;text-decoration:none;margin-top:.4rem;transition:.2s}
 .hdr-totem:hover{background:rgba(201,168,76,.1)}
@@ -75,7 +81,7 @@ body{width:100%;background:var(--black);color:var(--white);font-family:'Montserr
 .menu-cat-ttl{font-size:.5rem;letter-spacing:.4em;text-transform:uppercase;color:var(--gold);margin-bottom:.65rem}
 .menu-items{display:flex;flex-wrap:wrap;gap:.45rem}
 .menu-chip{background:rgba(201,168,76,.07);border:1px solid rgba(201,168,76,.14);font-size:.68rem;font-weight:300;letter-spacing:.04em;padding:.28rem .7rem;border-radius:20px;color:var(--white)}
-.menu-note{font-size:.63rem;color:var(--white-dim);font-style:italic;line-height:1.65;margin-top:1.3rem;border-left:2px solid var(--gold);padding-left:.9rem;opacity:.85}
+.menu-note{font-size:.82rem;color:var(--white);font-style:italic;line-height:1.75;margin-top:1.3rem;border-left:2px solid var(--gold);padding-left:.9rem;opacity:.9}
 .menu-salad{margin-top:1rem;font-size:.6rem;letter-spacing:.08em;color:var(--white-dim);text-align:center;padding:.6rem;border:1px dashed rgba(201,168,76,.2);border-radius:2px}
 
 /* ── DRINKS ── */
@@ -264,7 +270,7 @@ footer{padding:2.5rem 1.4rem;text-align:center;border-top:1px solid rgba(201,168
     <div class="ic tl"></div><div class="ic tr"></div>
     <div class="ic bl"></div><div class="ic br"></div>
     <p class="hdr-year">Dalylah Party &bull; 2026</p>
-    <h1 class="hdr-main">A<em>Festa</em></h1>
+    <h1 class="hdr-main">Dalylah&#8217;s<em>Red Carpet</em></h1>
     <p class="hdr-sub">Uma noite de personagens inesquecíveis</p>
     <div class="hdr-rule"></div>
     <p class="hdr-hint">Role para baixo ↓</p>
@@ -780,7 +786,7 @@ async function loadTopPhotos() {
       const id    = photoIdFromUrl(p.url);
       const count = id ? Object.keys(ld[id]||{}).length : 0;
       return { url:p.url, count };
-    }).sort((a,b)=>b.count-a.count).slice(0,10);
+    }).sort((a,b)=>b.count-a.count).slice(0,4);
     box.innerHTML = '';
     scored.forEach(p => {
       const el = document.createElement('div'); el.className = 'gal-top-item';
