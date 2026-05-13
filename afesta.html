@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>A Festa — Dalylah Party 2026</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400&family=Montserrat:wght@300;400;600&family=Dancing+Script:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
   --gold:#C9A84C; --gold-light:#E8C97A;
@@ -177,6 +177,44 @@ footer{padding:2.5rem 1.4rem;text-align:center;border-top:1px solid rgba(201,168
 .adm-btn-reset{background:rgba(200,200,200,.08);border-color:rgba(200,200,200,.25);color:var(--white-dim)}
 .adm-btn:disabled{opacity:.4;pointer-events:none}
 .adm-refresh{display:block;margin:0 auto .5rem;background:transparent;border:1px solid rgba(201,168,76,.25);color:var(--gold);padding:.5rem 1.2rem;font-family:'Montserrat',sans-serif;font-size:.58rem;letter-spacing:.2em;cursor:pointer;border-radius:2px}
+
+/* ── LIVRO DE ASSINATURAS ── */
+.nb-paper{background:#FFFEF5;background-image:linear-gradient(rgba(30,30,140,.07) 1px,transparent 1px);background-size:100% 2rem;border-left:3px solid rgba(210,70,70,.2);border-radius:2px;box-shadow:0 3px 12px rgba(0,0,0,.35);padding:1rem 1rem 1rem 1.3rem;position:relative}
+.nb-name-input{font-family:'Dancing Script',cursive;font-size:1.2rem;background:transparent;border:none;border-bottom:1px solid rgba(201,168,76,.4);outline:none;color:#1a1a3a;width:100%;padding:.15rem 0 .15rem;letter-spacing:.03em;caret-color:var(--gold);line-height:2rem}
+.nb-name-input::placeholder{color:rgba(26,26,58,.35);font-style:italic}
+.nb-textarea{font-family:'Dancing Script',cursive;font-size:1.05rem;background:transparent;border:none;outline:none;width:100%;resize:none;color:#1a1a3a;line-height:2rem;min-height:8rem;caret-color:var(--gold);margin-top:.4rem;letter-spacing:.02em}
+.nb-textarea::placeholder{color:rgba(26,26,58,.32);font-style:italic}
+.nb-footer{display:flex;align-items:center;justify-content:space-between;margin-top:.5rem}
+.nb-counter{font-family:'Montserrat',sans-serif;font-size:.52rem;color:rgba(26,26,58,.4);letter-spacing:.05em}
+.nb-counter.near{color:#c97a4c}
+.nb-submit{background:var(--gold);border:none;color:var(--black);font-family:'Montserrat',sans-serif;font-size:.62rem;font-weight:600;letter-spacing:.28em;text-transform:uppercase;padding:.55rem 1.3rem;cursor:pointer;border-radius:2px;transition:.2s;flex-shrink:0}
+.nb-submit:hover{background:var(--gold-light)}
+.nb-submit:disabled{opacity:.5;pointer-events:none}
+/* Cards de mensagens */
+.gb-controls{display:flex;align-items:center;justify-content:space-between;margin:1.3rem 0 .8rem;flex-wrap:wrap;gap:.5rem}
+.gb-count{font-size:.56rem;letter-spacing:.18em;text-transform:uppercase;color:var(--white-dim)}
+.gb-view-all{background:transparent;border:1px solid rgba(201,168,76,.3);color:var(--gold);font-family:'Montserrat',sans-serif;font-size:.54rem;letter-spacing:.18em;text-transform:uppercase;padding:.35rem .8rem;cursor:pointer;border-radius:2px;transition:.2s}
+.gb-view-all:hover{background:rgba(201,168,76,.1)}
+.gb-list{display:flex;flex-direction:column;gap:1rem}
+.gb-card{background:#FFFEF5;background-image:linear-gradient(rgba(30,30,140,.065) 1px,transparent 1px);background-size:100% 2rem;border-left:3px solid rgba(210,70,70,.18);border-radius:2px;box-shadow:0 2px 10px rgba(0,0,0,.3);padding:.9rem 1rem .9rem 1.2rem;position:relative;color:#1a1a3a}
+.gb-card-nome{font-family:'Dancing Script',cursive;font-size:1.3rem;font-weight:700;color:#8a5c1a;line-height:2rem}
+.gb-card-msg{font-family:'Dancing Script',cursive;font-size:1rem;color:#1a1a3a;line-height:2rem;white-space:pre-wrap;word-break:break-word;margin-top:.1rem}
+.gb-card-ts{font-family:'Montserrat',sans-serif;font-size:.46rem;color:rgba(26,26,58,.38);letter-spacing:.1em;margin-top:.5rem}
+.gb-card-adm{position:absolute;top:.5rem;right:.5rem;display:flex;gap:.3rem}
+.gb-adm-btn{background:rgba(0,0,0,.08);border:1px solid rgba(0,0,0,.12);color:rgba(26,26,58,.45);font-family:'Montserrat',sans-serif;font-size:.48rem;letter-spacing:.08em;padding:.2rem .45rem;cursor:pointer;border-radius:2px;transition:.15s}
+.gb-adm-btn:hover{background:rgba(0,0,0,.14)}
+.gb-adm-btn.del{border-color:rgba(200,60,60,.3);color:rgba(200,60,60,.6)}
+.gb-adm-btn.del:hover{background:rgba(200,60,60,.1)}
+.gb-edit-area{font-family:'Dancing Script',cursive;font-size:1rem;background:rgba(255,255,255,.7);border:1px solid rgba(201,168,76,.4);outline:none;width:100%;resize:none;line-height:2rem;color:#1a1a3a;padding:.2rem .4rem;border-radius:2px;margin-top:.3rem;caret-color:var(--gold)}
+.gb-edit-save{background:var(--gold);border:none;color:#000;font-family:'Montserrat',sans-serif;font-size:.52rem;font-weight:600;letter-spacing:.2em;padding:.3rem .8rem;cursor:pointer;border-radius:2px;margin-top:.4rem;margin-right:.3rem}
+.gb-edit-cancel{background:transparent;border:1px solid rgba(0,0,0,.2);color:rgba(26,26,58,.5);font-family:'Montserrat',sans-serif;font-size:.52rem;letter-spacing:.15em;padding:.3rem .8rem;cursor:pointer;border-radius:2px;margin-top:.4rem}
+/* Paginação */
+.gb-pagination{display:flex;align-items:center;justify-content:center;gap:.6rem;margin-top:1.2rem}
+.gb-page-btn{background:transparent;border:1px solid rgba(201,168,76,.28);color:var(--gold);font-family:'Montserrat',sans-serif;font-size:.54rem;letter-spacing:.15em;padding:.38rem .9rem;cursor:pointer;border-radius:2px;transition:.2s}
+.gb-page-btn:hover{background:rgba(201,168,76,.1)}
+.gb-page-btn:disabled{opacity:.3;pointer-events:none}
+.gb-page-info{font-size:.54rem;letter-spacing:.1em;color:var(--white-dim)}
+.gb-empty{text-align:center;padding:2.5rem 1rem;font-family:'Dancing Script',cursive;font-size:1.1rem;color:var(--white-dim);opacity:.45;line-height:1.7}
 </style>
 </head>
 <body>
@@ -269,6 +307,36 @@ footer{padding:2.5rem 1.4rem;text-align:center;border-top:1px solid rgba(201,168
     <div id="galTop" class="gal-top-grid">
       <p class="gal-empty" style="grid-column:1/-1">Carregando fotos…</p>
     </div>
+  </section>
+
+  <!-- LIVRO DE ASSINATURAS -->
+  <section class="section">
+    <p class="sec-label">Deixe sua marca</p>
+    <h2 class="sec-title">Livro de <em>Assinaturas</em></h2>
+    <div class="sec-divider"></div>
+
+    <!-- Formulário -->
+    <div class="nb-paper">
+      <input id="gbName" class="nb-name-input" type="text" maxlength="50"
+             placeholder="Seu nome…" autocomplete="name">
+      <textarea id="gbMsg" class="nb-textarea" maxlength="600"
+                placeholder="Escreva sua mensagem para Dalylah…"
+                oninput="gbCount(this)"></textarea>
+      <div class="nb-footer">
+        <span class="nb-counter" id="gbCounter">0 / 600</span>
+        <button class="nb-submit" id="gbSubmit" onclick="gbSubmit()">✒ Assinar</button>
+      </div>
+    </div>
+
+    <!-- Lista de mensagens -->
+    <div class="gb-controls">
+      <span class="gb-count" id="gbTotalLabel"></span>
+      <button class="gb-view-all" id="gbViewAll" onclick="gbToggleAll()" style="display:none">Ver todas ↓</button>
+    </div>
+    <div class="gb-list" id="gbList">
+      <p class="gb-empty">Seja o primeiro a assinar! ✒</p>
+    </div>
+    <div class="gb-pagination" id="gbPagination"></div>
   </section>
 
   <!-- FOOTER -->
@@ -491,6 +559,7 @@ function checkAdminPin() {
 async function openAdminPanel() {
   document.getElementById('adminPanel').classList.add('on');
   await refreshAdminPanel();
+  gbRender(); // re-renderiza livro com botões de moderação visíveis
 }
 function closeAdminPanel() { document.getElementById('adminPanel').classList.remove('on'); }
 
@@ -748,14 +817,195 @@ function renderOscarIntro() {
 }
 
 /* ══════════════════════════════════════
+   LIVRO DE ASSINATURAS
+══════════════════════════════════════ */
+const GB_PER_PAGE = 5;
+let gbAllEntries  = [];   // todos os registros [{key,nome,msg,ts}]
+let gbPage        = 1;
+let gbShowAll     = false;
+
+/* Contador de caracteres */
+function gbCount(el) {
+  const n = el.value.length;
+  const c = document.getElementById('gbCounter');
+  c.textContent = n + ' / 600';
+  c.classList.toggle('near', n > 500);
+}
+
+/* Pré-preenche nome com o userName logado */
+function gbPrefillName() {
+  const inp = document.getElementById('gbName');
+  if (inp && !inp.value && userName) inp.value = userName;
+}
+
+/* Submete mensagem */
+async function gbSubmit() {
+  const nome = document.getElementById('gbName').value.trim();
+  const msg  = document.getElementById('gbMsg').value.trim();
+  if (!nome) { document.getElementById('gbName').focus(); showToast('Digite seu nome!'); return; }
+  if (!msg)  { document.getElementById('gbMsg').focus();  showToast('Escreva uma mensagem!'); return; }
+  const btn = document.getElementById('gbSubmit');
+  btn.disabled = true; btn.textContent = 'Enviando…';
+  try {
+    await fetch(`${FIREBASE_URL}/guestbook.json`, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ nome, msg, ts: Date.now() })
+    });
+    document.getElementById('gbMsg').value  = '';
+    document.getElementById('gbCounter').textContent = '0 / 600';
+    document.getElementById('gbCounter').classList.remove('near');
+    showToast('Mensagem registrada! ✒');
+    await gbLoad();
+  } catch { showToast('Erro ao enviar. Tente novamente.'); }
+  btn.disabled = false; btn.textContent = '✒ Assinar';
+}
+
+/* Carrega do Firebase */
+async function gbLoad() {
+  try {
+    const r = await fetch(`${FIREBASE_URL}/guestbook.json`);
+    const d = await r.json();
+    if (!d) { gbAllEntries = []; gbRender(); return; }
+    gbAllEntries = Object.entries(d)
+      .map(([key, v]) => ({ key, ...v }))
+      .sort((a,b) => b.ts - a.ts);  // mais recente primeiro
+    gbRender();
+  } catch { gbRender(); }
+}
+
+/* Renderiza lista + paginação */
+function gbRender() {
+  const list  = document.getElementById('gbList');
+  const pgDiv = document.getElementById('gbPagination');
+  const label = document.getElementById('gbTotalLabel');
+  const vaBtn = document.getElementById('gbViewAll');
+  const total = gbAllEntries.length;
+
+  label.textContent = total
+    ? total + ' mensagem' + (total !== 1 ? 's' : '')
+    : '';
+
+  if (!total) {
+    list.innerHTML = '<p class="gb-empty">Seja o primeiro a assinar! ✒</p>';
+    pgDiv.innerHTML = ''; vaBtn.style.display = 'none'; return;
+  }
+
+  const entries = gbShowAll
+    ? gbAllEntries
+    : gbAllEntries.slice((gbPage-1)*GB_PER_PAGE, gbPage*GB_PER_PAGE);
+
+  list.innerHTML = '';
+  entries.forEach(e => list.appendChild(gbCard(e)));
+
+  /* Paginação */
+  pgDiv.innerHTML = '';
+  if (!gbShowAll && total > GB_PER_PAGE) {
+    const pages = Math.ceil(total / GB_PER_PAGE);
+    vaBtn.style.display    = 'block';
+    vaBtn.textContent      = gbShowAll ? 'Paginar ↑' : 'Ver todas (' + total + ') ↓';
+
+    const prev = document.createElement('button');
+    prev.className = 'gb-page-btn'; prev.textContent = '← Anterior';
+    prev.disabled  = gbPage === 1;
+    prev.onclick   = () => { gbPage--; gbRender(); window.scrollTo({top: document.getElementById('gbList').offsetTop - 80, behavior:'smooth'}); };
+
+    const info = document.createElement('span');
+    info.className = 'gb-page-info'; info.textContent = gbPage + ' / ' + pages;
+
+    const next = document.createElement('button');
+    next.className = 'gb-page-btn'; next.textContent = 'Próxima →';
+    next.disabled  = gbPage === pages;
+    next.onclick   = () => { gbPage++; gbRender(); window.scrollTo({top: document.getElementById('gbList').offsetTop - 80, behavior:'smooth'}); };
+
+    pgDiv.appendChild(prev); pgDiv.appendChild(info); pgDiv.appendChild(next);
+  } else if (!gbShowAll) {
+    vaBtn.style.display = 'none';
+  } else {
+    vaBtn.style.display   = 'block';
+    vaBtn.textContent     = '↑ Paginar';
+  }
+}
+
+/* Alterna "ver tudo" / paginado */
+function gbToggleAll() {
+  gbShowAll = !gbShowAll;
+  gbPage    = 1;
+  gbRender();
+}
+
+/* Cria card de mensagem */
+function gbCard(e) {
+  const div = document.createElement('div'); div.className = 'gb-card'; div.id = 'gbc_'+e.key;
+  const dt  = new Date(e.ts);
+  const fdt = dt.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'})
+            + ' às ' + dt.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+
+  let admHTML = '';
+  if (isAdmin) {
+    admHTML = `<div class="gb-card-adm">
+      <button class="gb-adm-btn" onclick="gbEdit('${e.key}')">✏ editar</button>
+      <button class="gb-adm-btn del" onclick="gbDelete('${e.key}')">✕ apagar</button>
+    </div>`;
+  }
+
+  div.innerHTML = `${admHTML}
+    <div class="gb-card-nome">${escHtml(e.nome)}</div>
+    <div class="gb-card-msg" id="gbmsg_${e.key}">${escHtml(e.msg)}</div>
+    <div class="gb-card-ts">${fdt}</div>`;
+  return div;
+}
+
+/* Admin — apagar */
+async function gbDelete(key) {
+  if (!confirm('Apagar esta mensagem?')) return;
+  await fetch(`${FIREBASE_URL}/guestbook/${key}.json`, { method:'DELETE' });
+  showToast('Mensagem apagada.');
+  await gbLoad();
+}
+
+/* Admin — editar inline */
+function gbEdit(key) {
+  const entry = gbAllEntries.find(e => e.key === key);
+  if (!entry) return;
+  const msgEl = document.getElementById('gbmsg_'+key);
+  if (!msgEl) return;
+  const card  = document.getElementById('gbc_'+key);
+
+  msgEl.style.display = 'none';
+  const area = document.createElement('textarea');
+  area.className = 'gb-edit-area'; area.value = entry.msg;
+  area.rows = Math.max(3, Math.ceil(entry.msg.length / 50));
+
+  const saveBtn = document.createElement('button');
+  saveBtn.className = 'gb-edit-save'; saveBtn.textContent = 'Salvar';
+  saveBtn.onclick = async () => {
+    const newMsg = area.value.trim();
+    if (!newMsg) return;
+    saveBtn.disabled = true; saveBtn.textContent = '…';
+    await fetch(`${FIREBASE_URL}/guestbook/${key}.json`, {
+      method:'PATCH', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ msg: newMsg })
+    });
+    showToast('Mensagem atualizada!');
+    await gbLoad();
+  };
+
+  const cancelBtn = document.createElement('button');
+  cancelBtn.className = 'gb-edit-cancel'; cancelBtn.textContent = 'Cancelar';
+  cancelBtn.onclick = () => { area.remove(); saveBtn.remove(); cancelBtn.remove(); msgEl.style.display=''; };
+
+  card.appendChild(area); card.appendChild(saveBtn); card.appendChild(cancelBtn);
+}
+
+/* ══════════════════════════════════════
    INIT
 ══════════════════════════════════════ */
 async function startApp() {
   renderMenu();
   renderDrinks();
   renderOscarIntro();
-  await renderOscar();
-  await loadTopPhotos();
+  gbPrefillName();
+  await Promise.all([renderOscar(), loadTopPhotos(), gbLoad()]);
   oscarPollTimer = setInterval(renderOscar, 8000);
 }
 
