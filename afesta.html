@@ -215,6 +215,21 @@ footer{padding:2.5rem 1.4rem;text-align:center;border-top:1px solid rgba(201,168
 .gb-page-btn:disabled{opacity:.3;pointer-events:none}
 .gb-page-info{font-size:.54rem;letter-spacing:.1em;color:var(--white-dim)}
 .gb-empty{text-align:center;padding:2.5rem 1rem;font-family:'Dancing Script',cursive;font-size:1.1rem;color:var(--white-dim);opacity:.45;line-height:1.7}
+/* Signoff / carta */
+.nb-signoff{margin-top:.8rem;display:flex;flex-direction:column;gap:.1rem}
+.nb-signoff-label{font-family:'Dancing Script',cursive;font-size:1rem;color:rgba(26,26,58,.45);line-height:2rem}
+.nb-name-signoff{margin-top:0}
+/* Card letter format */
+.gb-card-greeting{font-family:'Dancing Script',cursive;font-size:1.1rem;color:#8a5c1a;line-height:2rem;font-weight:600}
+.gb-card-signoff{font-family:'Dancing Script',cursive;font-size:.95rem;color:rgba(26,26,58,.55);line-height:2rem;margin-top:.3rem}
+.gb-card-signoff strong{color:#8a5c1a;font-weight:600}
+/* Drinks intro */
+.drinks-intro{font-size:.68rem;font-weight:300;color:var(--white-dim);line-height:1.8;margin-bottom:1.1rem}
+.drinks-available{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:.6rem}
+.da-chip{background:rgba(201,168,76,.07);border:1px solid rgba(201,168,76,.2);font-size:.65rem;font-weight:300;letter-spacing:.04em;padding:.28rem .7rem;border-radius:20px;color:var(--white)}
+/* Lock button */
+.lock-btn{background:none;border:none;color:rgba(201,168,76,.18);font-size:.85rem;cursor:pointer;padding:.6rem;display:block;margin:.4rem auto 0;transition:color .3s;-webkit-tap-highlight-color:transparent}
+.lock-btn:hover{color:rgba(201,168,76,.45)}
 </style>
 </head>
 <body>
@@ -253,7 +268,6 @@ footer{padding:2.5rem 1.4rem;text-align:center;border-top:1px solid rgba(201,168
     <p class="hdr-sub">Uma noite de personagens inesquecíveis</p>
     <div class="hdr-rule"></div>
     <p class="hdr-hint">Role para baixo ↓</p>
-    <a href="https://dalylahmr.github.io/totem-foto/" class="hdr-totem">📸 Totem de Fotos &#8594;</a>
   </section>
 
   <!-- CARDÁPIO -->
@@ -271,7 +285,9 @@ footer{padding:2.5rem 1.4rem;text-align:center;border-top:1px solid rgba(201,168
     <p class="sec-label">Para beber</p>
     <h2 class="sec-title">Bar <em>&amp; Drinks</em></h2>
     <div class="sec-divider"></div>
-    <p class="drinks-hint">← Arraste os cards para ver as receitas →</p>
+    <p class="drinks-intro">A festa é nossa — você mesma serve a bebida de preferência ou monta seu drink. Confira abaixo o que temos disponível e deslize os cards para ver as sugestões de receitas. 🥂</p>
+    <div class="drinks-available" id="drinksAvailable"></div>
+    <p class="drinks-hint" style="margin-top:1.3rem">← Arraste para ver as receitas →</p>
     <div class="drinks-carousel" id="drinksCarousel"></div>
     <div class="drinks-nav" id="drinksNav"></div>
   </section>
@@ -315,13 +331,21 @@ footer{padding:2.5rem 1.4rem;text-align:center;border-top:1px solid rgba(201,168
     <h2 class="sec-title">Livro de <em>Assinaturas</em></h2>
     <div class="sec-divider"></div>
 
-    <!-- Formulário -->
+    <!-- Formulário — estilo cartinha -->
     <div class="nb-paper">
-      <input id="gbName" class="nb-name-input" type="text" maxlength="50"
-             placeholder="Seu nome…" autocomplete="name">
+      <!-- Saudação editável -->
+      <input id="gbGreeting" class="nb-name-input" type="text" maxlength="60"
+             value="Dalylah," placeholder="Dalylah,">
+      <!-- Mensagem -->
       <textarea id="gbMsg" class="nb-textarea" maxlength="600"
-                placeholder="Escreva sua mensagem para Dalylah…"
+                placeholder="Escreva sua mensagem…"
                 oninput="gbCount(this)"></textarea>
+      <!-- Assinatura -->
+      <div class="nb-signoff">
+        <span class="nb-signoff-label">Com Carinho,</span>
+        <input id="gbName" class="nb-name-input nb-name-signoff" type="text" maxlength="50"
+               placeholder="Seu nome…" autocomplete="name">
+      </div>
       <div class="nb-footer">
         <span class="nb-counter" id="gbCounter">0 / 600</span>
         <button class="nb-submit" id="gbSubmit" onclick="gbSubmit()">✒ Assinar</button>
@@ -343,6 +367,7 @@ footer{padding:2.5rem 1.4rem;text-align:center;border-top:1px solid rgba(201,168
   <footer>
     <p class="ft-txt">Dalylah Party &bull; 2026 &bull; com amor ❤️</p>
     <button class="admin-ghost" onclick="openAdminPin()">adm</button>
+    <button class="lock-btn" onclick="resetAdmin()" title="">🔒</button>
   </footer>
 
 </div><!-- /#main -->
@@ -455,6 +480,12 @@ const CHARACTERS = [
   { char:'Beth Dutton',               obra:'Yellowstone',              nome:'Janaína' },
 ];
 
+const DRINKS_AVAILABLE = [
+  'Espumante','Aperol','Vinho tinto','Vinho branco','Vinho rosé',
+  'Água com gás','Tônica','Gin','Vodka','Coca Zero',
+  'Suco de uva','Suco de maracujá','Limão',
+];
+
 const OSCAR_CATS = [
   { id:'glamurosa',     emoji:'🌟', title:'Personagem mais glamurosa', desc:'Make, cabelo, elegância' },
   { id:'divertida',     emoji:'😂', title:'Personagem mais divertida',  desc:'Energia, humor, animação' },
@@ -546,6 +577,7 @@ function openAdminPin() {
   document.getElementById('adminPinModal').classList.add('on');
 }
 function closeAdminPin() { document.getElementById('adminPinModal').classList.remove('on'); admBuf.v=''; }
+function resetAdmin()   { isAdmin = false; gbRender(); openAdminPin(); }
 function checkAdminPin() {
   if (admBuf.v === ADMIN_PIN) {
     isAdmin = true;
@@ -782,6 +814,13 @@ function renderMenu() {
    RENDER DRINKS
 ══════════════════════════════════════ */
 function renderDrinks() {
+  /* Lista de bebidas disponíveis */
+  const avail = document.getElementById('drinksAvailable');
+  DRINKS_AVAILABLE.forEach(b => {
+    const chip = document.createElement('span'); chip.className = 'da-chip';
+    chip.textContent = b; avail.appendChild(chip);
+  });
+
   const car = document.getElementById('drinksCarousel');
   const nav = document.getElementById('drinksNav');
   DRINKS.forEach((d, i) => {
@@ -793,8 +832,7 @@ function renderDrinks() {
         <div class="d-sub">${escHtml(d.sub)}</div></div>
       <div class="d-rule"></div>
       <ul class="d-list">${ing}</ul>
-      <p class="d-dica">${escHtml(d.dica)}</p>
-      ${d.bola ? '<span class="d-bola">Taça bola (400ml)? Dobre as doses</span>' : ''}`;
+      <p class="d-dica">${escHtml(d.dica)}</p>`;
     car.appendChild(card);
     const dot = document.createElement('div'); dot.className = 'dn-dot'+(i===0?' on':'');
     dot.onclick = () => car.scrollTo({ left: i * car.offsetWidth, behavior:'smooth' });
@@ -836,25 +874,33 @@ function gbCount(el) {
 function gbPrefillName() {
   const inp = document.getElementById('gbName');
   if (inp && !inp.value && userName) inp.value = userName;
+  // greeting padrão
+  const gr = document.getElementById('gbGreeting');
+  if (gr && !gr.value) gr.value = 'Dalylah,';
 }
 
 /* Submete mensagem */
 async function gbSubmit() {
-  const nome = document.getElementById('gbName').value.trim();
-  const msg  = document.getElementById('gbMsg').value.trim();
-  if (!nome) { document.getElementById('gbName').focus(); showToast('Digite seu nome!'); return; }
-  if (!msg)  { document.getElementById('gbMsg').focus();  showToast('Escreva uma mensagem!'); return; }
+  const greeting = (document.getElementById('gbGreeting').value.trim() || 'Dalylah,');
+  const msg      = document.getElementById('gbMsg').value.trim();
+  const nome     = document.getElementById('gbName').value.trim();
+  if (!nome) { document.getElementById('gbName').focus(); showToast('Assine com seu nome!'); return; }
+  if (!msg)  { document.getElementById('gbMsg').focus();  showToast('Escreva sua mensagem!'); return; }
   const btn = document.getElementById('gbSubmit');
   btn.disabled = true; btn.textContent = 'Enviando…';
   try {
-    await fetch(`${FIREBASE_URL}/guestbook.json`, {
+    const res  = await fetch(`${FIREBASE_URL}/guestbook.json`, {
       method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ nome, msg, ts: Date.now() })
+      body: JSON.stringify({ greeting, msg, nome, ts: Date.now() })
     });
-    document.getElementById('gbMsg').value  = '';
+    const data = await res.json();
+    if (data && data.name) localStorage.setItem('dp_gb_mykey', data.name);
+    document.getElementById('gbMsg').value = '';
+    document.getElementById('gbGreeting').value = 'Dalylah,';
     document.getElementById('gbCounter').textContent = '0 / 600';
     document.getElementById('gbCounter').classList.remove('near');
-    showToast('Mensagem registrada! ✒');
+    if (userName) document.getElementById('gbName').value = userName;
+    showToast('Cartinha enviada! ✒');
     await gbLoad();
   } catch { showToast('Erro ao enviar. Tente novamente.'); }
   btn.disabled = false; btn.textContent = '✒ Assinar';
@@ -935,22 +981,27 @@ function gbToggleAll() {
 
 /* Cria card de mensagem */
 function gbCard(e) {
-  const div = document.createElement('div'); div.className = 'gb-card'; div.id = 'gbc_'+e.key;
-  const dt  = new Date(e.ts);
-  const fdt = dt.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'})
-            + ' às ' + dt.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+  const div    = document.createElement('div'); div.className = 'gb-card'; div.id = 'gbc_'+e.key;
+  const dt     = new Date(e.ts);
+  const fdt    = dt.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'})
+               + ' às ' + dt.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+  const myKey  = localStorage.getItem('dp_gb_mykey');
+  const isOwner= e.key === myKey;
+  const canEdit= isAdmin || isOwner;
 
   let admHTML = '';
-  if (isAdmin) {
+  if (canEdit) {
     admHTML = `<div class="gb-card-adm">
       <button class="gb-adm-btn" onclick="gbEdit('${e.key}')">✏ editar</button>
       <button class="gb-adm-btn del" onclick="gbDelete('${e.key}')">✕ apagar</button>
     </div>`;
   }
 
+  const greeting = e.greeting || 'Dalylah,';
   div.innerHTML = `${admHTML}
-    <div class="gb-card-nome">${escHtml(e.nome)}</div>
+    <div class="gb-card-greeting">${escHtml(greeting)}</div>
     <div class="gb-card-msg" id="gbmsg_${e.key}">${escHtml(e.msg)}</div>
+    <div class="gb-card-signoff">Com Carinho, <strong>${escHtml(e.nome)}</strong></div>
     <div class="gb-card-ts">${fdt}</div>`;
   return div;
 }
@@ -963,38 +1014,60 @@ async function gbDelete(key) {
   await gbLoad();
 }
 
-/* Admin — editar inline */
+/* Editar mensagem inline */
 function gbEdit(key) {
   const entry = gbAllEntries.find(e => e.key === key);
   if (!entry) return;
-  const msgEl = document.getElementById('gbmsg_'+key);
-  if (!msgEl) return;
-  const card  = document.getElementById('gbc_'+key);
+  const card = document.getElementById('gbc_'+key);
+  if (!card) return;
 
-  msgEl.style.display = 'none';
+  // Remove botões para evitar duplo-clique
+  const admDiv = card.querySelector('.gb-card-adm');
+  if (admDiv) admDiv.style.display = 'none';
+
+  // Campos editáveis
+  const grEl  = card.querySelector('.gb-card-greeting');
+  const msgEl = document.getElementById('gbmsg_'+key);
+  const sfEl  = card.querySelector('.gb-card-signoff');
+  if (grEl)  grEl.style.display  = 'none';
+  if (msgEl) msgEl.style.display = 'none';
+  if (sfEl)  sfEl.style.display  = 'none';
+
+  const grInp = document.createElement('input');
+  grInp.className = 'gb-edit-area'; grInp.style.cssText = 'font-size:1.05rem;height:2rem;margin-bottom:.2rem';
+  grInp.value = entry.greeting || 'Dalylah,';
+
   const area = document.createElement('textarea');
   area.className = 'gb-edit-area'; area.value = entry.msg;
-  area.rows = Math.max(3, Math.ceil(entry.msg.length / 50));
+  area.rows = Math.max(3, Math.ceil(entry.msg.length / 45));
+
+  const nomeInp = document.createElement('input');
+  nomeInp.className = 'gb-edit-area'; nomeInp.style.cssText = 'font-size:1rem;height:2rem;margin-top:.3rem';
+  nomeInp.value = entry.nome || '';
+  nomeInp.placeholder = 'Seu nome…';
 
   const saveBtn = document.createElement('button');
   saveBtn.className = 'gb-edit-save'; saveBtn.textContent = 'Salvar';
   saveBtn.onclick = async () => {
-    const newMsg = area.value.trim();
-    if (!newMsg) return;
+    const newGreeting = grInp.value.trim()  || 'Dalylah,';
+    const newMsg      = area.value.trim();
+    const newNome     = nomeInp.value.trim();
+    if (!newMsg || !newNome) return;
     saveBtn.disabled = true; saveBtn.textContent = '…';
     await fetch(`${FIREBASE_URL}/guestbook/${key}.json`, {
       method:'PATCH', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ msg: newMsg })
+      body: JSON.stringify({ greeting: newGreeting, msg: newMsg, nome: newNome })
     });
-    showToast('Mensagem atualizada!');
+    showToast('Cartinha atualizada! ✒');
     await gbLoad();
   };
 
   const cancelBtn = document.createElement('button');
   cancelBtn.className = 'gb-edit-cancel'; cancelBtn.textContent = 'Cancelar';
-  cancelBtn.onclick = () => { area.remove(); saveBtn.remove(); cancelBtn.remove(); msgEl.style.display=''; };
+  cancelBtn.onclick = async () => { await gbLoad(); };
 
-  card.appendChild(area); card.appendChild(saveBtn); card.appendChild(cancelBtn);
+  card.appendChild(grInp); card.appendChild(area); card.appendChild(nomeInp);
+  card.appendChild(saveBtn); card.appendChild(cancelBtn);
 }
 
 /* ══════════════════════════════════════
