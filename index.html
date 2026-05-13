@@ -123,6 +123,14 @@ html,body{width:100%;height:100%;background:#000;color:var(--white);font-family:
 .btn-gal2{background:transparent;color:var(--gold);border-color:var(--gold)}
 .btn-home2{background:transparent;color:var(--white-dim);border-color:rgba(255,255,255,.18)}
 
+/* ── NAME INPUT (passo 1 do login) ── */
+#pinNameStep{display:flex;flex-direction:column;align-items:center;gap:.7rem;width:100%;max-width:260px}
+#pinNameInput{width:100%;background:rgba(201,168,76,.06);border:1px solid rgba(201,168,76,.35);color:var(--white);font-family:'Montserrat',sans-serif;font-size:1rem;font-weight:300;padding:.85rem 1rem;border-radius:3px;text-align:center;outline:none;letter-spacing:.05em;caret-color:var(--gold)}
+#pinNameInput::placeholder{color:rgba(201,168,76,.4);font-style:italic}
+#pinNameInput:focus{border-color:var(--gold)}
+#pinNameContinue{width:100%;padding:.85rem;background:var(--gold);border:none;color:var(--black);font-family:'Montserrat',sans-serif;font-size:.72rem;font-weight:600;letter-spacing:.28em;text-transform:uppercase;cursor:pointer;border-radius:3px;transition:.2s}
+#pinNameContinue:hover{background:var(--gold-light)}
+
 /* ── GALLERY ── */
 #sGal{position:fixed;inset:0;background:var(--black-soft);z-index:70;opacity:0;pointer-events:none;transition:opacity .5s;display:flex;flex-direction:column}
 #sGal.on{opacity:1;pointer-events:all}
@@ -130,10 +138,29 @@ html,body{width:100%;height:100%;background:#000;color:var(--white);font-family:
 .gal-ttl{font-family:'Playfair Display',serif;font-size:1.1rem;font-style:italic;color:var(--gold)}
 .gal-count{font-size:.56rem;letter-spacing:.18em;text-transform:uppercase;color:var(--white-dim)}
 .gal-grid{flex:1;overflow-y:auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:3px;padding:.8rem}
-.gal-grid img{width:100%;aspect-ratio:9/16;object-fit:cover;cursor:pointer;transition:opacity .2s;border:1px solid rgba(201,168,76,.1)}
-.gal-grid img:hover{opacity:.75}
+.gal-item{position:relative;display:flex;flex-direction:column;background:var(--black-soft)}
+.gal-item img{width:100%;aspect-ratio:9/16;object-fit:cover;cursor:pointer;transition:opacity .2s;border:1px solid rgba(201,168,76,.1);display:block}
+.gal-item img:hover{opacity:.82}
+.gal-like-bar{display:flex;align-items:center;gap:.3rem;padding:.28rem .5rem;background:rgba(0,0,0,.82);border:1px solid rgba(201,168,76,.08);border-top:none}
+.gal-like-btn{background:none;border:none;cursor:pointer;font-size:.9rem;padding:0;line-height:1;transition:transform .15s;-webkit-tap-highlight-color:transparent}
+.gal-like-btn:active{transform:scale(1.35)}
+.gal-like-btn.liked{filter:drop-shadow(0 0 3px #e55)}
+.gal-like-count{font-size:.52rem;color:var(--white-dim);letter-spacing:.05em}
 .gal-empty,.gal-loading{grid-column:1/-1;text-align:center;padding:3rem;font-size:.78rem;letter-spacing:.12em;color:var(--white-dim)}
 .gal-loading{color:var(--gold);text-transform:uppercase;animation:pulse 1.5s infinite}
+
+/* ── PHOTO VIEWER (aberto da galeria) ── */
+#photoViewer{position:fixed;inset:0;background:rgba(0,0,0,.96);z-index:200;display:none;flex-direction:column;align-items:center;justify-content:center;gap:.9rem;padding:1.2rem}
+#photoViewer.on{display:flex}
+#pvImg{max-width:90vw;max-height:58vh;object-fit:contain;border:1px solid rgba(201,168,76,.3)}
+.pv-actions{display:flex;gap:.7rem;flex-wrap:wrap;justify-content:center;width:100%;max-width:360px}
+.pv-btn{padding:.75rem 1.3rem;font-family:'Montserrat',sans-serif;font-size:.62rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase;cursor:pointer;border:1px solid;transition:.2s;display:inline-flex;align-items:center;gap:.3rem}
+.pv-btn-like{background:transparent;color:#e66;border-color:#e66}
+.pv-btn-like.liked{background:#e66;color:#fff}
+.pv-btn-share{background:var(--gold);color:var(--black);border-color:var(--gold)}
+.pv-btn-dl{background:transparent;color:var(--gold);border-color:var(--gold)}
+.pv-btn-close{background:transparent;color:var(--white-dim);border-color:rgba(255,255,255,.2)}
+.pv-like-info{font-size:.58rem;color:var(--white-dim);text-align:center;min-height:1.2em;max-width:280px}
 
 /* ── SHARE PAGE (via QR code) ── */
 #sShare{position:fixed;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:1.1rem;padding:1.5rem 1.2rem;background:var(--black);z-index:600;overflow:hidden}
@@ -165,8 +192,30 @@ html,body{width:100%;height:100%;background:#000;color:var(--white);font-family:
   <div id="sharePhotoWrap">
     <img id="sShareImg" src="" alt="Sua foto da festa">
   </div>
-  <button id="shareBtn" onclick="doShareFromQR()">&#8679;&nbsp; Compartilhar</button>
+  <div style="display:flex;gap:.6rem;width:100%;max-width:320px">
+    <button id="shareBtn" onclick="doShareFromQR()" style="flex:1;padding:1rem;">&#8679;&nbsp; Compartilhar</button>
+    <button id="dlBtn" onclick="downloadFromQR()" style="flex:0 0 auto;padding:1rem 1.2rem;font-family:Montserrat,sans-serif;font-size:.8rem;font-weight:600;letter-spacing:.15em;text-transform:uppercase;background:transparent;border:1px solid var(--gold);color:var(--gold);cursor:pointer;">&#8595;&nbsp; Baixar</button>
+  </div>
+  <!-- Curtidas na share page -->
+  <div id="shareLikeRow" style="display:flex;align-items:center;gap:.6rem;width:100%;max-width:320px">
+    <button id="shareLikeBtn" onclick="toggleShareLike()" style="background:none;border:1px solid rgba(230,80,80,.5);color:#e66;padding:.5rem .9rem;font-size:1rem;cursor:pointer;border-radius:3px;transition:.2s;display:flex;align-items:center;gap:.35rem">
+      <span id="shareLikeHeart">🤍</span><span id="shareLikeCount" style="font-size:.65rem;font-family:Montserrat,sans-serif;letter-spacing:.1em">0</span>
+    </button>
+    <p id="shareLikeNames" style="font-size:.52rem;color:var(--white-dim);letter-spacing:.05em;line-height:1.4;flex:1"></p>
+  </div>
   <a id="shareTakeMine" href="?">Tirar minha foto &#8594;</a>
+</div>
+
+<!-- PHOTO VIEWER (galeria → abrir foto) -->
+<div id="photoViewer">
+  <img id="pvImg" src="" alt="Foto">
+  <div id="pvLikeInfo" class="pv-like-info"></div>
+  <div class="pv-actions">
+    <button id="pvLikeBtn" class="pv-btn pv-btn-like" onclick="togglePvLike()">🤍 Curtir</button>
+    <button class="pv-btn pv-btn-share" onclick="sharePvPhoto()">&#8679; Compartilhar</button>
+    <button class="pv-btn pv-btn-dl" onclick="downloadPvPhoto()">&#8595; Baixar</button>
+    <button class="pv-btn pv-btn-close" onclick="closePv()">&#10005; Fechar</button>
+  </div>
 </div>
 
 <canvas id="canvas"></canvas>
@@ -180,14 +229,27 @@ html,body{width:100%;height:100%;background:#000;color:var(--white);font-family:
   <div class="ic bl"></div><div class="ic br"></div>
   <p style="font-size:.44rem;letter-spacing:.5em;text-transform:uppercase;color:var(--gold);opacity:.7">Acesso Exclusivo &bull; 2026</p>
   <h1 class="pin-title">Dalylah <em>Party</em></h1>
-  <p class="pin-sub">Digite o código de acesso</p>
-  <div class="pin-dots" id="pinDots">
-    <span class="pd"></span><span class="pd"></span>
-    <span class="pd"></span><span class="pd"></span>
-    <span class="pd"></span><span class="pd"></span>
-    <span class="pd"></span><span class="pd"></span>
+
+  <!-- Passo 1: nome -->
+  <div id="pinNameStep">
+    <p class="pin-sub">Como você se chama?</p>
+    <input id="pinNameInput" type="text" placeholder="Seu nome" maxlength="30" autocomplete="name"
+           onkeydown="if(event.key==='Enter') confirmPinName()">
+    <button id="pinNameContinue" onclick="confirmPinName()">Continuar &#8594;</button>
   </div>
-  <div class="pin-pad" id="pinPad"></div>
+
+  <!-- Passo 2: código (oculto até confirmar nome) -->
+  <div id="pinCodeStep" style="display:none;flex-direction:column;align-items:center;gap:.7rem">
+    <p class="pin-sub" id="pinWelcomeMsg">Digite o código de acesso</p>
+    <div class="pin-dots" id="pinDots">
+      <span class="pd"></span><span class="pd"></span>
+      <span class="pd"></span><span class="pd"></span>
+      <span class="pd"></span><span class="pd"></span>
+      <span class="pd"></span><span class="pd"></span>
+    </div>
+    <div class="pin-pad" id="pinPad"></div>
+  </div>
+
   <p id="pinErr">&nbsp;</p>
 </div>
 
@@ -445,7 +507,39 @@ async function loadFromFirebase() {
   if (!res.ok) throw new Error('Firebase read');
   const data = await res.json();
   if (!data) return [];
-  return Object.values(data).sort((a,b) => a.ts - b.ts);
+  return Object.entries(data)
+    .map(([key,val]) => ({...val, _fbId: key}))
+    .sort((a,b) => a.ts - b.ts);
+}
+async function loadAllLikes() {
+  try {
+    const res = await fetch(`${FIREBASE_URL}/likes.json`);
+    if (!res.ok) return {};
+    return (await res.json()) || {};
+  } catch { return {}; }
+}
+async function getLikes(photoId) {
+  try {
+    const res = await fetch(`${FIREBASE_URL}/likes/${encodeURIComponent(photoId)}.json`);
+    return (await res.json()) || {};
+  } catch { return {}; }
+}
+async function toggleLike(photoId) {
+  if (!userName || !photoId) return false;
+  const key = encodeURIComponent(userName);
+  const url = `${FIREBASE_URL}/likes/${encodeURIComponent(photoId)}/${key}.json`;
+  const cur = await fetch(url).then(r=>r.json()).catch(()=>null);
+  if (cur) { await fetch(url, {method:'DELETE'}); return false; }
+  else     { await fetch(url, {method:'PUT', headers:{'Content-Type':'application/json'}, body:'true'}); return true; }
+}
+function likesDisplay(likesObj) {
+  const names = Object.keys(likesObj||{}).map(decodeURIComponent);
+  const count = names.length;
+  if (!count) return {count:0, text:''};
+  const iLiked = names.includes(userName);
+  let text = names.slice(0,3).join(', ');
+  if (names.length > 3) text += ` e mais ${names.length-3}`;
+  return { count, text, iLiked };
 }
 
 /* ══════════════════════════════════════
@@ -467,6 +561,17 @@ function loadFromIDB(){ return new Promise(r=>{ if(!db) return r([]); try{ const
    STATE
 ══════════════════════════════════════ */
 let stream=null, photoCount=0, cdTimer=null, capturing=false, curUrl=null;
+let userName = localStorage.getItem('dp_user_name') || '';
+let _pvUrl='', _pvId=''; // photo viewer state
+
+/* Deriva um ID estável da URL do Cloudinary para usar como chave de curtida */
+function photoIdFromUrl(url) {
+  try {
+    const m = url.match(/\/upload\/(?:v\d+\/)?(.+?)(?:\.[a-z]+)?$/i);
+    if (!m) return null;
+    return m[1].replace(/\//g,'_').replace(/[^a-zA-Z0-9_-]/g,'').slice(0,60);
+  } catch { return null; }
+}
 let overlayRAF=null, autoReturnTimer=null;
 
 const video        = document.getElementById('video');
@@ -496,6 +601,14 @@ let pinBuffer = '';
 const PIN_LEN = ACCESS_PIN.length; // 8
 
 function initPin() {
+  /* Se nome já salvo: pula passo 1 e vai direto ao teclado */
+  if (userName) {
+    document.getElementById('pinNameStep').style.display = 'none';
+    const step2 = document.getElementById('pinCodeStep');
+    step2.style.display = 'flex';
+    document.getElementById('pinWelcomeMsg').textContent =
+      'Olá, ' + userName.split(' ')[0] + '! Digite o código de acesso';
+  }
   const pad = document.getElementById('pinPad');
   // Layout: 1-9, vazio, 0, ⌫
   const keys = ['1','2','3','4','5','6','7','8','9','','0','⌫'];
@@ -523,7 +636,7 @@ function updatePinDots() {
 
 function checkPin() {
   if (pinBuffer === ACCESS_PIN) {
-    localStorage.setItem('dp_auth_ts', Date.now()); // guarda timestamp do login
+    localStorage.setItem('dp_auth_ts', Date.now());
     document.getElementById('sPin').classList.add('hide');
     show('sIdle');
     startVoice();
@@ -934,6 +1047,145 @@ document.addEventListener('keydown',e=>{
 });
 
 /* ══════════════════════════════════════
+   PIN — Passo 1: Nome
+══════════════════════════════════════ */
+function confirmPinName() {
+  const input = document.getElementById('pinNameInput');
+  const name  = input.value.trim();
+  if (!name) {
+    input.focus();
+    input.style.borderColor = '#e55';
+    setTimeout(() => { input.style.borderColor = ''; }, 1200);
+    return;
+  }
+  userName = name;
+  localStorage.setItem('dp_user_name', name);
+  document.getElementById('pinNameStep').style.display = 'none';
+  const step2 = document.getElementById('pinCodeStep');
+  step2.style.display = 'flex';
+  document.getElementById('pinWelcomeMsg').textContent =
+    'Olá, ' + name.split(' ')[0] + '! Digite o código de acesso';
+}
+
+/* ══════════════════════════════════════
+   DOWNLOAD
+══════════════════════════════════════ */
+async function downloadImage(url, filename) {
+  try {
+    const resp = await fetch(url, { mode: 'cors' });
+    const blob = await resp.blob();
+    const a    = document.createElement('a');
+    a.href     = URL.createObjectURL(blob);
+    a.download = filename || 'dalylah-party.jpg';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(a.href);
+  } catch(e) { window.open(url, '_blank'); }
+}
+function downloadFromQR()  { if (_qrPhotoUrl) downloadImage(_qrPhotoUrl, 'dalylah-party.jpg'); }
+function downloadPvPhoto() { if (_pvUrl)       downloadImage(_pvUrl,       'dalylah-party.jpg'); }
+
+/* ══════════════════════════════════════
+   PHOTO VIEWER (galeria)
+══════════════════════════════════════ */
+async function openPv(url) {
+  _pvUrl = url;
+  _pvId  = photoIdFromUrl(url);
+  const viewer = document.getElementById('photoViewer');
+  const pvImg  = document.getElementById('pvImg');
+  const btn    = document.getElementById('pvLikeBtn');
+  const info   = document.getElementById('pvLikeInfo');
+  pvImg.src = url;
+  info.textContent = '';
+  btn.innerHTML = '🤍 Curtir'; btn.classList.remove('liked');
+  viewer.classList.add('on');
+  if (_pvId) {
+    const obj = await getLikes(_pvId);
+    const { count, text, iLiked } = likesDisplay(obj);
+    btn.innerHTML = (iLiked ? '❤️' : '🤍') + ' Curtir';
+    btn.classList.toggle('liked', !!iLiked);
+    info.textContent = count ? '❤️ ' + count + ' — ' + text : '';
+  }
+}
+
+function closePv() {
+  document.getElementById('photoViewer').classList.remove('on');
+  _pvUrl = ''; _pvId = '';
+}
+
+async function togglePvLike() {
+  if (!_pvId) return;
+  if (!userName) { showToast('Faça login para curtir'); return; }
+  const btn  = document.getElementById('pvLikeBtn');
+  const info = document.getElementById('pvLikeInfo');
+  btn.style.opacity = '.4'; btn.style.pointerEvents = 'none';
+  const liked  = await toggleLike(_pvId);
+  const obj    = await getLikes(_pvId);
+  const { count, text } = likesDisplay(obj);
+  btn.innerHTML = (liked ? '❤️' : '🤍') + ' Curtir';
+  btn.classList.toggle('liked', liked);
+  info.textContent = count ? '❤️ ' + count + ' — ' + text : '';
+  btn.style.opacity = ''; btn.style.pointerEvents = '';
+}
+
+async function sharePvPhoto() {
+  if (!_pvUrl) return;
+  const TITLE = "#Dalylah'sParty", TEXT = "Minha foto da festa! 🎉";
+  try {
+    const resp = await fetch(_pvUrl, { mode:'cors' });
+    const blob = await resp.blob();
+    const file = new File([blob], 'dalylah-party.jpg', { type:'image/jpeg' });
+    if (navigator.share && navigator.canShare?.({ files:[file] })) {
+      await navigator.share({ files:[file], title:TITLE, text:TEXT }); return;
+    }
+  } catch(e) {}
+  if (navigator.share) {
+    try { await navigator.share({ url:_pvUrl, title:TITLE, text:TEXT }); return; }
+    catch(e) { if (e.name==='AbortError') return; }
+  }
+  try { await navigator.clipboard.writeText(_pvUrl); showToast('Link copiado!'); }
+  catch(e) { window.open(_pvUrl, '_blank'); }
+}
+
+/* ══════════════════════════════════════
+   SHARE PAGE — curtidas (via QR)
+══════════════════════════════════════ */
+async function loadShareLikes() {
+  const id = photoIdFromUrl(_qrPhotoUrl);
+  if (!id) return;
+  const obj = await getLikes(id);
+  const { count, text, iLiked } = likesDisplay(obj);
+  document.getElementById('shareLikeCount').textContent = count || '0';
+  document.getElementById('shareLikeHeart').textContent = iLiked ? '❤️' : '🤍';
+  document.getElementById('shareLikeNames').textContent = text || '';
+  if (iLiked) document.getElementById('shareLikeBtn').style.background = 'rgba(230,80,80,.15)';
+}
+
+async function toggleShareLike() {
+  const id = photoIdFromUrl(_qrPhotoUrl);
+  if (!id) return;
+  /* Na share page o usuário pode não ter passado pelo PIN — pede nome se necessário */
+  let likeUser = userName || localStorage.getItem('dp_share_name') || '';
+  if (!likeUser) {
+    const n = prompt('Como você se chama? (para curtir a foto)');
+    if (!n || !n.trim()) return;
+    likeUser = n.trim();
+    localStorage.setItem('dp_share_name', likeUser);
+  }
+  const orig = userName; userName = likeUser;
+  const btn  = document.getElementById('shareLikeBtn');
+  btn.style.opacity = '.4'; btn.style.pointerEvents = 'none';
+  const liked = await toggleLike(id);
+  const obj   = await getLikes(id);
+  const { count, text } = likesDisplay(obj);
+  document.getElementById('shareLikeCount').textContent = count || '0';
+  document.getElementById('shareLikeHeart').textContent = liked ? '❤️' : '🤍';
+  document.getElementById('shareLikeNames').textContent = text || '';
+  btn.style.background   = liked ? 'rgba(230,80,80,.15)' : 'none';
+  btn.style.opacity = ''; btn.style.pointerEvents = '';
+  userName = orig;
+}
+
+/* ══════════════════════════════════════
    GALLERY
 ══════════════════════════════════════ */
 async function renderGal() {
@@ -941,25 +1193,53 @@ async function renderGal() {
   document.getElementById('galCount').textContent='';
   let items=[];
   try{ items=await loadFromFirebase(); }
-  catch(e){ const local=await loadFromIDB(); items=local; }
+  catch(e){ items=await loadFromIDB(); }
   if(!items.length){ galGrid.innerHTML='<p class="gal-empty">Nenhuma foto ainda.<br>Seja a primeira! 🎉</p>'; return; }
   document.getElementById('galCount').textContent=items.length+' foto'+(items.length!==1?'s':'');
   galGrid.innerHTML='';
-  [...items].reverse().forEach((p,i)=>{
-    const img=document.createElement('img');
-    img.src=p.url; img.alt='Foto '+(items.length-i); img.loading='lazy';
-    img.onclick=()=>{
-      cancelAuto();
-      curUrl=p.url;
-      rImg.src=p.url;
-      uploadStatus.textContent='✓ Salva na nuvem'; uploadStatus.className='ok';
-      /* Esconde contador regressivo (não faz sentido ao visualizar galeria) */
-      autoCountWrap.style.display='none';
-      /* Exibe QR code da foto do Cloudinary */
-      showQR(p.url);
-      show('sRes');
+  const allLikes = await loadAllLikes().catch(()=>({}));
+  [...items].reverse().forEach((p,idx)=>{
+    const id       = photoIdFromUrl(p.url);
+    const likesObj = id ? (allLikes[id] || {}) : {};
+    const { count, text, iLiked } = likesDisplay(likesObj);
+
+    const item = document.createElement('div');
+    item.className = 'gal-item';
+
+    const img = document.createElement('img');
+    img.src = p.url; img.alt='Foto '+(items.length-idx); img.loading='lazy';
+    img.onclick = () => openPv(p.url);
+
+    const bar    = document.createElement('div');
+    bar.className = 'gal-like-bar';
+
+    const likeBtn = document.createElement('button');
+    likeBtn.className = 'gal-like-btn' + (iLiked ? ' liked' : '');
+    likeBtn.textContent = iLiked ? '❤️' : '🤍';
+
+    const countEl = document.createElement('span');
+    countEl.className = 'gal-like-count';
+    countEl.textContent = count ? count + (count===1?' curtida':' curtidas') : '';
+
+    likeBtn.onclick = async (e) => {
+      e.stopPropagation();
+      if (!userName) { showToast('Faça login para curtir'); return; }
+      if (!id) return;
+      likeBtn.style.opacity = '.4';
+      const liked2 = await toggleLike(id);
+      const obj2   = await getLikes(id);
+      const d      = likesDisplay(obj2);
+      likeBtn.textContent = liked2 ? '❤️' : '🤍';
+      likeBtn.classList.toggle('liked', liked2);
+      countEl.textContent = d.count ? d.count + (d.count===1?' curtida':' curtidas') : '';
+      likeBtn.style.opacity = '';
     };
-    galGrid.appendChild(img);
+
+    bar.appendChild(likeBtn);
+    bar.appendChild(countEl);
+    item.appendChild(img);
+    item.appendChild(bar);
+    galGrid.appendChild(item);
   });
 }
 
@@ -989,6 +1269,8 @@ async function init() {
     const bw = Math.min(rw, avW) + 'px';
     document.getElementById('shareBtn').style.maxWidth = bw;
     document.getElementById('shareTakeMine').style.maxWidth = bw;
+    /* Carrega curtidas da foto */
+    loadShareLikes().catch(()=>{});
     return; /* não inicializa o totem — só a tela de share */
   }
 
