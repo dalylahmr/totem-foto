@@ -1070,19 +1070,32 @@ function confirmPinName() {
 /* ══════════════════════════════════════
    DOWNLOAD
 ══════════════════════════════════════ */
-async function downloadImage(url, filename) {
+function buildFilename() {
+  /* dalylahsparty_NomeLogin_AAAAMMDD_HHMMSS.jpg */
+  const raw  = userName || localStorage.getItem('dp_share_name') || 'convidado';
+  const name = raw.normalize('NFD').replace(/[̀-ͯ]/g,'')  // tira acentos
+                  .replace(/\s+/g,'')                                // sem espaços
+                  .replace(/[^a-zA-Z0-9]/g,'');                      // só alfanumérico
+  const now  = new Date();
+  const pad  = n => String(n).padStart(2,'0');
+  const date = `${now.getFullYear()}${pad(now.getMonth()+1)}${pad(now.getDate())}`;
+  const time = `${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}`;
+  return `dalylahsparty_${name}_${date}_${time}.jpg`;
+}
+
+async function downloadImage(url) {
   try {
     const resp = await fetch(url, { mode: 'cors' });
     const blob = await resp.blob();
     const a    = document.createElement('a');
     a.href     = URL.createObjectURL(blob);
-    a.download = filename || 'dalylah-party.jpg';
+    a.download = buildFilename();
     document.body.appendChild(a); a.click(); document.body.removeChild(a);
     URL.revokeObjectURL(a.href);
   } catch(e) { window.open(url, '_blank'); }
 }
-function downloadFromQR()  { if (_qrPhotoUrl) downloadImage(_qrPhotoUrl, 'dalylah-party.jpg'); }
-function downloadPvPhoto() { if (_pvUrl)       downloadImage(_pvUrl,       'dalylah-party.jpg'); }
+function downloadFromQR()  { if (_qrPhotoUrl) downloadImage(_qrPhotoUrl); }
+function downloadPvPhoto() { if (_pvUrl)       downloadImage(_pvUrl); }
 
 /* ══════════════════════════════════════
    PHOTO VIEWER (galeria)
